@@ -42,11 +42,11 @@ class ListsHelper:
         # ====================================================================#
         # Prepare Search Settings
         try:
-            limit = params["max"]
+            limit = int(params["max"])
         except:
             limit = 25
         try:
-            offset = params["offset"]
+            offset = int(params["offset"])
         except:
             offset = 0
         # ====================================================================#

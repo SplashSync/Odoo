@@ -38,6 +38,7 @@ class ResConfigSettings(models.TransientModel):
     splash_ws_user = fields.Many2one(
         string="Webservice User",
         comodel_name="res.users",
+        default="2",
         help="ID of Local User used by Splash"
     )
 
