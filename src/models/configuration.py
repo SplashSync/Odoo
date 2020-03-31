@@ -21,9 +21,14 @@ class ResConfigSettings(models.TransientModel):
     splash_ws_id = fields.Char(
         required=True,
         string="Server Identifier",
+        default="ThisIsSplashWsId",
         help="Your Odoo Server Identifier, generated on your account."
     )
-    splash_ws_key = fields.Char(required=True, string="Encryption Key")
+    splash_ws_key = fields.Char(
+        required=True,
+        string="Encryption Key",
+        default="ThisIsYourEncryptionKeyForSplash"
+    )
     splash_ws_expert = fields.Boolean(string="Advanced Mode")
     splash_ws_host = fields.Char(
         string="Splash Server",

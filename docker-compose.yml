@@ -1,7 +1,7 @@
 #
 #  This file is part of SplashSync Project.
 #
-#  Copyright (C) 2015-2019 Splash Sync  <www.splashsync.com>
+#  Copyright (C) 2015-2020 Splash Sync  <www.splashsync.com>
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,22 +11,78 @@
 #  file that was distributed with this source code.
 #
 
-version: '2'
+################################################################################
+# Docker Compose File
+#
+# This Docker File intend to Create a Complete Dev Envirenement
+# for Splash Modules
+#
+# 172.120.0.99        latest.odoo.local
+# 172.120.0.100       toolkit.odoo.local
+#
+################################################################################
+
+version: "3.2"
 
 services:
+
+    ################################################################################
+    # Odoo Server Container
     odoo:
         image:  odoo:latest
+        container_name: odoo-latest
         depends_on:
             - db
         ports:
             - "8069:8069"
         volumes:
+            - ./docker/x86:/etc/odoo:ro
             - ./src:/mnt/extra-addons/splashsync:ro
             - ../SplashSync-Py-Core/splashpy:/mnt/extra-addons/splashpy:ro
             - ../SplashSync-Py-Core:/mnt/splashpy
+        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i splashsync,ecommerce,inventory
+        hostname:           latest.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
+            splashsync:     { aliases: [ latest.odoo.local ] }
+
+    ################################################################################
+    # Postgres Database Container
     db:
         image: postgres:10
+        container_name: odoo-db
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo
             - POSTGRES_USER=odoo
+        hostname:           db.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.101, aliases: [ db.odoo.local ] }
+
+    ################################################################################
+    # Splash Toolkit Container
+    toolkit:
+        image: 'splashsync/toolkit'
+        container_name: odoo-toolkit
+        volumes:
+            # Specify Local Configuration File
+            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
+            # Uncomment to use Local Sources instead of Release
+#            - './src/:/app/vendor/splash/shopify/src/:ro'
+        hostname:           toolkit.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.100, aliases: [ toolkit.odoo.local ] }
+            splashsync:     { aliases: [ toolkit.odoo.local ] }
+
+networks:
+    ################################################################################
+    # Default Private Network
+    odoo:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.120.0.0/24
+    ################################################################################
+    # External Splash Network
+    splashsync:
+        external: true
