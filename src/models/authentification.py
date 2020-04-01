@@ -30,4 +30,4 @@ class IrHttp(models.AbstractModel):
         if user_agent is None or user_agent.find("SOAP") < 0:
             raise exceptions.AccessDenied()
         # Setup Splash User
-        request.uid = http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_user')
+        request.uid = int(http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_user'))
