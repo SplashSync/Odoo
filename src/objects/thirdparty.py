@@ -34,7 +34,7 @@ class ThirdParty(OdooObject):
     # Object CRUD
     # ====================================================================#
 
-    def create( self ):
+    def create(self):
         """Create a Faker Object """
         return False
 

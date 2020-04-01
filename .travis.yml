@@ -1,0 +1,50 @@
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) 2015-2020 Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+
+language: python
+os: linux
+python:
+  - "3.6"     # current default Python on Travis CI
+
+services:
+  - docker    # Require Docker to run Splash Php Toolkit
+
+cache:
+  pip: ~
+  directories:
+    - docker_images
+
+before_install:
+  # Restore Docker Images from Cache
+  #- docker load -i docker_images/images.tar || true
+
+install:
+  # Install PIP dependencies
+  # - pip install pycryptodome crypto pysimplesoap peewee
+  # Install Module as PIP dependencies
+  # - pip install -e ./
+  # Build Docker Compose
+  - docker network create splashsync --attachable
+  - docker-compose up -d
+
+# command to run tests
+script:
+  # Run unit tests for whole package
+  # - pytest
+  # Run Splash Unit tests from Splash Toolkit
+  - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
+  - docker-compose stop
+
+before_cache:
+  # Store Docker Images in Cache
+  #- docker save -o docker_images/images.tar $(docker images -a -q)
