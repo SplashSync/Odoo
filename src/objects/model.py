@@ -14,20 +14,23 @@
 from abc import abstractmethod
 from splashpy.models.object import BaseObject
 from splashpy.models.objects.parser import SimpleFields
-from splashpy.core.framework import Framework
-
+from splashpy import Framework
 from odoo import http
-
-from odoo.addons.splashsync.helpers.objects.basic import BasicFields
-from odoo.addons.splashsync.helpers.objects.lists import ListsHelper
+from odoo.addons.splashsync.helpers.objects import BasicFields, BinaryFields, ListsHelper, ObjectConfigurator
 
 
-class OdooObject(BasicFields, ListsHelper, BaseObject, SimpleFields):
+class OdooObject(BasicFields, BinaryFields, ListsHelper, BaseObject, SimpleFields):
+
+    configurator = None
 
     def __init__(self):
         self.model = None
-
-        pass
+        # ====================================================================#
+        # Setup Configurator if Config Defined by Object
+        object_type = self.getType()
+        config = self.get_configuration()
+        if isinstance(config, dict):
+            self.configurator = ObjectConfigurator(object_type, config)
 
     # ====================================================================#
     # Functions that Parent Class MUST Implements
@@ -37,6 +40,11 @@ class OdooObject(BasicFields, ListsHelper, BaseObject, SimpleFields):
     def getDomain(self):
         """Get Object Model Domain"""
         raise NotImplementedError("Not implemented yet.")
+
+    @staticmethod
+    def get_configuration():
+        """Get Hash of Fields Overrides"""
+        return None
 
     # ====================================================================#
     # Odoo ORM Access
@@ -53,6 +61,26 @@ class OdooObject(BasicFields, ListsHelper, BaseObject, SimpleFields):
     # ====================================================================#
     # Object CRUD
     # ====================================================================#
+
+    def create(self):
+        """Create a New Model Object """
+        # Init List of required Fields
+        reqFields = {}
+        # Walk on Model Basic Fields Definitions
+        for fieldId, field in self.get_basic_fields_list().items():
+            # Check if Field is Required for Creation
+            if not field["required"] and fieldId not in self.get_required_fields():
+                continue
+            # Ensure Field is In Inputs Values
+            if fieldId not in self._in:
+                from splashpy.core.framework import Framework
+                Framework.log().error("Fields "+fieldId+" is required.")
+
+                return False
+            # Add Field Value to Model Data
+            reqFields[fieldId] = self._in[fieldId]
+        # Create new Model with Minimal Data
+        return self.getModel().create(reqFields)
 
     def load( self, object_id ):
         """Load Odoo Object by Id"""
@@ -87,5 +115,17 @@ class OdooObject(BasicFields, ListsHelper, BaseObject, SimpleFields):
 
     def getObjectIdentifier(self):
         return self.object.id
+
+    # ====================================================================#
+    # OBJECT DEFINITION
+    # ====================================================================#
+
+    def fields(self):
+        """Override Fields Definition if Configurator Defined"""
+        fields = super(BaseObject, self).fields()
+        if self.configurator is None:
+            return fields
+
+        return self.configurator.overrideFields(self.getType(), fields)
 
 

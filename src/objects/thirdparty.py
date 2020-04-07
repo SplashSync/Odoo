@@ -13,7 +13,7 @@
 
 import logging
 from .model import OdooObject
-
+from splashpy import const
 
 class ThirdParty(OdooObject):
     # ====================================================================#
@@ -26,64 +26,23 @@ class ThirdParty(OdooObject):
     def getDomain():
         return 'res.partner'
 
-    def get_listed_fields(self):
+    @staticmethod
+    def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
         return ['ref', 'name', 'email']
 
-    # ====================================================================#
-    # Object CRUD
-    # ====================================================================#
+    @staticmethod
+    def get_required_fields():
+        """Get List of Object Fields to Include in Lists"""
+        return ['name']
 
-    def create(self):
-        """Create a Faker Object """
-        return False
-
-    # ====================================================================#
-    # Field Parsing Functions
-    # ====================================================================#
-
-    # def buildCoreFields( self ):
-    #
-    #     # Varchar
-    #     FieldFactory.create(const.__SPL_T_VARCHAR__, "varchar", "Varchar 1")
-    #     FieldFactory.isListed().isRequired()
-    #     # Varchar 2
-    #     FieldFactory.create(const.__SPL_T_VARCHAR__, "varchar2", "Varchar 2")
-    #     # Bool
-    #     FieldFactory.create(const.__SPL_T_BOOL__, "bool", "Bool")
-    #     # Integer
-    #     FieldFactory.create(const.__SPL_T_INT__, "integer", "Integer")
-    #     # FieldFactory.isListed()
-    #
-    #     # Date
-    #     FieldFactory.create(const.__SPL_T_DATE__, "date", "Date")
-    #     # DateTime
-    #     FieldFactory.create(const.__SPL_T_DATETIME__, "datetime", "Date Time")
-    #
-    # def getCoreFields( self, index, field_id):
-    #
-    #     if field_id in ['varchar', 'varchar2']:
-    #         self.getSimpleStr(index, field_id)
-    #
-    #     if field_id in ['bool', 'integer']:
-    #         self.getSimple(index, field_id)
-    #
-    #     if field_id in ['date']:
-    #         self.getSimpleDate(index, field_id)
-    #
-    #     if field_id in ['datetime']:
-    #         self.getSimpleDateTime(index, field_id)
-    #
-    # def setCoreFields( self, field_id, field_data ):
-    #
-    #     if field_id in ['varchar', 'varchar2', 'integer']:
-    #         self.setSimple(field_id, field_data)
-    #
-    #     if field_id in ['bool']:
-    #         self.setSimpleBool(field_id, field_data)
-    #
-    #     if field_id in ['date']:
-    #         self.setSimpleDate(field_id, field_data)
-    #
-    #     if field_id in ['datetime']:
-    #         self.setSimpleDateTime(field_id, field_data)
+    @staticmethod
+    def get_configuration():
+        """Get Hash of Fields Overrides"""
+        return {
+            "website": {"type": const.__SPL_T_URL__, "itemtype": "metadata", "itemprop": "metatype"},
+            "activity_summary": {"write": False},
+            "image": {"notest": True},
+            "image_medium": {"write": False},
+            "image_small": {"write": False},
+        }

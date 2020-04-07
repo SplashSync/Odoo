@@ -55,7 +55,7 @@ class BasicFields():
         for fieldId, field in self.get_basic_fields_list().items():
             # Build Splash Field Definition
             FieldFactory.create(self.__BasicTypes__[field["type"]], fieldId, field["string"])
-            if field["required"]:
+            if field["required"] or fieldId in self.get_required_fields():
                 FieldFactory.isRequired()
             if field["readonly"]:
                 FieldFactory.isReadOnly()
@@ -64,6 +64,9 @@ class BasicFields():
             if fieldId in self.get_listed_fields():
                 FieldFactory.isListed()
 
+            # Force Urls generator options
+            if field["type"] is "char":
+                FieldFactory.addOption("Url_Prefix", "http://")
 
     def getCoreFields( self, index, field_id):
         # Load Basic Fields Definitions
@@ -100,8 +103,8 @@ class BasicFields():
         if field_type in ['boolean']:
             self.setSimpleBool(field_id, field_data)
 
-    #     if field_id in ['date']:
-    #         self.setSimpleDate(field_id, field_data)
-    #
-    #     if field_id in ['datetime']:
-    #         self.setSimpleDateTime(field_id, field_data)
+        if field_type in ['date']:
+            self.setSimpleDate(field_id, field_data)
+
+        if field_type in ['datetime']:
+            self.setSimpleDateTime(field_id, field_data)

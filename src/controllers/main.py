@@ -13,24 +13,35 @@
 #
 
 from odoo import http
+from splashpy import Framework
 from splashpy.server import SplashServer
-from odoo.addons.splashsync.objects.thirdparty import ThirdParty
+from splashpy.templates.widgets import Basic
 from odoo.addons.splashsync.client import OdooClient
+from odoo.addons.splashsync.objects.thirdparty import ThirdParty
 
 
 class Webservice(http.Controller):
 
-    def get_server( self ):
+    def get_server(self):
         """Build Splash Server"""
-
-        return SplashServer(
-            http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_id'),
-            http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_key'),
+        # ====================================================================#
+        # Load Odoo Configuration
+        config = http.request.env['ir.config_parameter'].sudo()
+        # ====================================================================#
+        # Build Splash Server with Common Options
+        splash_server = SplashServer(
+            config.get_param('splash_ws_id'),
+            config.get_param('splash_ws_key'),
             [ThirdParty()],
-            [],
+            [Basic()],
             OdooClient()
-
         )
+        # ====================================================================#
+        # Force Ws Host if Needed
+        if config.get_param('splash_ws_expert'):
+            Framework.config().force_host(config.get_param('splash_ws_host'))
+
+        return splash_server
 
     @http.route('/splash', type='http', auth='splash', website=True, csrf=False)
     def splash( self, **kw ):

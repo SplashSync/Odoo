@@ -12,4 +12,7 @@
 #  file that was distributed with this source code.
 #
 
-from . import basic, lists
+from .config import ObjectConfigurator
+from .lists import ListsHelper
+from .basic import BasicFields
+from .binaries import BinaryFields
