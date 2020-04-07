@@ -13,7 +13,7 @@
 #
 
 import logging
-from splashpy import const
+from splashpy import const, Framework
 from splashpy.componants.fieldfactory import FieldFactory
 
 class BasicFields():
@@ -22,6 +22,7 @@ class BasicFields():
         "boolean": const.__SPL_T_BOOL__,
         "char": const.__SPL_T_VARCHAR__,
         "integer": const.__SPL_T_INT__,
+        "float": const.__SPL_T_DOUBLE__,
         "date": const.__SPL_T_DATE__,
         "datetime": const.__SPL_T_DATETIME__,
     }
@@ -79,7 +80,7 @@ class BasicFields():
         if field_type in ['char']:
             self.getSimpleStr(index, field_id)
 
-        elif field_type in ['boolean', 'integer']:
+        elif field_type in ['boolean', 'integer', 'float']:
             self.getSimple(index, field_id)
 
         elif field_type in ['date']:
@@ -97,7 +98,7 @@ class BasicFields():
         # Update field value...
         field_type = fields_def[field_id]['type']
 
-        if field_type in ['char', 'integer']:
+        if field_type in ['char', 'integer', 'float']:
             self.setSimple(field_id, field_data)
 
         if field_type in ['boolean']:

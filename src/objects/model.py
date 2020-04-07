@@ -84,8 +84,6 @@ class OdooObject(BasicFields, BinaryFields, ListsHelper, BaseObject, SimpleField
 
     def load( self, object_id ):
         """Load Odoo Object by Id"""
-        # self.getModel().invalidate_cache([int(object_id)])
-        # model = self.getModel().browse([object_id]).sudo()
         model = self.getModel().browse([int(object_id)])
         if len(model) != 1:
             return False
@@ -127,5 +125,12 @@ class OdooObject(BasicFields, BinaryFields, ListsHelper, BaseObject, SimpleField
             return fields
 
         return self.configurator.overrideFields(self.getType(), fields)
+
+    # ====================================================================#
+    # OBJECT DEBUG
+    # ====================================================================#
+
+    def dump(self, field_id):
+        Framework.log().dump(getattr(self.object, field_id), field_id)
 
 

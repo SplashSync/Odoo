@@ -12,4 +12,6 @@
 #  file that was distributed with this source code.
 #
 
-from . import thirdparty
+from .model import OdooObject
+from .thirdparty import ThirdParty
+from .product import Product
