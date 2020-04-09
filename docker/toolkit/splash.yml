@@ -30,7 +30,6 @@ splash:
             config:
                 WsIdentifier:       ThisIsSplashWsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-#                WsHost:             http://latest.odoo.local:8069
-                WsHost:             http://172.120.0.99:8069
+                WsHost:             http://odoo:8069
                 WsPath:             /splash
                 Name:               Odoo dev

@@ -13,6 +13,7 @@
 
 language: python
 os: linux
+dist: xenial
 python:
   - "3.6"     # current default Python on Travis CI
 
@@ -29,9 +30,6 @@ before_install:
   #- docker load -i docker_images/images.tar || true
 
 install:
-  # Setup Hosts
-  - echo "172.120.0.99    latest.odoo.local" >> "/etc/hosts"
-  - echo "172.120.0.100   toolkit.odoo.local" >> "/etc/hosts"
   # Build Docker Compose
   - docker network create splashsync --attachable
   - docker-compose up -d
@@ -41,7 +39,7 @@ script:
   # Run Splash Unit tests from Splash Toolkit
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
   - docker-compose stop
-  -
+
 before_cache:
   # Store Docker Images in Cache
   #- docker save -o docker_images/images.tar $(docker images -a -q)
