@@ -105,10 +105,6 @@ class BinaryFields():
         base64_contents = getattr(self.object, field_id)
         if not isinstance(base64_contents, bytes):
             return None
-
-        self.decode_file_path(self.encode_file_path(field_id))
-
-
         # ====================================================================#
         # Fetch Field Definition
         field = self.__BinaryFields__[field_id]
@@ -134,8 +130,6 @@ class BinaryFields():
             self.encode_file_path(field_id),
             True
         )
-
-
 
     def get_image_url(self, field_id):
         """Get Public Image Preview Url"""

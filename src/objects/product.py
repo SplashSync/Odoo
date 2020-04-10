@@ -11,11 +11,12 @@
 #  file that was distributed with this source code.
 #
 
-import logging
 from . import OdooObject
 from splashpy import const
+from .products import ProductsVariants
 
-class Product(OdooObject):
+
+class Product(OdooObject, ProductsVariants):
     # ====================================================================#
     # Splash Object Definition
     name = "Product"
@@ -40,6 +41,8 @@ class Product(OdooObject):
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
+            "code": {"itemtype": "http://schema.org/Product", "itemprop": "model"},
+
             "qty_at_date": {"group": "Inventory"},
             "qty_available": {"group": "Inventory"},
             "virtual_available": {"group": "Inventory"},
@@ -51,4 +54,7 @@ class Product(OdooObject):
             "image": {"notest": True},
             "image_medium": {"write": False},
             "image_small": {"write": False},
+
+            "valuation": {"write": False},
+
         }
