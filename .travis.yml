@@ -35,8 +35,8 @@ install:
   - chmod 7777 -Rf ../SplashSync-Py-Core
   # Build Docker Compose
   - docker network create splashsync --attachable
-#  - docker-compose up -d
-  - docker-compose up
+  - docker-compose up -d
+#  - docker-compose up
 
 # command to run tests
 script:
