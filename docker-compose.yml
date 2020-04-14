@@ -37,7 +37,7 @@ services:
             - "8069:8069"
         volumes:
             - ./docker/x86:/etc/odoo:ro
-            - ./src:/mnt/extra-addons/splashsync:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ../SplashSync-Py-Core/splashpy:/mnt/extra-addons/splashpy:ro
             - ../SplashSync-Py-Core:/mnt/splashpy
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "website_sale,product,stock,splashsync"

@@ -12,7 +12,12 @@
 #  file that was distributed with this source code.
 #
 
-from .config import ObjectConfigurator
-from .lists import ListsHelper
-from .basic import BasicFields
-from .binaries import BinaryFields
+from odoo import http
+from splashpy import Framework
+
+
+class TaxHelper:
+    """Collection of Static Functions to manage Odoo Tax Rules"""
+
+    attr_domain = "product.attribute"
+    values_domain = "product.attribute.value"
