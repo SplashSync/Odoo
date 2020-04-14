@@ -30,6 +30,8 @@ before_install:
   #- docker load -i docker_images/images.tar || true
 
 install:
+  # Load SplashPy Module
+  - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../SplashSync-Py-Core
   # Build Docker Compose
   - docker network create splashsync --attachable
 #  - docker-compose up -d
