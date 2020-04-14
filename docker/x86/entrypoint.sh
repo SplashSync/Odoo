@@ -29,6 +29,7 @@ if (pip3 list -l --format=columns | grep 'splashpy');
 then
   echo "Splash PyCore Module Already Installed"
 else
+  pip3 install wheel
   pip3 install -e /mnt/splashpy
 fi;
 
