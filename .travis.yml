@@ -48,12 +48,10 @@ script:
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
 
 after_failure:
+  - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' odoo:8069
+  - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' 172.120.0.99:8069
+  - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' latest.odoo.local:8069
   - docker-compose logs odoo
-  - docker-compose exec toolkit curl odoo:8069
-  - docker-compose exec toolkit curl 172.120.0.99:8069
-  - docker-compose exec toolkit curl latest.odoo.local:8069
-  - curl -s -o /dev/null -w ''%{http_code}'' 172.120.0.99:8069
-  - curl -s -o /dev/null -w ''%{http_code}'' latest.odoo.local/:8069
 
 after_script:
   - docker-compose stop
