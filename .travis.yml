@@ -46,6 +46,7 @@ script:
   - sleep 60
   - docker-compose logs odoo
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
+  - docker-compose logs odoo
   - docker-compose stop
 
 before_cache:
