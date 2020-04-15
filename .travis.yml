@@ -44,6 +44,7 @@ script:
 #  - bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 172.120.0.99:8069)" != "303" ]]; do echo "Wait for Odoo..."; docker-compose logs  --tail="25" odoo; sleep 10; done'
 #  - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
   - sleep 60
+  - docker-compose logs odoo
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
   - docker-compose stop
 
