@@ -22,12 +22,6 @@ services:
 
 cache:
   pip: ~
-  directories:
-    - docker_images
-
-before_install:
-  # Restore Docker Images from Cache
-  #- docker load -i docker_images/images.tar || true
 
 install:
   # Load SplashPy Module
@@ -36,27 +30,16 @@ install:
   # Build Docker Compose
   - docker network create splashsync --attachable
   - docker-compose up -d
-#  - docker-compose up
-
-# command to run tests
-script:
-  # Run Splash Unit tests from Splash Toolkit
-#  - bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 172.120.0.99:8069)" != "303" ]]; do echo "Wait for Odoo..."; docker-compose logs  --tail="25" odoo; sleep 10; done'
+  # Wait Until Odoo Container Started
   - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
-#  - sleep 60
-  - docker-compose logs odoo
+
+script:
+  # Run Splash Tests from Php ToolKit
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
 
 after_failure:
   - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' odoo:8069
-  - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' 172.120.0.99:8069
-  - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' latest.odoo.local:8069
-
 
 after_script:
   - docker-compose stop
   - docker-compose logs odoo
-  -
-before_cache:
-  # Store Docker Images in Cache
-  #- docker save -o docker_images/images.tar $(docker images -a -q)
