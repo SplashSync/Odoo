@@ -49,6 +49,7 @@ script:
 
 after_failure:
   - docker-compose logs odoo
+  - docker-compose exec toolkit curl odoo:8069
 
 after_script:
   - docker-compose stop
