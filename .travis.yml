@@ -42,4 +42,4 @@ after_failure:
 
 after_script:
   - docker-compose stop
-  - docker-compose logs odoo
+  - docker-compose logs odoo --tail="200"
