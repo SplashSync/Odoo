@@ -17,5 +17,6 @@ from .lists import ListsHelper
 from .basic import BasicFields
 from .binaries import BinaryFields
 from .currency import CurrencyHelper
+from .taxes import TaxHelper
 
 from .products.attributes import AttributesHelper

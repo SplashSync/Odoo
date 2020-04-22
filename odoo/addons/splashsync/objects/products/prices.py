@@ -16,7 +16,8 @@ from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import PricesHelper
 from odoo.addons.splashsync.models.configuration import ResConfigSettings
-from odoo.addons.splashsync.helpers import CurrencyHelper
+from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper
+
 
 class ProductsPrices:
     """
@@ -26,60 +27,77 @@ class ProductsPrices:
     def buildPricesFields(self):
         # ==================================================================== #
         # Product Selling Price
-        FieldFactory.create(const.__SPL_T_PRICE__, "price", "Customer Price")
+        FieldFactory.create(const.__SPL_T_PRICE__, "list_price", "Sell Price")
         FieldFactory.group("General")
         FieldFactory.microData("http://schema.org/Product", "price")
 
+        # ==================================================================== #
+        # Product Cost Price
+        FieldFactory.create(const.__SPL_T_PRICE__, "standard_price", "Buy Price")
+        FieldFactory.group("General")
+        FieldFactory.microData("http://schema.org/Product", "wholesalePrice")
+
     def getPricesFields(self, index, field_id):
-        # ==================================================================== #
-        # Read Product Template Id
-        if field_id != "price":
+        # Check if Price Field...
+        if not self.isPricesFields(field_id):
             return
+        # ==================================================================== #
+        # Read Sell Price
+        if field_id == "list_price":
+            self._out[field_id] = PricesHelper.encode(
+                float(self.object.lst_price),
+                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale'),
+                None,
+                CurrencyHelper.get_main_currency_code()
+            )
+            self._in.__delitem__(index)
 
         # ==================================================================== #
-        # Fetch Product Infos
-        price_ht = float(self.object.price)
-        tax_rate = 0.0
-        code = CurrencyHelper.get_main_currency_code()
+        # Read Buy Price
+        if field_id == "standard_price":
+            self._out[field_id] = PricesHelper.encode(
+                float(self.object.standard_price),
+                TaxHelper.get_tax_rate(self.object.supplier_taxes_id, 'purchase'),
+                None,
+                CurrencyHelper.get_main_currency_code()
+            )
+            self._in.__delitem__(index)
+
+    def setPricesFields(self, field_id, field_data):
+        # Check if Price Field...
+        if not self.isPricesFields(field_id):
+            return
         # ==================================================================== #
-        # Build Price Array
-        self._out[field_id] = PricesHelper.encode(price_ht, tax_rate, None, code)
-        self._in.__delitem__(index)
+        # Update Price
+        self.setSimple(field_id, PricesHelper.taxExcluded(field_data) - self.object.price_extra)
+        # ==================================================================== #
+        # Update Product Sell Taxes
+        if field_id == "list_price":
+            tax_rate = PricesHelper.taxPercent(field_data)
+            if tax_rate > 0:
+                tax = TaxHelper.find_by_rate(tax_rate, 'sale')
+                if tax is None:
+                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
+                else:
+                    self.object.taxes_id = [(6, 0, [tax.id])]
+            else:
+                self.object.taxes_id = [(6, 0, [])]
+        # ==================================================================== #
+        # Update Product Buy Taxes
+        if field_id == "standard_price":
+            tax_rate = PricesHelper.taxPercent(field_data)
+            if tax_rate > 0:
+                tax = TaxHelper.find_by_rate(tax_rate, 'purchase')
+                if tax is None:
+                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
+                else:
+                    self.object.supplier_taxes_id = [(6, 0, [tax.id])]
+            else:
+                self.object.supplier_taxes_id = [(6, 0, [])]
 
-
-    # def getVariantsFields(self, index, field_id):
-    #     # ==================================================================== #
-    #     # Check if this Variant Field...
-    #     base_field_id = ListHelper.initOutput(self._out, "Variants", field_id)
-    #     if base_field_id is None:
-    #         return
-    #     # ==================================================================== #
-    #     # Check if Product has Variants
-    #     if not AttributesHelper.has_attr(self.object):
-    #         self._in.__delitem__(index)
-    #         return
-    #     # ==================================================================== #
-    #     # List Product Variants Ids
-    #     for variant in self.object.product_variant_ids:
-    #         # ==================================================================== #
-    #         # Debug Mode => Filter Current Product From List
-    #         if Framework.isDebugMode() and variant.id == self.object.id:
-    #             continue
-    #         # ==================================================================== #
-    #         # Read Variant Data
-    #         if base_field_id == "id":
-    #             value = ObjectsHelper.encode("Product", str(variant.id))
-    #         elif base_field_id == "sku":
-    #             value = str(variant.code)
-    #         ListHelper.insert(self._out, "Variants", field_id, "var-"+str(variant.id), value)
-    #
-    #     self._in.__delitem__(index)
-
-    # def setVariantsFields(self, field_id, field_data):
-    #     """Update of Product Variants Not Allowed"""
-    #     if field_id == "Variants":
-    #         self.detect_variant_template()
-    #         self._in.__delitem__(field_id)
-
-
+    @staticmethod
+    def isPricesFields(field_id):
+        if field_id in ["list_price", "standard_price"]:
+            return True
+        return False
 

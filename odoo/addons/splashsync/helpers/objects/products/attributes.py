@@ -52,7 +52,7 @@ class AttributesHelper:
             return values
         # ====================================================================#
         # Walk on Product Attributes Values
-        for attribute in product.attribute_value_ids.sorted(key=lambda r: -r.attribute_id[0].id):
+        for attribute in product.attribute_value_ids.sorted(key=lambda r: r.attribute_id[0].id):
             if value_id == "value":
                 values += [attribute.name]
             elif value_id == "code":

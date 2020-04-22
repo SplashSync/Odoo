@@ -12,9 +12,10 @@
 #  file that was distributed with this source code.
 #
 
-import logging
+from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants.fieldfactory import FieldFactory
+
 
 class BasicFields():
 
@@ -34,7 +35,7 @@ class BasicFields():
         """Build & Store List of Basic Fields Definitions"""
         # List already in cache
         if self.__BasicFields__ is not None:
-            return self.__BasicFields__
+            return OrderedDict(sorted(self.__BasicFields__.items()))
         # Init List Cache
         self.__BasicFields__ = {}
         # Walk on Model Fields Definitions
@@ -50,7 +51,7 @@ class BasicFields():
             # Add Definition to Cache
             self.__BasicFields__[fieldId] = field[fieldId]
 
-        return self.__BasicFields__
+        return OrderedDict(sorted(self.__BasicFields__.items()))
 
     def buildBasicFields(self):
         # Walk on Model Basic Fields Definitions

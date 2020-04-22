@@ -12,6 +12,7 @@
 #  file that was distributed with this source code.
 #
 
+from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper
@@ -68,7 +69,9 @@ class ProductsAttributes:
         attr_values = AttributesHelper.get_attr_values(self.object, value_id)
         for pos in range(len(attr_values)):
             ListHelper.insert(self._out, "Attributes", field_id, "attr-"+str(pos), attr_values[pos])
-
+        # ==================================================================== #
+        # Force Attributes Ordering
+        self._out["Attributes"] = OrderedDict(sorted(self._out["Attributes"].items()))
         self._in.__delitem__(index)
 
     def setAttributesFields(self, field_id, field_data):
@@ -85,14 +88,15 @@ class ProductsAttributes:
         # ==================================================================== #
         # Walk on Product Attributes Field...
         attr_ids = []
-        for key, value in field_data.items():
-            try:
-                # Find or Create Attribute Value
-                attr_value = AttributesHelper.find_or_create_value(value["code"], value["value"])
-                # Store Attribute Value Id
-                attr_ids += [attr_value.id]
-            except Exception as exception:
-                return Framework.log().fromException(exception)
+        if isinstance(field_data, dict):
+            for key, value in field_data.items():
+                try:
+                    # Find or Create Attribute Value
+                    attr_value = AttributesHelper.find_or_create_value(value["code"], value["value"])
+                    # Store Attribute Value Id
+                    attr_ids += [attr_value.id]
+                except Exception as exception:
+                    return Framework.log().fromException(exception)
         # ==================================================================== #
         # Update List of Product Attributes
         self.object.attribute_value_ids = [(6, 0, attr_ids)]

@@ -23,6 +23,8 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
     desc = "Odoo Product"
     icon = "fa fa-product-hunt"
 
+    template = None
+
     @staticmethod
     def getDomain():
         return 'product.product'
@@ -30,7 +32,7 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['code', 'name', 'qty_available']
+        return ['code', 'name', 'qty_available', 'list_price']
 
     @staticmethod
     def get_required_fields():
@@ -43,7 +45,12 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
         return [
             "id", "valuation", "image_small", "image_medium", "cost_method",
             "rating_last_image", "rating_last_feedback",
+            "message_unread_counter",
             "price",
+            "lst_price",
+            "list_price",
+            # "price", "lst_price", "list_price", 
+            "standard_price"
         ]
 
     @staticmethod
@@ -54,7 +61,7 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
             "name": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "name"},
             "description": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 
-            "active": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "active"},
+            "active": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
@@ -95,5 +102,16 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
 
         return self.getModel().create(reqFields)
 
+    def load(self, object_id):
+        """Load Odoo Object by Id"""
+        # ====================================================================#
+        # Load Product Variant
+        model = self.getModel().browse([int(object_id)])
+        if len(model) != 1:
+            return False
+        # ====================================================================#
+        # Load Product Template
+        self.template = model[0].product_tmpl_id[0]
 
+        return model
 
