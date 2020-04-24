@@ -39,8 +39,7 @@ services:
             - ./docker/x86:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ../SplashSync-Py-Core:/mnt/splashpy
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison"
-        entrypoint:         bash /etc/odoo/entrypoint.sh odoo
+        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison"
         hostname:           latest.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
@@ -64,11 +63,6 @@ services:
     toolkit:
         image: 'splashsync/toolkit'
         container_name: odoo-toolkit
-        volumes:
-            # Specify Local Configuration File
-            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
-            # Uncomment to use Local Sources instead of Release
-#            - './src/:/app/vendor/splash/shopify/src/:ro'
         hostname:           toolkit.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.100, aliases: [ toolkit.odoo.local ] }
