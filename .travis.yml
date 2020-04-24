@@ -28,8 +28,9 @@ install:
   - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../SplashSync-Py-Core
   - chmod 7777 -Rf ../SplashSync-Py-Core
   # Build Docker Compose
+  - mv ./travis/docker-compose.yml docker-compose.yml
   - docker network create splashsync --attachable
-  - docker-compose  -f travis/docker-compose.yml up -d
+  - docker-compose up -d
   # Wait Until Odoo Container Started
   - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
 
