@@ -63,6 +63,9 @@ services:
     toolkit:
         image: 'splashsync/toolkit'
         container_name: odoo-toolkit
+        volumes:
+            # Specify Local Configuration File
+            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
         hostname:           toolkit.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.100, aliases: [ toolkit.odoo.local ] }
