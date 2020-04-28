@@ -15,4 +15,5 @@
 from .variants import ProductsVariants
 from .attributes import ProductsAttributes
 from .prices import ProductsPrices
+from .images import ProductsImages
 

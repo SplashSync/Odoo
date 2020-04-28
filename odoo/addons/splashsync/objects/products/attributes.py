@@ -38,6 +38,7 @@ class ProductsAttributes:
         FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Attr Name")
         FieldFactory.inlist("Attributes")
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
+        FieldFactory.isReadOnly()
         FieldFactory.isNotTested()
 
         # ==================================================================== #

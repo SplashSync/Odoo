@@ -20,7 +20,7 @@ from odoo.exceptions import MissingError
 from odoo.addons.splashsync.helpers.objects import BasicFields, BinaryFields, ListsHelper, ObjectConfigurator
 
 
-class OdooObject(ListsHelper, BaseObject, SimpleFields, BasicFields, BinaryFields):
+class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicFields):
 
     configurator = None
 

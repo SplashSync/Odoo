@@ -13,10 +13,10 @@
 
 from . import OdooObject
 from splashpy import const
-from .products import ProductsVariants, ProductsAttributes, ProductsPrices
+from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
 
 
-class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
+class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, ProductsImages):
     # ====================================================================#
     # Splash Object Definition
     name = "Product"
@@ -43,14 +43,11 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automaticaly """
         return [
-            "id", "valuation", "image_small", "image_medium", "cost_method",
+            "id", "valuation", "cost_method",
+            "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback",
             "message_unread_counter",
-            "price",
-            "lst_price",
-            "list_price",
-            # "price", "lst_price", "list_price", 
-            "standard_price"
+            "price", "lst_price", "list_price", "standard_price",
         ]
 
     @staticmethod
@@ -91,16 +88,23 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices):
         if reqFields is False:
             return False
         # ====================================================================#
-        # Create a New Simple Product
-        if not self.is_new_variable_product():
-            return self.getModel().create(reqFields)
+        # Create a New Variable Product
+        if self.is_new_variable_product():
+            # ====================================================================#
+            # Detect Product Variant Template
+            template_id = self.detect_variant_template()
+            if template_id is not None:
+                reqFields["product_tmpl_id"] = template_id
         # ====================================================================#
-        # Detect Product Variant Template
-        template_id = self.detect_variant_template()
-        if template_id is not None:
-            reqFields["product_tmpl_id"] = template_id
+        # Create Product
+        new_product = self.getModel().create(reqFields)
+        if new_product is None:
+            return False
+        # ====================================================================#
+        # Load Product Template
+        self.template = new_product.product_tmpl_id[0]
 
-        return self.getModel().create(reqFields)
+        return new_product
 
     def load(self, object_id):
         """Load Odoo Object by Id"""

@@ -6,9 +6,9 @@ splash:
 # Cache is Enabled by Default to Store Custom Connectors Configuration
 # If disabled, configuration must be store in Static, on connections section
 ################################################################################
-#    cache:
-#        enabled: false
-#        lifetime: 10
+    cache:
+        enabled: true
+        lifetime: 10
 
     # Allow Notifications for Generic Users
     notify: ["ROLE_USER"]
@@ -30,6 +30,6 @@ splash:
             config:
                 WsIdentifier:       ThisIsSplashWsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://172.120.0.99:8069
+                WsHost:             http://odoo:8069
                 WsPath:             /splash
                 Name:               Odoo dev
