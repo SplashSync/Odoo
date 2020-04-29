@@ -54,7 +54,7 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
+            "default_code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
             "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
             "description": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 

@@ -113,34 +113,35 @@ class ProductsImages:
         index_images = 0
         # ====================================================================#
         # Walk on Product Images
-        for index, spl_image in field_data.items():
-            # ====================================================================#
-            # Filter on Cover or Variant Images
-            if index in [main_index, variant_index]:
-                continue
-            # ====================================================================#
-            # Filter on Visible Images
-            if "visible" in spl_image and not bool(int(spl_image["visible"])):
-                continue
-            # ====================================================================#
-            # Load or Create Image
-            try:
-                product_image = product_images[index_images]
-            except:
-                product_image = ProductImagesHelper.create_image(self.template)
-            # ====================================================================#
-            # Update Image Name
-            if str(spl_image["image"]["name"]).__len__() > 0:
-                product_image.name = spl_image["image"]["name"]
-            else:
-                product_image.name = self.template.name
-            # ====================================================================#
-            # Update Image Contents
-            self._in["image"] = spl_image["image"]
-            self.set_binary_data("image", spl_image["image"], product_image)
-            # Update loop metadata
-            index_images += 1
-            product_image_ids += [product_image.id]
+        if isinstance(field_data, dict):
+            for index, spl_image in field_data.items():
+                # ====================================================================#
+                # Filter on Cover or Variant Images
+                if index in [main_index, variant_index]:
+                    continue
+                # ====================================================================#
+                # Filter on Visible Images
+                if "visible" in spl_image and not bool(int(spl_image["visible"])):
+                    continue
+                # ====================================================================#
+                # Load or Create Image
+                try:
+                    product_image = product_images[index_images]
+                except:
+                    product_image = ProductImagesHelper.create_image(self.template)
+                # ====================================================================#
+                # Update Image Name
+                if str(spl_image["image"]["name"]).__len__() > 0:
+                    product_image.name = spl_image["image"]["name"]
+                else:
+                    product_image.name = self.template.name
+                # ====================================================================#
+                # Update Image Contents
+                self._in["image"] = spl_image["image"]
+                self.set_binary_data("image", spl_image["image"], product_image)
+                # Update loop metadata
+                index_images += 1
+                product_image_ids += [product_image.id]
 
         # ====================================================================#
         # Update Product Images
