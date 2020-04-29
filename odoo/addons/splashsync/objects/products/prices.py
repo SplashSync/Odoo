@@ -28,13 +28,11 @@ class ProductsPrices:
         # ==================================================================== #
         # Product Selling Price
         FieldFactory.create(const.__SPL_T_PRICE__, "list_price", "Sell Price")
-        FieldFactory.group("General")
         FieldFactory.microData("http://schema.org/Product", "price")
 
         # ==================================================================== #
         # Product Cost Price
         FieldFactory.create(const.__SPL_T_PRICE__, "standard_price", "Buy Price")
-        FieldFactory.group("General")
         FieldFactory.microData("http://schema.org/Product", "wholesalePrice")
 
     def getPricesFields(self, index, field_id):

@@ -54,23 +54,23 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "code": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "model"},
-            "name": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "name"},
-            "description": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "description"},
+            "code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
+            "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
+            "description": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 
-            "active": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
-            "sale_ok": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
-            "purchase_ok": {"group": "General", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
+            "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
+            "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
+            "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
-            "qty_available": {"group": "General"},
-            "qty_at_date": {"group": "General"},
-            "virtual_available": {"group": "General"},
-            "outgoing_qty	": {"group": "General"},
-            "incoming_qty": {"group": "General"},
+            "qty_available": {"group": ""},
+            "qty_at_date": {"group": ""},
+            "virtual_available": {"group": ""},
+            "outgoing_qty	": {"group": ""},
+            "incoming_qty": {"group": ""},
 
             "website": {"type": const.__SPL_T_URL__, "itemtype": "metadata", "itemprop": "metatype"},
             "activity_summary": {"write": False},
-            "image": {"group": "General", "notest": True},
+            "image": {"group": "", "notest": True},
 
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},

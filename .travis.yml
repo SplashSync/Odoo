@@ -38,6 +38,7 @@ install:
 
 script:
   # Run Splash Tests from Php ToolKit
+  - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
 
 after_failure:
@@ -46,3 +47,4 @@ after_failure:
 after_script:
   - docker-compose stop
   - docker-compose logs --tail="200" odoo
+  - docker-compose logs --tail="200" toolkit
