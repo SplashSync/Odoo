@@ -41,13 +41,13 @@ class ProductsVariants:
         # Product Variation List - Product Link
         FieldFactory.create(ObjectsHelper.encode("Product", const.__SPL_T_ID__), "id")
         FieldFactory.name("Variant ID")
-        FieldFactory.inlist("Variants")
+        FieldFactory.inlist("variants")
         FieldFactory.microData("http://schema.org/Product", "Variants")
         FieldFactory.isNotTested()
 
         FieldFactory.create(const.__SPL_T_VARCHAR__, "sku")
         FieldFactory.name("Variant SKU")
-        FieldFactory.inlist("Variants")
+        FieldFactory.inlist("variants")
         FieldFactory.isReadOnly()
 
     def getVariantsMetaFields(self, index, field_id):
@@ -64,7 +64,7 @@ class ProductsVariants:
     def getVariantsFields(self, index, field_id):
         # ==================================================================== #
         # Check if this Variant Field...
-        base_field_id = ListHelper.initOutput(self._out, "Variants", field_id)
+        base_field_id = ListHelper.initOutput(self._out, "variants", field_id)
         if base_field_id is None:
             return
         # ==================================================================== #
@@ -85,13 +85,13 @@ class ProductsVariants:
                 value = ObjectsHelper.encode("Product", str(variant.id))
             elif base_field_id == "sku":
                 value = str(variant.code)
-            ListHelper.insert(self._out, "Variants", field_id, "var-"+str(variant.id), value)
+            ListHelper.insert(self._out, "variants", field_id, "var-"+str(variant.id), value)
 
         self._in.__delitem__(index)
 
     def setVariantsFields(self, field_id, field_data):
         """Update of Product Variants Not Allowed"""
-        if field_id == "Variants":
+        if field_id == "variants":
             self.detect_variant_template()
             self._in.__delitem__(field_id)
 
@@ -102,7 +102,7 @@ class ProductsVariants:
         """
         # ====================================================================#
         # Check if Inputs Contains Attributes
-        if "Attributes" not in self._in.keys() or not isinstance(self._in["Attributes"], dict):
+        if "attributes" not in self._in.keys() or not isinstance(self._in["attributes"], dict):
             return False
         Framework.log().warn("New Product is Variable !!")
         return True
@@ -114,11 +114,11 @@ class ProductsVariants:
         """
         # ====================================================================#
         # Check if Inputs Contains Variants Ids
-        if "Variants" not in self._in.keys() or not isinstance(self._in["Variants"], dict):
+        if "variants" not in self._in.keys() or not isinstance(self._in["variants"], dict):
             return None
         # ====================================================================#
         # Walk on Variants Items
-        for key, variant in self._in["Variants"].items():
+        for key, variant in self._in["variants"].items():
             # Variant Object Splash Id is Here
             if "id" not in variant.keys() or not isinstance(variant["id"], str):
                 continue

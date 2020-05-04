@@ -12,10 +12,8 @@
 #  file that was distributed with this source code.
 #
 
-from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from splashpy.helpers import ListHelper
 from odoo.addons.splashsync.helpers import AttributesHelper, FeaturesHelper
 
 
@@ -32,6 +30,10 @@ class ProductsFeatures:
             FieldFactory.create(const.__SPL_T_VARCHAR__, FeaturesHelper.encode_id(attribute), attribute.display_name)
             FieldFactory.group("Features")
             FieldFactory.microData("http://schema.org/Product", attribute.name)
+            # ==================================================================== #
+            # Filter Variants Attributes During Tests
+            if Framework.isDebugMode() and attribute.name in ['VariantA', 'VariantB']:
+                FieldFactory.isNotTested()
 
     def getFeaturesFields(self, index, field_id):
         """
@@ -46,6 +48,7 @@ class ProductsFeatures:
         if attr_id is None:
             return
         self._in.__delitem__(index)
+        self._out[field_id] = None
         # ==================================================================== #
         # Check if Product has Attribute Value
         for attr_value in self.object.attribute_value_ids:
@@ -111,3 +114,4 @@ class ProductsFeatures:
             )
             # for variant in self.object.product_variant_ids:
             FeaturesHelper.add(self.template, new_value)
+            Framework.log().dump(self.object.attribute_value_ids.ids)

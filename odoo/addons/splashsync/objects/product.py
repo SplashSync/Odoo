@@ -76,12 +76,20 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
         }
 
+    def order_inputs(self):
+        """Ensure Inputs are Correctly Ordered"""
+        from collections import OrderedDict
+        self._in = OrderedDict(sorted(self._in.items()))
+
     # ====================================================================#
     # Object CRUD
     # ====================================================================#
 
     def create(self):
         """Create a New Product with Variants Detection"""
+        # ====================================================================#
+        # Order Fields Inputs
+        # self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
@@ -97,29 +105,35 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
                 reqFields["product_tmpl_id"] = template_id
         # ====================================================================#
         # Create Product
-        new_product = self.getModel().create(reqFields)
+        new_product = self.getModel().with_context(create_product_product=True).create(reqFields)
         if new_product is None:
             return False
         # ====================================================================#
         # Load Product Template
         for template in new_product.product_tmpl_id:
-            self.template = template
+            self.template = template.with_context(create_product_product=True)
             break
 
         return new_product
 
     def load(self, object_id):
         """Load Odoo Object by Id"""
-        # ====================================================================#
-        # Load Product Variant
-        model = self.getModel().browse([int(object_id)])
-        if len(model) != 1:
+        try:
+            # ====================================================================#
+            # Order Fields Inputs
+            # self.order_inputs()
+            # ====================================================================#
+            # Load Product Variant
+            model = self.getModel().browse([int(object_id)])
+            if len(model) != 1:
+                return False
+            # ====================================================================#
+            # Load Product Template
+            for template in model.product_tmpl_id:
+                self.template = template
+                break
+            return model
+        except Exception as exception:
+            from splashpy import Framework
+            Framework.log().warn("Unable to Load Odoo Product " + str(object_id))
             return False
-        # ====================================================================#
-        # Load Product Template
-        for template in model.product_tmpl_id:
-            self.template = template
-            break
-
-
-        return model

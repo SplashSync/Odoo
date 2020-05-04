@@ -78,6 +78,11 @@ class FeaturesHelper:
         # ====================================================================#
         # Add Attribute Line
         template.attribute_line_ids = [(0, 0, new_line)]
+        # ====================================================================#
+        # FIX: Remove Auto-created Attributes from Variants
+        for product in template.product_variant_ids:
+            if new_value.id in product.attribute_value_ids.ids:
+                product.attribute_value_ids = [(3, new_value.id, 0)]
 
     @staticmethod
     def update(template, new_value):

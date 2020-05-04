@@ -133,5 +133,3 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     def dump(self, field_id):
         Framework.log().dump(getattr(self.object, field_id), field_id)
-
-
