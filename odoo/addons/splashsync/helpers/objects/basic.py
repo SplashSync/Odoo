@@ -60,6 +60,7 @@ class BasicFields():
             FieldFactory.create(self.__BasicTypes__[field["type"]], fieldId, field["string"])
             FieldFactory.group("Others")
             # FieldFactory.isReadOnly()
+            # FieldFactory.isNotTested()
 
             if field["required"] or fieldId in self.get_required_fields():
                 FieldFactory.isRequired()

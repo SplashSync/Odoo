@@ -29,14 +29,14 @@ class ProductsAttributes:
         # ==================================================================== #
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "code", "Attr Code")
-        FieldFactory.inlist("Attributes")
+        FieldFactory.inlist("attributes")
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeCode")
         FieldFactory.isNotTested()
 
         # ==================================================================== #
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Attr Name")
-        FieldFactory.inlist("Attributes")
+        FieldFactory.inlist("attributes")
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
         FieldFactory.isReadOnly()
         FieldFactory.isNotTested()
@@ -44,7 +44,7 @@ class ProductsAttributes:
         # ==================================================================== #
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "value", "Attr Value")
-        FieldFactory.inlist("Attributes")
+        FieldFactory.inlist("attributes")
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeValue")
         FieldFactory.isNotTested()
 
@@ -57,7 +57,7 @@ class ProductsAttributes:
         """
         # ==================================================================== #
         # Check field_id this Attribute Field...
-        value_id = ListHelper.initOutput(self._out, "Attributes", field_id)
+        value_id = ListHelper.initOutput(self._out, "attributes", field_id)
         if value_id is None:
             return
         # ==================================================================== #
@@ -69,10 +69,10 @@ class ProductsAttributes:
         # Get Product Attributes Data
         attr_values = AttributesHelper.get_attr_values(self.object, value_id)
         for pos in range(len(attr_values)):
-            ListHelper.insert(self._out, "Attributes", field_id, "attr-"+str(pos), attr_values[pos])
+            ListHelper.insert(self._out, "attributes", field_id, "attr-"+str(pos), attr_values[pos])
         # ==================================================================== #
         # Force Attributes Ordering
-        self._out["Attributes"] = OrderedDict(sorted(self._out["Attributes"].items()))
+        self._out["attributes"] = OrderedDict(sorted(self._out["attributes"].items()))
         self._in.__delitem__(index)
 
     def setAttributesFields(self, field_id, field_data):
@@ -84,12 +84,15 @@ class ProductsAttributes:
         """
         # ==================================================================== #
         # Check field_id this Attribute Field...
-        if field_id != "Attributes":
+        if field_id != "attributes":
             return
+        new_attributes_ids = []
         # ==================================================================== #
         # Walk on Product Attributes Field...
-        new_attributes_ids = []
         if isinstance(field_data, dict):
+            # Force Attributes Ordering
+            field_data = OrderedDict(sorted(field_data.items()))
+            # Walk on Product Attributes Field...
             for key, value in field_data.items():
                 try:
                     # Find or Create Attribute Value

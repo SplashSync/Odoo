@@ -19,7 +19,7 @@ from splashpy import Framework
 class FeaturesHelper:
     """Collection of Static Functions to manage Product Features"""
 
-    prefix = "feature_id_"
+    prefix = "__feature_id__"
 
     @staticmethod
     def find_all():
@@ -103,9 +103,7 @@ class FeaturesHelper:
                 return
             # Update Attribute Value => Remove Old Value => Add New Value
             attribute_line.value_ids = [(3, attribute_line.value_ids[0].id, 0), (4, new_value.id, 0)]
-
             return
-
         # ====================================================================#
         # Attributes Value NOT Found => Add New Value
         template.product_template_attribute_value_ids = [(4, new_value.id, 0)]
