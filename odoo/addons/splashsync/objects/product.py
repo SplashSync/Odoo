@@ -102,7 +102,9 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
             return False
         # ====================================================================#
         # Load Product Template
-        self.template = new_product.product_tmpl_id[0]
+        for template in new_product.product_tmpl_id:
+            self.template = template
+            break
 
         return new_product
 

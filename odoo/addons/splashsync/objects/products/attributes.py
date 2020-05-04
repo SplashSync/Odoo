@@ -88,6 +88,7 @@ class ProductsAttributes:
             return
         # ==================================================================== #
         # Walk on Product Attributes Field...
+        new_attributes_ids = []
         if isinstance(field_data, dict):
             for key, value in field_data.items():
                 try:
@@ -95,8 +96,14 @@ class ProductsAttributes:
                     attr_value = AttributesHelper.find_or_create_value(value["code"], value["value"])
                     # Update Product Attribute
                     if attr_value is not None:
+                        new_attributes_ids += [attr_value.attribute_id.id]
                         AttributesHelper.update_value(self.object, attr_value)
                 except Exception as exception:
                     return Framework.log().fromException(exception)
+        # ==================================================================== #
+        # Delete Remaining Product Attributes Values...
+        for current_value in self.object.attribute_value_ids:
+            if current_value.attribute_id.id not in new_attributes_ids:
+                self.object.attribute_value_ids = [(3, current_value.id, 0)]
 
         self._in.__delitem__(field_id)
