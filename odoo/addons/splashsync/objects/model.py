@@ -94,7 +94,7 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         try:
             self.object.flush()
         except Exception as exception:
-            return Framework.log().error(exception)
+            return Framework.log().fromException(exception)
 
         return self.getObjectIdentifier()
 
@@ -108,7 +108,7 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         except MissingError:
             return True
         except Exception as exception:
-            return Framework.log().error(exception)
+            return Framework.log().fromException(exception)
 
         return True
 

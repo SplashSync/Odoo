@@ -88,17 +88,15 @@ class ProductsAttributes:
             return
         # ==================================================================== #
         # Walk on Product Attributes Field...
-        attr_ids = []
         if isinstance(field_data, dict):
             for key, value in field_data.items():
                 try:
                     # Find or Create Attribute Value
                     attr_value = AttributesHelper.find_or_create_value(value["code"], value["value"])
-                    # Store Attribute Value Id
-                    attr_ids += [attr_value.id]
+                    # Update Product Attribute
+                    if attr_value is not None:
+                        AttributesHelper.update_value(self.object, attr_value)
                 except Exception as exception:
                     return Framework.log().fromException(exception)
-        # ==================================================================== #
-        # Update List of Product Attributes
-        self.object.attribute_value_ids = [(6, 0, attr_ids)]
+
         self._in.__delitem__(field_id)

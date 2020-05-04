@@ -13,10 +13,10 @@
 
 from . import OdooObject
 from splashpy import const
-from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
+from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages, ProductsFeatures
 
 
-class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, ProductsImages):
+class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, ProductsImages, ProductsFeatures):
     # ====================================================================#
     # Splash Object Definition
     name = "Product"
@@ -118,4 +118,3 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
         self.template = model[0].product_tmpl_id[0]
 
         return model
-

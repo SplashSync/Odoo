@@ -51,7 +51,7 @@ class ListsHelper:
             offset = 0
         # ====================================================================#
         # Execute Search Query
-        results = self.getModel().search([], limit=limit, offset=offset, order='create_date asc')
+        results = self.getModel().search([], limit=limit, offset=offset, order='id')
         # Init Results
         objects = {}
         # Walk on Results
@@ -59,7 +59,7 @@ class ListsHelper:
             for result in results.read(self.get_listed_fields()):
                 objects["object-" + str(result['id'])] = result
         except Exception as exception:
-            Framework.log().error(exception.message)
+            Framework.log().fromException(exception)
         # ====================================================================#
         # Add Metadata
         objects['meta'] = {
