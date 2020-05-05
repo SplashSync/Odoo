@@ -89,7 +89,7 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
         """Create a New Product with Variants Detection"""
         # ====================================================================#
         # Order Fields Inputs
-        # self.order_inputs()
+        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
@@ -121,7 +121,7 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
         try:
             # ====================================================================#
             # Order Fields Inputs
-            # self.order_inputs()
+            self.order_inputs()
             # ====================================================================#
             # Load Product Variant
             model = self.getModel().browse([int(object_id)])

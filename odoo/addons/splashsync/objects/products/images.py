@@ -76,11 +76,6 @@ class ProductsImages:
         self._out["Images"] = OrderedDict(sorted(self._out["Images"].items()))
         self._in.__delitem__(index)
 
-        # if "cover" == value_id:
-        #     ProductImagesHelper.find_first(self._out["Images"], True, None)
-        #     Framework.log().dump(ProductImagesHelper.find_first(self._out["Images"], True, None))
-
-
     def setImagesFields(self, field_id, field_data):
         """
         Update Product Images Values

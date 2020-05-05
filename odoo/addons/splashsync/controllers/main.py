@@ -52,24 +52,30 @@ class Webservice(http.Controller):
         return self.get_server().fromWerkzeug(http.request.httprequest)
 
     @http.route('/splash/debug', type='http', auth='public', website=True)
-    def debug( self, **kw ):
-        """
-         Respond to User Debug Requets
-         """
-        return self.get_server().fromWerkzeug(http.request.httprequest)
-
-    @http.route('/test', type='http', auth='public', website=True)
     def test( self, **kw ):
         """
-         Respond to User Debug Requets
+         Respond to User Debug Requests
          """
-        import logging
+        from splashpy.client import SplashClient
+        # ====================================================================#
+        # Init Splash Framework
+        self.get_server()
+        # ====================================================================#
+        # Load Server Info
+        wsId, wsKey, wsHost = Framework.config().identifiers()
+        raw_html = "<h3>Server Debug</h3>"
+        # ====================================================================#
+        # Execute Ping Test
+        ping = SplashClient.getInstance().ping()
+        raw_html += Framework.log().to_html_list(True)
+        if not ping:
+            Framework.log().error('Ping Test Fail: ' + str(wsHost))
 
-        partner = ThirdParty(http.request.env)
-        model = partner.load(10)
-        logging.warning(model['email'])
-        logging.warning(getattr(model, 'email'))
-        # logging.warning(http.request.env.su)
-        # logging.warning(http.request.env.context)
+        # ====================================================================#
+        # Execute Connect Test
+        connect = SplashClient.getInstance().connect()
+        raw_html += Framework.log().to_html_list(True)
+        if not connect:
+            Framework.log().error('Connect Test Fail: ' + str(wsHost))
 
-        return "Ok"
+        return raw_html + Framework.log().to_html_list(True)

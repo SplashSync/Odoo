@@ -116,7 +116,7 @@ class BinaryFields():
             return
         # ====================================================================#
         # Read File from Server
-        new_file = Files.getFile(field_data['path'], field_data['md5'])
+        new_file = Files.getFile(field_data['file'], field_data['md5'])
         if isinstance(new_file, dict) and "raw" in new_file:
             self.setSimple(field_id, new_file["raw"], target)
             Framework.log().warn("File contents updated")
