@@ -114,4 +114,3 @@ class ProductsFeatures:
             )
             # for variant in self.object.product_variant_ids:
             FeaturesHelper.add(self.template, new_value)
-            Framework.log().dump(self.object.attribute_value_ids.ids)
