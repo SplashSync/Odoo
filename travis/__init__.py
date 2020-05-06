@@ -26,3 +26,13 @@ def post_init_hook(cr, registry):
     env['ir.config_parameter'].sudo().set_param('splash_ws_expert', True)
     env['ir.config_parameter'].sudo().set_param('splash_ws_host', "http://toolkit/ws/soap")
     env['ir.config_parameter'].sudo().set_param('splash_ws_user', 2)
+
+    config = env['res.config.settings'].search([('company_id', '=', 1)], limit=1)
+    # Update Company Values
+    config.write({
+        'splash_ws_id': "ThisIsSplashWsId",
+        'splash_ws_key': "ThisIsYourEncryptionKeyForSplash",
+        'splash_ws_expert': True,
+        'splash_ws_host': "http://toolkit/ws/soap",
+        'splash_ws_user': 2,
+    })

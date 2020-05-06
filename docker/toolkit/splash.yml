@@ -31,20 +31,20 @@ splash:
                 WsIdentifier:       ThisIsSplashWsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
-                WsPath:             /splash?c=1
+                WsPath:             /splash
                 Name:               Odoo C1
 
         ########################################################################
         # Odoo Connection [Company 2]
-        odoo-2:
-            id:                 ThisIsSplashWsId
-            key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo C2
-            host:               false
-            connector:          soap
-            config:
-                WsIdentifier:       ThisIsSplashWsId
-                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:8069
-                WsPath:             /splash?c=2
-                Name:               Odoo C2
+#        odoo-2:
+#            id:                 ThisIsSplashWsId
+#            key:                ThisIsYourEncryptionKeyForSplash
+#            name:               Odoo C2
+#            host:               false
+#            connector:          soap
+#            config:
+#                WsIdentifier:       ThisIsSplashWsId
+#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+#                WsHost:             http://odoo:8069
+#                WsPath:             /splash?c=2
+#                Name:               Odoo C2

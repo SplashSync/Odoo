@@ -64,17 +64,16 @@ class Webservice(http.Controller):
         # ====================================================================#
         # Init Odoo User & Company
         SettingsManager.ensure_company()
-
-        # http.request.session.get_context()
-
-        # print(SettingsManager.get_configuration())
         # ====================================================================#
         # Build Splash Server with Common Options
+        splash_objects = [
+            # ThirdParty(),
+            Product(),
+        ]
         splash_server = SplashServer(
             SettingsManager.get_id(),
             SettingsManager.get_key(),
-            [Product()],
-            # [ThirdParty(), Product()],
+            splash_objects,
             [Basic()],
             OdooClient()
         )
