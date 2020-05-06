@@ -12,7 +12,7 @@
 #  file that was distributed with this source code.
 #
 
-from odoo import SUPERUSER_ID, exceptions, http, models, tools
+from odoo import SUPERUSER_ID, exceptions, models
 from odoo.http import request
 
 
@@ -22,12 +22,25 @@ class IrHttp(models.AbstractModel):
 
     @classmethod
     def _auth_method_splash(cls):
+        # ====================================================================#
         # Only POST Requests
         if request.httprequest.method != 'POST':
             raise exceptions.AccessDenied()
+        # ====================================================================#
         # Verify User Agent
         user_agent = request.httprequest.headers.get("User-Agent")
         if user_agent is None or user_agent.find("SOAP") < 0:
             raise exceptions.AccessDenied()
+        # ====================================================================#
+        # Init as Super User
+        request.session.uid = None
+        request.uid = SUPERUSER_ID
+        # ====================================================================#
         # Setup Splash User
-        request.uid = int(http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_user'))
+        from odoo.addons.splashsync.helpers import SettingsManager
+        splash_user = SettingsManager.get_user()
+        if splash_user is None:
+            raise exceptions.AccessDenied()
+        request.session.uid = None
+        request.uid = splash_user
+

@@ -13,3 +13,4 @@
 #
 
 from .objects import *
+from .settings import SettingsManager

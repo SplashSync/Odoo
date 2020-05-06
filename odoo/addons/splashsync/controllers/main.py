@@ -18,41 +18,20 @@ from splashpy.server import SplashServer
 from splashpy.templates.widgets import Basic
 from odoo.addons.splashsync.client import OdooClient
 from odoo.addons.splashsync.objects import ThirdParty, Product
-
+from odoo.addons.splashsync.helpers import SettingsManager
 
 class Webservice(http.Controller):
 
-    def get_server(self):
-        """Build Splash Server"""
-        # ====================================================================#
-        # Load Odoo Configuration
-        config = http.request.env['ir.config_parameter'].sudo()
-        # ====================================================================#
-        # Build Splash Server with Common Options
-        splash_server = SplashServer(
-            config.get_param('splash_ws_id'),
-            config.get_param('splash_ws_key'),
-            [Product()],
-            # [ThirdParty(), Product()],
-            [Basic()],
-            OdooClient()
-        )
-        # ====================================================================#
-        # Force Ws Host if Needed
-        if config.get_param('splash_ws_expert'):
-            Framework.config().force_host(config.get_param('splash_ws_host'))
-
-        return splash_server
-
-    @http.route('/splash', type='http', auth='splash', website=True, csrf=False)
-    def splash( self, **kw ):
+    @http.route('/splash', type='http', auth='splash', website=False, csrf=False)
+    def splash(self, **kw):
         """
          Respond to Splash Webservice Requests
          """
         return self.get_server().fromWerkzeug(http.request.httprequest)
 
-    @http.route('/splash/debug', type='http', auth='public', website=True)
-    def test( self, **kw ):
+    # @http.route('/splash/debug', type='http', auth='public', website=True)
+    @http.route('/splash/debug', type='http', auth='user', website=True)
+    def debug(self, **kw):
         """
          Respond to User Debug Requests
          """
@@ -70,7 +49,6 @@ class Webservice(http.Controller):
         raw_html += Framework.log().to_html_list(True)
         if not ping:
             Framework.log().error('Ping Test Fail: ' + str(wsHost))
-
         # ====================================================================#
         # Execute Connect Test
         connect = SplashClient.getInstance().connect()
@@ -79,3 +57,30 @@ class Webservice(http.Controller):
             Framework.log().error('Connect Test Fail: ' + str(wsHost))
 
         return raw_html + Framework.log().to_html_list(True)
+
+    @staticmethod
+    def get_server():
+        """Build Splash Server"""
+        # ====================================================================#
+        # Init Odoo User & Company
+        SettingsManager.ensure_company()
+
+        # http.request.session.get_context()
+
+        # print(SettingsManager.get_configuration())
+        # ====================================================================#
+        # Build Splash Server with Common Options
+        splash_server = SplashServer(
+            SettingsManager.get_id(),
+            SettingsManager.get_key(),
+            [Product()],
+            # [ThirdParty(), Product()],
+            [Basic()],
+            OdooClient()
+        )
+        # ====================================================================#
+        # Force Ws Host if Needed
+        if SettingsManager.is_expert():
+            Framework.config().force_host(SettingsManager.get_host())
+
+        return splash_server
