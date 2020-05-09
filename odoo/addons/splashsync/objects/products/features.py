@@ -50,6 +50,8 @@ class ProductsFeatures:
                 # Filter Variants Attributes During Tests
                 if Framework.isDebugMode() and attribute.name in AttributesHelper.attr_test:
                     FieldFactory.isNotTested()
+                if iso_code != TransHelper.get_default_iso():
+                    FieldFactory.association(self.encode(attribute))
 
     def getFeaturesFields(self, index, field_id):
         """

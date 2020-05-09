@@ -15,8 +15,7 @@
 from splashpy import const
 from splashpy.componants import FieldFactory, Files
 from splashpy.helpers import FilesHelper, ImagesHelper
-from splashpy.core.framework import Framework
-from odoo.addons.splashsync.models.configuration import ResConfigSettings
+from splashpy import Framework
 
 
 class BinaryFields():
@@ -116,10 +115,10 @@ class BinaryFields():
             return
         # ====================================================================#
         # Read File from Server
-        if 'file' in field_data:
-            new_file = Files.getFile(field_data['file'], field_data['md5'])
-        else:
-            new_file = Files.getFile(field_data['path'], field_data['md5'])
+        new_file = Files.getFile(
+            field_data['file'] if not Framework.isDebugMode() else field_data['path'],
+            field_data['md5']
+        )
         if isinstance(new_file, dict) and "raw" in new_file:
             self.setSimple(field_id, new_file["raw"], target)
             Framework.log().warn("File contents updated")
