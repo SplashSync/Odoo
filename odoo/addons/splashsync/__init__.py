@@ -20,6 +20,8 @@ from odoo.api import Environment, SUPERUSER_ID
 
 def post_init_hook(cr, registry):
     """Init Odoo with Splash Sync default Configuration"""
+    # ====================================================================#
+    # Setup Default Configuration
     env = Environment(cr, SUPERUSER_ID, {})
     env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsSplashWsId")
     env['ir.config_parameter'].sudo().set_param('splash_ws_key', "ThisIsYourEncryptionKeyForSplash")

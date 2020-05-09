@@ -19,8 +19,11 @@ from splashpy import Framework
 class AttributesHelper:
     """Collection of Static Functions to manage Product Attributes"""
 
-    attr_domain = "product.attribute"
-    values_domain = "product.attribute.value"
+    # List of Attributes Modes used For Features
+    attr_wnva = ['no_variant']
+
+    # Names of Unit Tests Variants Codes
+    attr_test = ['VariantA', 'VariantB']
 
     # ====================================================================#
     # Products Attributes Management
@@ -38,116 +41,118 @@ class AttributesHelper:
         return False
 
     @staticmethod
-    def get_attr_values(product, value_id):
+    def is_wnva(attribute):
         """
-        Get List of Attributes Values for given Field
-        :param product: product.product
-        :param value_id: str
-        :return: dict
+        Check if Product Attributes is 'Without No Varriant Atrribute"
+        :param attribute: product.attribute
+        :return: bool
         """
-        values = []
-        attr_ids = AttributesHelper.get_variation_attr_ids(product)
-        # ====================================================================#
-        # Verify if Product has Attributes
-        if len(product.attribute_value_ids) == 0:
-            return values
-        # ====================================================================#
-        # Walk on Product Attributes Values
-        for attribute in product.attribute_value_ids.sorted(key=lambda r: r.attribute_id[0].id):
-            # Filter Attributes that are NOT Variants Attributes
-            if attribute.attribute_id[0].id not in attr_ids:
-                continue
-            # Collect Values
-            if value_id == "value":
-                values += [attribute.name]
-            elif value_id == "code":
-                values += [attribute.attribute_id[0].name]
-            elif value_id == "name":
-                values += [attribute.attribute_id[0].display_name]
-
-        return values
+        return attribute.create_variant in AttributesHelper.attr_wnva
 
     @staticmethod
-    def get_variation_attr_ids(product):
+    def touch(attr_code, is_wnva):
         """
-        Get List of Product Attributes Used for Variations
-        :param product: product.product
-        :return: list
+        Find or Create a Product Attributes by Code
+
+        :param attr_code: str       Attribute Code name
+        :param is_wnva: bool        No Variant Attribute?
+
+        :return: None, product.attribute
         """
-        attr_ids = []
-        # ====================================================================#
-        # Walk on Product Attributes Values to Collect Attributes Ids
-        for value in product.attribute_value_ids:
-            attr_ids += [value.attribute_id.id]
-
-        # for line in product.valid_product_template_attribute_line_ids:
-        #     if Framework.isDebugMode() or len(line.value_ids.ids) > 1:
-        #         attr_ids += [line.attribute_id.id]
-
-        return attr_ids
-
-    @staticmethod
-    def find_or_create_attr(attr_code):
-        """Find or Create a Product Attributes by Code"""
         # ====================================================================#
         # Search for Attribute by Code
-        attribute = AttributesHelper.find_attr(attr_code)
+        attribute = AttributesHelper.find(attr_code, is_wnva)
         # ====================================================================#
         # Create Attribute if Not Found
         if attribute is None:
-            attribute = AttributesHelper.create_attr(attr_code)
-
+            attribute = AttributesHelper.create(attr_code, is_wnva)
         return attribute
 
     @staticmethod
-    def find_attr(attr_code):
+    def find(attr_code, is_wnva):
         """
         Find Product Attributes by Code
-        :param attr_code: str
-        :return: product.attribute
-        """
-        records = AttributesHelper.getAttrModel().name_search(attr_code, operator='=ilike')
-        if len(records) > 0:
-            for record in records:
-                model = AttributesHelper.getAttrModel().browse([int(record[0])])
-                if len(model) == 1:
-                    return model
 
+        :param attr_code: str       Attribute Code name
+        :param is_wnva: bool        No Variant Attribute?
+
+        :return: None, product.attribute
+        """
+        # ==================================================================== #
+        # Prepare Search Filters
+        search_filters = [
+            ("name", '=ilike', attr_code),
+            ("create_variant", 'in' if is_wnva else 'not in', AttributesHelper.attr_wnva)
+        ]
+        # ==================================================================== #
+        # Search For Attribute
+        records = AttributesHelper.getModel().search(search_filters)
+        if len(records) > 0:
+            return records[0]
         return None
 
     @staticmethod
-    def create_attr(attr_code):
+    def load(attr_id):
+        """
+        Find Product Attributes by Id
+        :param attr_id: int       Attribute Id
+        :return: None, product.attribute
+        """
+        # ==================================================================== #
+        # Search For Attribute
+        records = AttributesHelper.getModel().browse([attr_id])
+        if len(records) == 1:
+            return records[0]
+        return None
+
+    @staticmethod
+    def create(attr_code, is_wnva):
         """
         Create a Product Attribute
-        :param attr_code: str
-        :return: product.attribute
-        """
-        attr_data = {"name": attr_code, "type": "select", "create_variant": "no_variant"}
-        # if attr_code.find("color") > 0:
-        #     attr_data["type"] = "color"
 
-        return AttributesHelper.getAttrModel().create(attr_data)
+        :param attr_code: str       Attribute Code name
+        :param is_wnva: bool        No Variant Attribute?
+
+        :return: None, product.attribute
+        """
+        return AttributesHelper.getModel().create({
+            "name": attr_code,
+            "type": "select",
+            "create_variant": "no_variant" if is_wnva else "always"
+        })
 
     # ====================================================================#
-    # Products Attributes Values Management
+    # Odoo ORM Access
     # ====================================================================#
 
     @staticmethod
-    def find_or_create_value(attr_code, attr_value):
+    def getModel():
+        """Get Product Attributes Model Class"""
+        return http.request.env["product.attribute"]
+
+
+class ValuesHelper:
+    """Collection of Static Functions to Manage Product Attributes Values"""
+
+    @staticmethod
+    def touch(attribute, attr_value, is_wnva):
         """
         Find or Create a Product Attributes Value by Code & Value
-        :param attr_code: str
-        :param attr_value: str
+
+        :param attribute: str, product.attribute       Attribute Code Name or Product Attribute
+        :param attr_value: None, str                Attribute Value
+        :param is_wnva: bool        No Variant Attribute?
+
         :return: None, product.attribute.value
         """
         # ====================================================================#
         # Detect Empty Attribute Values
         if attr_value is None or len(str(attr_value)) < 1:
-            Framework.log().warn("Empty Attribute Detected")
             return None
         # ====================================================================#
-        # Search or Create Attribute by Code
-        attribute = AttributesHelper.find_or_create_attr(attr_code)
+        # STR? Search or Create Attribute by Code
+        if isinstance(attribute, str):
+            attribute = AttributesHelper.touch(attribute, is_wnva)
         if attribute is None:
             Framework.log().error("An Error Occurred while Loading Attribute")
             return None
@@ -155,72 +160,82 @@ class AttributesHelper:
         # Search for Value in Attribute
         values = attribute.value_ids.filtered(lambda r: r.name.lower() == attr_value.lower())
         if len(values) > 0:
-            for value in values:
-                return value
+            return values[0]
         # ====================================================================#
         # Crate New Value for Attribute
-        return AttributesHelper.create_value(attribute, attr_value)
+        return ValuesHelper.create(attribute, attr_value)
 
     @staticmethod
-    def create_value(attribute, attr_value):
+    def create(attribute, attr_value):
         """
         Create a Product Attribute Value
         :param attribute: product.attribute
         :param attr_value: str
         :return: product.attribute.value
         """
-        value_data = {
+        return ValuesHelper.getModel().create({
             "name": attr_value,
             "attribute_id": attribute.id,
-        }
-        return AttributesHelper.getValueModel().create(value_data)
-
-    # ====================================================================#
-    # Products Attributes Values Management
-    # ====================================================================#
-
-    @staticmethod
-    def update_value(product, new_value):
-        """
-        Update a Product Attribute Value
-        :param product: product.product
-        :param new_value: product.attribute.value
-        :return: None
-        """
-        # ====================================================================#
-        # Safety Check
-        if new_value is None:
-            Framework.log().error("Attribute Value is None!")
-            return
-        # ====================================================================#
-        # Walk on Product Current Attributes Values
-        for current_value in product.attribute_value_ids:
-            # Filter Same Attribute
-            if new_value.attribute_id.id != current_value.attribute_id.id:
-                continue
-            # If Values are Similar => Nothing to Do => Exit
-            if new_value.id == current_value.id:
-                return
-            # Update Attribute Value => Remove Old Value => Add New Value
-            product.attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
-
-            return
-
-        # ====================================================================#
-        # Attributes Value NOT Found => Add New Value
-        product.attribute_value_ids = [(4, new_value.id, 0)]
+        })
 
     # ====================================================================#
     # Odoo ORM Access
     # ====================================================================#
 
     @staticmethod
-    def getAttrModel():
-        """Get Product Attributes Model Class"""
-        return http.request.env[AttributesHelper.attr_domain].sudo()
+    def getModel():
+        """Get Product Attributes Value Model Class"""
+        return http.request.env["product.attribute.value"]
+
+
+class LinesHelper:
+    """Collection of Static Functions to Manage Product Templates Attributes Lines"""
 
     @staticmethod
-    def getValueModel():
-        """Get Product Attributes Value Model Class"""
-        return http.request.env[AttributesHelper.values_domain].sudo()
+    def add(template, new_value):
+        """
+        Add a Product Template Attribute Value Line
+        :param template: product.product, product.template
+        :param new_value: product.attribute.value
+        :return: None
+        """
+        # ====================================================================#
+        # Create Product Attributes Line
+        new_line = {
+            "attribute_id": new_value.attribute_id.id,
+            "value_ids": [new_value.id],
+            "product_tmpl_id": template.id
+        }
+        # ====================================================================#
+        # Add Attribute Line
+        template.attribute_line_ids = [(0, 0, new_line)]
 
+    @staticmethod
+    def set(template, attribute, value_ids):
+        """
+        Add a Product Template Attribute Value Line
+
+        :param template: product.product, product.template
+        :param attribute: product.attribute
+        :param value_ids: dict
+        """
+        # ====================================================================#
+        # Filter Attributes Line on Attribute For Id
+        filtered_lines = template.attribute_line_ids.filtered(
+            lambda l: l.attribute_id.id == attribute.id
+        )
+        # ====================================================================#
+        # Line Found but Empty Values
+        if len(value_ids) == 0 and len(filtered_lines) > 0:
+            template.attribute_line_ids = [(2, filtered_lines[0].id, 0)]
+            return
+        # ====================================================================#
+        # Line NOT Found => Add New Value
+        if len(filtered_lines) == 0:
+            # Add Attribute Line
+            new_line = {"attribute_id": attribute.id, "value_ids": value_ids, "product_tmpl_id": template.id}
+            template.attribute_line_ids = [(0, 0, new_line)]
+            return
+        # ====================================================================#
+        # Update Attribute Line
+        filtered_lines[0].value_ids = [(6, 0, value_ids)]

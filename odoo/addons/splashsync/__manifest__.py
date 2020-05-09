@@ -26,7 +26,7 @@
         'bin': [],
     },
     'depends': [
-        'base',
+        'base','product',
     ],
     'data': [
        'views/settings_view.xml',

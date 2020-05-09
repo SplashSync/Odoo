@@ -132,8 +132,54 @@ class Product(OdooObject, ProductsAttributes, ProductsVariants, ProductsPrices, 
             for template in model.product_tmpl_id:
                 self.template = template
                 break
-            return model
         except Exception as exception:
             from splashpy import Framework
             Framework.log().warn("Unable to Load Odoo Product " + str(object_id))
             return False
+
+        # self.debug(model, template)
+
+        return model
+
+    def debug( self, product, template):
+        """Debug for Product Attributes Configuration"""
+        # Debug Product Variants
+        infos = "<br />Product Variants: "+str(template.product_variant_ids.ids)
+        # Debug Product Attributes
+        infos += "<br />Product Values: "
+        for prd_value in product.attribute_value_ids:
+            infos += "<br /> - "+prd_value.attribute_id.name
+            infos += " => "+"["+str(prd_value.id)+"] "+prd_value.name
+
+        # Debug Product Attributes Line
+        # infos += "<br />Product Lines: "
+        # for prd_line in product.attribute_line_ids:
+        #     infos += "<br /> - "+prd_line.attribute_id.name+" Values => "
+        #     for value in prd_line.value_ids:
+        #         infos += "["+str(value.id)+"] "+value.name
+        #     infos += "<br /> - "+prd_line.attribute_id.name+" Template Values => "
+        #     for value in prd_line.product_template_value_ids:
+        #         infos += "["+str(value.id)+"] "+value.name
+
+        # # Debug Template Attributes Line
+        # infos += "<br />Template Lines: "
+        # for tmpl_line in template.attribute_line_ids:
+        #     infos += "<br /> - "+tmpl_line.attribute_id.name+" Values => "
+        #     for value in tmpl_line.value_ids:
+        #         infos += "["+str(value.id)+"] "+value.name
+        #     infos += "<br /> - "+tmpl_line.attribute_id.name+" Template Values => "
+        #     for value in tmpl_line.product_template_value_ids:
+        #         infos += "["+str(value.id)+"] "+value.name
+
+        # Debug Product Attributes Line
+        infos += "<br />Template Valid Attribute Lines: "
+        for prd_line in product.valid_product_template_attribute_line_ids:
+            infos += "<br /> - "+prd_line.attribute_id.name+" Values => "
+            for value in prd_line.value_ids:
+                infos += " ["+str(value.id)+"] "+value.name
+            infos += "<br /> - "+prd_line.attribute_id.name+" Template Values => "
+            for value in prd_line.product_template_value_ids:
+                infos += " ["+str(value.id)+"] "+value.name
+
+        from splashpy import Framework
+        Framework.log().dump(infos, "Attributes Debug")

@@ -78,9 +78,16 @@ class ResConfigSettings(models.TransientModel):
             'splash_ws_host': self.splash_ws_host,
             'splash_ws_user': self.splash_ws_user,
         })
+        # ====================================================================#
+        # Default Company => Copy Configuration to Main Parameters
+        if self.env.user.company_id.id == 1:
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_id', self.splash_ws_id)
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_key', self.splash_ws_key)
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_expert', self.splash_ws_expert)
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
 
     @staticmethod
     def get_base_url():
         from odoo import http
-
         return http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')

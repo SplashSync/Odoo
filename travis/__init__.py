@@ -19,20 +19,17 @@ from odoo.api import Environment, SUPERUSER_ID
 
 
 def post_init_hook(cr, registry):
-    """Init Odoo with Splash Sync default Configuration"""
+    """Init Odoo with Splash Sync Tests Configuration"""
+    # ====================================================================#
+    # Setup Default Configuration For Testing
     env = Environment(cr, SUPERUSER_ID, {})
     env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsSplashWsId")
     env['ir.config_parameter'].sudo().set_param('splash_ws_key', "ThisIsYourEncryptionKeyForSplash")
     env['ir.config_parameter'].sudo().set_param('splash_ws_expert', True)
     env['ir.config_parameter'].sudo().set_param('splash_ws_host', "http://toolkit/ws/soap")
     env['ir.config_parameter'].sudo().set_param('splash_ws_user', 2)
+    # ====================================================================#
+    # Ensure Install of an Extra Language
+    env['res.lang'].load_lang('fr_FR')
 
-    config = env['res.config.settings'].search([('company_id', '=', 1)], limit=1)
-    # Update Company Values
-    config.write({
-        'splash_ws_id': "ThisIsSplashWsId",
-        'splash_ws_key': "ThisIsYourEncryptionKeyForSplash",
-        'splash_ws_expert': True,
-        'splash_ws_host': "http://toolkit/ws/soap",
-        'splash_ws_user': 2,
-    })
+

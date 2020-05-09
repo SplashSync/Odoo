@@ -38,6 +38,7 @@ class IrHttp(models.AbstractModel):
         # ====================================================================#
         # Setup Splash User
         from odoo.addons.splashsync.helpers import SettingsManager
+        SettingsManager.reset()
         splash_user = SettingsManager.get_user()
         if splash_user is None:
             raise exceptions.AccessDenied()

@@ -19,7 +19,7 @@ from .files import OddoFilesHelper
 from .binaries import BinaryFields
 from .currency import CurrencyHelper
 from .taxes import TaxHelper
+from .trans import TransHelper
 
-from .products.attributes import AttributesHelper
-from .products.features import FeaturesHelper
+from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper

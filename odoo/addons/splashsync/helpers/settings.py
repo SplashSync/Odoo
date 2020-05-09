@@ -19,6 +19,15 @@ class SettingsManager():
 
     __settings__ = None
 
+    # Default Settings
+    __default__ = {
+        'splash_ws_id': "",
+        'splash_ws_key': "",
+        'splash_ws_expert': False,
+        'splash_ws_host': "https://www.splashsync.com/ws/soap",
+        'splash_ws_user': None,
+    }
+
     @staticmethod
     def get_id():
         config = SettingsManager.get_configuration()
@@ -58,23 +67,16 @@ class SettingsManager():
         if isinstance(SettingsManager.__settings__, dict):
             return SettingsManager.__settings__
         # ====================================================================#
-        # Load Company Configuration
-        settings = request.env['res.config.settings'].search(
-            [('company_id', '=', SettingsManager.get_company_id())],
-            limit=1
-        )
-        if len(settings) != 1:
-            import logging
-            logging.warning("Company Settings Not Found")
-            SettingsManager.__settings__ = {
-                'splash_ws_id': "",
-                'splash_ws_key': "",
-                'splash_ws_expert': False,
-                'splash_ws_host': "https://www.splashsync.com/ws/soap",
-                'splash_ws_user': None,
-            }
+        # Load Splash Configuration For Company
+        company_id = SettingsManager.get_company_id()
+        # ====================================================================#
+        # First/Default Company => Take Params from Core Config
+        if company_id == 1:
+            SettingsManager.__settings__ = SettingsManager.__get_core_config()
+        # ====================================================================#
+        # Other Companies => Take params from Company Config
         else:
-            SettingsManager.__settings__ = settings.get_values()
+            SettingsManager.__settings__ = SettingsManager.__get_company_config()
 
         return SettingsManager.__settings__
 
@@ -84,9 +86,46 @@ class SettingsManager():
         expected_company_id = SettingsManager.get_company_id()
         if request.env.user.company_id.id != expected_company_id:
             request.env.user.company_id = expected_company_id
-            # request.env.user.write({"company_id": expected_company_id})
-            # request.session.get_context()
 
     @staticmethod
     def reset():
         SettingsManager.__settings__ = None
+
+    @staticmethod
+    def __get_company_config():
+        """
+        Get Company Configuration
+        :return: None, dict
+        """
+        # ====================================================================#
+        # Load Company Configuration
+        settings = request.env['res.config.settings'].search(
+            [('company_id', '=', SettingsManager.get_company_id())],
+            limit=1
+        )
+        if len(settings) != 1:
+            import logging
+            logging.warning("Company Settings Not Found")
+            return SettingsManager.__default__
+
+        return settings.get_values()
+
+    @staticmethod
+    def __get_core_config():
+        """
+        Get Configuration from Core Parameters
+        :return: None, dict
+        """
+        # ====================================================================#
+        # Load Core Configuration
+        parameters = request.env['ir.config_parameter'].sudo()
+        defaults = SettingsManager.__default__
+        # ====================================================================#
+        # Build Configuration
+        return {
+            "splash_ws_id":       parameters.get_param('splash_ws_id', defaults['splash_ws_id']),
+            "splash_ws_key":      parameters.get_param('splash_ws_key', defaults['splash_ws_key']),
+            "splash_ws_expert":   bool(parameters.get_param('splash_ws_expert', defaults['splash_ws_expert'])),
+            "splash_ws_host":     parameters.get_param('splash_ws_host', defaults['splash_ws_host']),
+            "splash_ws_user":     int(parameters.get_param('splash_ws_user', defaults['splash_ws_user'])),
+        }

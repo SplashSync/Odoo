@@ -54,26 +54,37 @@ class BasicFields():
         return OrderedDict(sorted(self.__BasicFields__.items()))
 
     def buildBasicFields(self):
+        from odoo.addons.splashsync.helpers import TransHelper
+        # ====================================================================#
+        # Set default System Language
+        FieldFactory.setDefaultLanguage(TransHelper.get_default_iso())
+        # ====================================================================#
         # Walk on Model Basic Fields Definitions
         for fieldId, field in self.get_basic_fields_list().items():
-            # Build Splash Field Definition
-            FieldFactory.create(self.__BasicTypes__[field["type"]], fieldId, field["string"])
-            FieldFactory.group("Others")
-            # FieldFactory.isReadOnly()
-            # FieldFactory.isNotTested()
+            # ====================================================================#
+            # Walk on Available Languages
+            for iso_code, lang_name in TransHelper.for_factory(field).items():
+                # Build Splash Field Definition
+                FieldFactory.create(self.__BasicTypes__[field["type"]], fieldId, field["string"])
+                FieldFactory.group("Others")
+                FieldFactory.microData("http://schema.org/Product", field["string"])
+                if field["required"] or fieldId in self.get_required_fields():
+                    FieldFactory.isRequired(iso_code == TransHelper.get_default_iso())
+                if field["readonly"]:
+                    FieldFactory.isReadOnly()
+                if 'help' in field:
+                    FieldFactory.description(field["help"])
+                if iso_code == "en_US" and fieldId in self.get_listed_fields():
+                    FieldFactory.isListed()
+                if "translate" in field and field["translate"] is True:
+                    FieldFactory.description(field["string"]+" ["+lang_name+"]")
+                    FieldFactory.setMultilang(iso_code)
+                    if iso_code != TransHelper.get_default_iso():
+                        FieldFactory.association(fieldId)
 
-            if field["required"] or fieldId in self.get_required_fields():
-                FieldFactory.isRequired()
-            if field["readonly"]:
-                FieldFactory.isReadOnly()
-            if 'help' in field:
-                FieldFactory.description(field["help"])
-            if fieldId in self.get_listed_fields():
-                FieldFactory.isListed()
-
-            # Force Urls generator options
-            if field["type"] is "char":
-                FieldFactory.addOption("Url_Prefix", "http://")
+                # Force Urls generator options
+                if field["type"] is "char":
+                    FieldFactory.addOption("Url_Prefix", "http://")
 
     def getCoreFields(self, index, field_id):
         # Load Basic Fields Definitions
@@ -85,6 +96,7 @@ class BasicFields():
         field_type = fields_def[field_id]['type']
         if field_type in ['char', 'text']:
             self.getSimpleStr(index, field_id)
+            self.__getCoreTranslatedFields(field_id)
 
         elif field_type in ['boolean', 'integer', 'float']:
             self.getSimple(index, field_id)
@@ -94,6 +106,8 @@ class BasicFields():
 
         elif field_type in ['datetime']:
             self.getSimpleDateTime(index, field_id)
+
+
 
     def setCoreFields(self, field_id, field_data):
         # Load Basic Fields Definitions
@@ -106,6 +120,9 @@ class BasicFields():
 
         if field_type in ['char', 'text', 'integer', 'float']:
             self.setSimple(field_id, field_data)
+
+        if field_type in ['char', 'text']:
+            self.__setCoreTranslatedFields(field_id)
 
         if field_type in ['boolean']:
             self.setSimpleBool(field_id, field_data)
@@ -137,3 +154,22 @@ class BasicFields():
             reqFields[fieldId] = self._in[fieldId]
 
         return reqFields
+
+    def __getCoreTranslatedFields(self, field_id):
+        from odoo.addons.splashsync.helpers import TransHelper
+        for iso_code in TransHelper.get_extra_iso():
+            iso_field_id = field_id+"_"+iso_code
+            for key, val in self._in.copy().items():
+                if iso_field_id != val:
+                    continue
+                self._out[iso_field_id] = TransHelper.get(self.template, field_id, iso_code)
+                self._in.__delitem__(key)
+
+    def __setCoreTranslatedFields(self, field_id):
+        from odoo.addons.splashsync.helpers import TransHelper
+        for iso_code in TransHelper.get_extra_iso():
+            iso_field_id = field_id+"_"+iso_code
+            if iso_field_id not in self._in.keys():
+                continue
+            TransHelper.set(self.template, field_id, iso_code, self._in[iso_field_id])
+            self._in.__delitem__(iso_field_id)

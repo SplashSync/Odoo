@@ -12,6 +12,18 @@
 #  file that was distributed with this source code.
 #
 
-from . import authentification
-from . import configuration
-from . import product_template
+
+from odoo import api, models
+import logging
+
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    @api.multi
+    def create_variant_ids(self):
+
+        _logger = logging.getLogger("SPLASH SYNC")
+        _logger.warning("Variants Auto-creation is disabled when Splash Module is Active")
+
+        return True

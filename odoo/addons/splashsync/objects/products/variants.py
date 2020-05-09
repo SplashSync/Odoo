@@ -74,7 +74,7 @@ class ProductsVariants:
             return
         # ==================================================================== #
         # List Product Variants Ids
-        for variant in self.object.product_variant_ids:
+        for variant in self.object.with_context(active_test=False).product_variant_ids:
             # ==================================================================== #
             # Debug Mode => Filter Current Product From List
             if Framework.isDebugMode() and variant.id == self.object.id:
@@ -104,7 +104,6 @@ class ProductsVariants:
         # Check if Inputs Contains Attributes
         if "attributes" not in self._in.keys() or not isinstance(self._in["attributes"], dict):
             return False
-        Framework.log().warn("New Product is Variable !!")
         return True
 
     def detect_variant_template(self):

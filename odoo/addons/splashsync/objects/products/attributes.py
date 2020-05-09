@@ -16,7 +16,7 @@ from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper
-from odoo.addons.splashsync.helpers import AttributesHelper
+from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, TransHelper, ValuesHelper
 
 
 class ProductsAttributes:
@@ -26,13 +26,15 @@ class ProductsAttributes:
 
     @staticmethod
     def buildAttributesFields():
+        # ====================================================================#
+        # Set default System Language
+        FieldFactory.setDefaultLanguage(TransHelper.get_default_iso())
         # ==================================================================== #
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "code", "Attr Code")
         FieldFactory.inlist("attributes")
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeCode")
         FieldFactory.isNotTested()
-
         # ==================================================================== #
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Attr Name")
@@ -40,13 +42,17 @@ class ProductsAttributes:
         FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
         FieldFactory.isReadOnly()
         FieldFactory.isNotTested()
-
-        # ==================================================================== #
-        # Product Variation Attribute Code
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "value", "Attr Value")
-        FieldFactory.inlist("attributes")
-        FieldFactory.microData("http://schema.org/Product", "VariantAttributeValue")
-        FieldFactory.isNotTested()
+        # ====================================================================#
+        # Walk on Available Languages
+        for iso_code, lang_name in TransHelper.get_all().items():
+            # ==================================================================== #
+            # Product Variation Attribute Code
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "value", "Attr Value")
+            FieldFactory.description("[" + lang_name + "] Attr Value")
+            FieldFactory.microData("http://schema.org/Product", "VariantAttributeValue")
+            FieldFactory.setMultilang(iso_code)
+            FieldFactory.inlist("attributes")
+            FieldFactory.isNotTested()
 
     def getAttributesFields(self, index, field_id):
         """
@@ -61,13 +67,8 @@ class ProductsAttributes:
         if value_id is None:
             return
         # ==================================================================== #
-        # Check if Product has Variants
-        if not AttributesHelper.has_attr(self.object):
-            self._in.__delitem__(index)
-            return
-        # ==================================================================== #
         # Get Product Attributes Data
-        attr_values = AttributesHelper.get_attr_values(self.object, value_id)
+        attr_values = self._get_attributes_values(value_id)
         for pos in range(len(attr_values)):
             ListHelper.insert(self._out, "attributes", field_id, "attr-"+str(pos), attr_values[pos])
         # ==================================================================== #
@@ -94,19 +95,104 @@ class ProductsAttributes:
             field_data = OrderedDict(sorted(field_data.items()))
             # Walk on Product Attributes Field...
             for key, value in field_data.items():
-                try:
-                    # Find or Create Attribute Value
-                    attr_value = AttributesHelper.find_or_create_value(value["code"], value["value"])
-                    # Update Product Attribute
-                    if attr_value is not None:
-                        new_attributes_ids += [attr_value.attribute_id.id]
-                        AttributesHelper.update_value(self.object, attr_value)
-                except Exception as exception:
-                    return Framework.log().fromException(exception)
+                # Find or Create Attribute Value
+                attr_value = ValuesHelper.touch(value["code"], value["value"], False)
+                # Unable to Create Attribute...
+                if attr_value is None:
+                    continue
+                # Update Product Attribute
+                new_attributes_ids += [attr_value.attribute_id.id]
+                self._set_attribute_value(attr_value)
+                self._set_attribute_value_langs(attr_value, value)
         # ==================================================================== #
         # Delete Remaining Product Attributes Values...
-        for current_value in self.object.attribute_value_ids:
-            if current_value.attribute_id.id not in new_attributes_ids:
-                self.object.attribute_value_ids = [(3, current_value.id, 0)]
-
+        to_delete_values = self.object.attribute_value_ids.filtered(
+            lambda v: not AttributesHelper.is_wnva(v.attribute_id) and v.attribute_id.id not in new_attributes_ids
+        )
+        for attr_value in to_delete_values:
+            # Remove Attribute from Values
+            self.object.attribute_value_ids = [(3, attr_value.id, 0)]
+            # Update Template Attribute Values with Variants Values
+            self._set_variants_value_ids(attr_value.attribute_id)
         self._in.__delitem__(field_id)
+
+    def _get_attributes_values(self, value_id):
+        """
+        Get List of Attributes Values for given Field
+        :param product: product.product
+        :param value_id: str
+        :return: dict
+        """
+        values = []
+        # ====================================================================#
+        # Walk on Product Attributes Values
+        for attr_value in self.object.attribute_value_ids:
+            # Filter Attributes that are NOT Variants Attributes
+            if AttributesHelper.is_wnva(attr_value.attribute_id):
+                continue
+            # Collect Values
+            if value_id == "value":
+                values += [attr_value.name]
+            elif value_id == "code":
+                values += [attr_value.attribute_id[0].name]
+            elif value_id == "name":
+                values += [attr_value.attribute_id[0].display_name]
+            # Walk on Extra Languages
+            for iso_code in TransHelper.get_extra_iso():
+                if value_id != "value_"+iso_code:
+                    continue
+                values += [TransHelper.get(attr_value, 'name', iso_code, attr_value.name)]
+
+        return values
+
+    def _set_attribute_value(self, new_value):
+        """
+        Update a Product Attribute Value
+        :param new_value: product.attribute.value
+        """
+        # ====================================================================#
+        # Find Product Current Attributes Values
+        current_value = self.object.attribute_value_ids.filtered(lambda v: v.attribute_id.id == new_value.attribute_id.id)
+        # ====================================================================#
+        # If Values are Similar => Nothing to Do => Exit
+        if len(current_value) == 1 and new_value.id == current_value.id:
+            return
+        # ====================================================================#
+        # Update Attribute Value => Remove Old Value => Add New Value
+        if len(current_value):
+            self.object.attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
+        else:
+            self.object.attribute_value_ids = [(4, new_value.id, 0)]
+        # ====================================================================#
+        # Update Template Attribute Values with Variants Values
+        self._set_variants_value_ids(new_value.attribute_id)
+
+    @staticmethod
+    def _set_attribute_value_langs(attr_value, field_values):
+        """
+        Update a Product Attribute Value Translations
+        :param attr_value: product.attribute.value
+        :param field_values: dict
+        """
+        for iso_code in TransHelper.get_extra_iso():
+            iso_field_id = "value_" + iso_code
+            if iso_field_id in field_values.keys():
+                TransHelper.set(attr_value, 'name', iso_code, field_values[iso_field_id])
+
+    def _set_variants_value_ids(self, attribute, active_test=True):
+        """
+        Get List of Product Value Ids for product Variants
+        :param attribute: product.attribute
+        :param active_test: bool
+        :return: list
+        """
+        # ====================================================================#
+        # Collect Variants Product Values Ids
+        values_ids = []
+        for variant in self.template.with_context(active_test=active_test).product_variant_ids:
+            for value in variant.attribute_value_ids.filtered(lambda v: v.attribute_id.id == attribute.id):
+                values_ids += [value.id]
+        # ====================================================================#
+        # Update Product Template Attribute Values Ids
+        LinesHelper.set(self.template, attribute, values_ids)
+        return values_ids
