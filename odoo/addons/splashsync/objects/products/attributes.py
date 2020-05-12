@@ -33,16 +33,21 @@ class ProductsAttributes:
         # Product Variation Attribute Code
         FieldFactory.create(const.__SPL_T_VARCHAR__, "code", "Attr Code")
         FieldFactory.inlist("attributes")
-        FieldFactory.microData("http://schema.org/Product", "VariantAttributeCode")
+        FieldFactory.microData(
+            "http://schema.org/Product",
+            "VariantAttributeCode" if Framework.isDebugMode() else "VariantAttributeName"
+        )
         FieldFactory.isNotTested()
         # ==================================================================== #
-        # Product Variation Attribute Code
+        # Product Variation Attribute Name
         FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Attr Name")
         FieldFactory.inlist("attributes")
-        FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
         FieldFactory.isReadOnly()
         FieldFactory.isNotTested()
-        # ====================================================================#
+        if Framework.isDebugMode():
+            FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
+
+    # ====================================================================#
         # Walk on Available Languages
         for iso_code, lang_name in TransHelper.get_all().items():
             # ==================================================================== #

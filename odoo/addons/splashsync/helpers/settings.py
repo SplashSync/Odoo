@@ -26,6 +26,7 @@ class SettingsManager():
         'splash_ws_expert': False,
         'splash_ws_host': "https://www.splashsync.com/ws/soap",
         'splash_ws_user': None,
+        'splash_product_advanced_taxes': False,
     }
 
     @staticmethod
@@ -48,6 +49,10 @@ class SettingsManager():
     @staticmethod
     def get_user():
         return SettingsManager.get_configuration()["splash_ws_user"]
+
+    @staticmethod
+    def is_prd_adv_taxes():
+        return bool(SettingsManager.get_configuration()["splash_product_advanced_taxes"])
 
     @staticmethod
     def get_company_id():
@@ -128,4 +133,5 @@ class SettingsManager():
             "splash_ws_expert":   bool(parameters.get_param('splash_ws_expert', defaults['splash_ws_expert'])),
             "splash_ws_host":     parameters.get_param('splash_ws_host', defaults['splash_ws_host']),
             "splash_ws_user":     int(parameters.get_param('splash_ws_user', defaults['splash_ws_user'])),
+            "splash_product_advanced_taxes":    bool(parameters.get_param('splash_product_advanced_taxes', False)),
         }

@@ -65,6 +65,21 @@
 
                     <h2>Products Settings</h2>
 
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="splash_product_advanced_taxes"/>
+                                <field name="splash_product_advanced_taxes" class="o_light_label"/>
+                                <div class="text-muted">
+                                    Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sell and purchase taxes.
+                                </div>
+                                <div class="text-muted">
+                                    By default, Splash will only setup first detected Taxe Rate.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </xpath>
         </field>

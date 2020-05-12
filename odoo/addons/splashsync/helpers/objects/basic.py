@@ -81,10 +81,10 @@ class BasicFields():
                     FieldFactory.setMultilang(iso_code)
                     if iso_code != TransHelper.get_default_iso():
                         FieldFactory.association(fieldId)
-
                 # Force Urls generator options
                 if field["type"] is "char":
                     FieldFactory.addOption("Url_Prefix", "http://")
+                # FieldFactory.isReadOnly()
 
     def getCoreFields(self, index, field_id):
         # Load Basic Fields Definitions

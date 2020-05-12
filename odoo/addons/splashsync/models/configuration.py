@@ -50,7 +50,12 @@ class ResConfigSettings(models.TransientModel):
         default="2",
         help="ID of Local User used by Splash"
     )
-
+    splash_product_advanced_taxes = fields.Boolean(
+        company_dependent=True,
+        string="Product Advanced taxes",
+        default=False,
+        help="Enable Advanced Taxes Mode."
+    )
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         # Load Current Company Configuration
@@ -62,6 +67,7 @@ class ResConfigSettings(models.TransientModel):
             splash_ws_expert=bool(config.splash_ws_expert),
             splash_ws_host=config.splash_ws_host,
             splash_ws_user=config.splash_ws_user.id,
+            splash_product_advanced_taxes=bool(config.splash_product_advanced_taxes),
         )
         return res
 
@@ -77,6 +83,7 @@ class ResConfigSettings(models.TransientModel):
             'splash_ws_expert': self.splash_ws_expert,
             'splash_ws_host': self.splash_ws_host,
             'splash_ws_user': self.splash_ws_user,
+            'splash_product_advanced_taxes': self.splash_product_advanced_taxes,
         })
         # ====================================================================#
         # Default Company => Copy Configuration to Main Parameters
@@ -86,6 +93,7 @@ class ResConfigSettings(models.TransientModel):
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_expert', self.splash_ws_expert)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
+            self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_taxes', self.splash_product_advanced_taxes)
 
     @staticmethod
     def get_base_url():
