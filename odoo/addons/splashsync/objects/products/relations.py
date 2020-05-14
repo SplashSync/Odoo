@@ -30,8 +30,8 @@ class ProductsRelations:
         FieldFactory.isNotTested()
         FieldFactory.create(const.__SPL_T_VARCHAR__, "categ", "Categorie")
         FieldFactory.microData("http://schema.org/Product", "classification")
+        FieldFactory.addChoices(M2OHelper.get_name_values("product.category"))
         FieldFactory.isNotTested()
-
         # ==================================================================== #
         # Website category
         if "public_categ_ids" in self.getModel().fields_get():
@@ -40,6 +40,18 @@ class ProductsRelations:
             FieldFactory.isNotTested()
             FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ", "Public Categorie")
             FieldFactory.microData("http://schema.org/Product", "publicCategory")
+            FieldFactory.isNotTested()
+        # ==================================================================== #
+        # Website Alternate Products
+        if "alternative_product_ids" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "alternative_products", "Alternate Products Names")
+            FieldFactory.microData("http://schema.org/Product", "alternateModels")
+            FieldFactory.isNotTested()
+        # ==================================================================== #
+        # Website Accessory Products
+        if "accessory_product_ids" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "accessory_products", "Accessory Products Names")
+            FieldFactory.microData("http://schema.org/Product", "crossellModels")
             FieldFactory.isNotTested()
 
     def getRelationFields(self, index, field_id):
@@ -62,6 +74,17 @@ class ProductsRelations:
         if field_id == "public_categ":
             self._out[field_id] = M2MHelper.get_names(self.object, "public_categ_ids")
             self._in.__delitem__(index)
+        # ==================================================================== #
+        # Website Alternate Products
+        if field_id == "alternative_products":
+            self._out[field_id] = M2MHelper.get_names(self.object, "alternative_product_ids")
+            self._in.__delitem__(index)
+        # ==================================================================== #
+        # Website Accessory Products
+        if field_id == "accessory_products":
+            self._out[field_id] = M2MHelper.get_names(self.object, "accessory_product_ids")
+            self._in.__delitem__(index)
+
 
     def setRelationFields(self, field_id, field_data):
         # Check if Relation Field...
@@ -83,12 +106,23 @@ class ProductsRelations:
         if field_id == "public_categ":
             M2MHelper.set_names(self.object, "public_categ_ids", field_data, domain="product.public.category")
             self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # Website Alternate Products
+        if field_id == "alternative_products":
+            M2MHelper.set_names(self.object, "alternative_product_ids", field_data, domain="product.template")
+            self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # Website Alternate Products
+        if field_id == "accessory_products":
+            M2MHelper.set_names(self.object, "accessory_product_ids", field_data, domain="product.product")
+            self._in.__delitem__(field_id)
 
     @staticmethod
     def isRelationFields(field_id):
         if field_id in [
             "categ_id", "categ",
-            "public_categ_ids", "public_categ"
+            "public_categ_ids", "public_categ",
+            "alternative_products", "accessory_products"
         ]:
             return True
         return False

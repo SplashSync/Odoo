@@ -212,6 +212,24 @@ class M2OHelper:
             return None
 
     @staticmethod
+    def get_name_values(domain=None, filters=[]):
+        """
+        Get a Relation Possible Values Dict
+        :param domain: str      Target Objects Domain
+        :param filters: list    Additionnal Search Filters
+        :return: dict
+        """
+        # No Domain or Filter => Skip
+        if domain is None or not isinstance(domain, str) or len(domain) < 5:
+            return True
+        # Execute Domain Search with Filter
+        results = []
+        values = http.request.env[domain].search(filters, limit=50)
+        for value in values:
+            results += [(value.name, value.name)]
+        return results
+
+    @staticmethod
     def set_id(inputs, field, object_id, domain=None, filters=[]):
         """
         Set Many 2 One Relation Records from a Id String/Int
@@ -224,7 +242,7 @@ class M2OHelper:
         """
         # ==================================================================== #
         # Compare Input Values
-        if int(object_id) == M2OHelper.get_id(inputs, field):
+        if object_id is not None and int(object_id) == M2OHelper.get_id(inputs, field):
             return
         # ==================================================================== #
         # Verify Values Exists
@@ -233,7 +251,7 @@ class M2OHelper:
             setattr(inputs, field, int(object_id))
         else:
             try:
-                setattr(inputs, field, 0)
+                setattr(inputs, field, False)
             except:
                 pass
 
@@ -252,16 +270,16 @@ class M2OHelper:
         # ==================================================================== #
         # Verify Value
         verified_id = M2OHelper.verify_name(data, index, domain, filters)
-        if isinstance(verified_id, int):
+        if isinstance(verified_id, int) and verified_id > 0:
             M2OHelper.set_id(inputs, field, verified_id)
         else:
-            M2OHelper.set_id(inputs, field, 0)
+            M2OHelper.set_id(inputs, field, False)
 
     @staticmethod
     def verify_id(object_id, domain=None, filters=[]):
         """
         Validate Id
-        :param object_id: int,str   Id to Verify
+        :param object_id: None, int, str   Id to Verify
         :param domain: str          Target Objects Domain
         :param filters: list        Additional Search Filters
         :return: bool
@@ -269,6 +287,8 @@ class M2OHelper:
         # No Domain or Filter => Skip
         if domain is None or not isinstance(domain, str) or len(domain) < 5:
             return True
+        if object_id is None or object_id is False:
+            return False
         # Execute Domain Search with Filter
         results = http.request.env[domain].search([('id', '=', int(object_id))] + filters)
         return len(results) > 0

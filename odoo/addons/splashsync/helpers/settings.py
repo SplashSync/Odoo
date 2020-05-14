@@ -55,6 +55,10 @@ class SettingsManager():
         return bool(SettingsManager.get_configuration()["splash_product_advanced_taxes"])
 
     @staticmethod
+    def is_prd_adv_variants():
+        return bool(SettingsManager.get_configuration()["splash_product_advanced_variants"])
+
+    @staticmethod
     def get_company_id():
         """Get Requested Company Id"""
         # ====================================================================#
@@ -134,4 +138,5 @@ class SettingsManager():
             "splash_ws_host":     parameters.get_param('splash_ws_host', defaults['splash_ws_host']),
             "splash_ws_user":     int(parameters.get_param('splash_ws_user', defaults['splash_ws_user'])),
             "splash_product_advanced_taxes":    bool(parameters.get_param('splash_product_advanced_taxes', False)),
+            "splash_product_advanced_variants":    bool(parameters.get_param('splash_product_advanced_variants', False)),
         }

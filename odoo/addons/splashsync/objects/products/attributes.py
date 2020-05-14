@@ -46,8 +46,7 @@ class ProductsAttributes:
         FieldFactory.isNotTested()
         if Framework.isDebugMode():
             FieldFactory.microData("http://schema.org/Product", "VariantAttributeName")
-
-    # ====================================================================#
+        # ====================================================================#
         # Walk on Available Languages
         for iso_code, lang_name in TransHelper.get_all().items():
             # ==================================================================== #
@@ -58,6 +57,15 @@ class ProductsAttributes:
             FieldFactory.setMultilang(iso_code)
             FieldFactory.inlist("attributes")
             FieldFactory.isNotTested()
+        # ==================================================================== #
+        # Product Variation Attribute Extra Price
+        FieldFactory.create(const.__SPL_T_DOUBLE__, "price_extra", "Extra Price")
+        FieldFactory.inlist("attributes")
+        FieldFactory.microData(
+            "http://schema.org/Product",
+            "VariantAttributeCode" if Framework.isDebugMode() else "VariantExtraPrice"
+        )
+        FieldFactory.isNotTested()
 
     def getAttributesFields(self, index, field_id):
         """
@@ -109,6 +117,7 @@ class ProductsAttributes:
                 new_attributes_ids += [attr_value.attribute_id.id]
                 self._set_attribute_value(attr_value)
                 self._set_attribute_value_langs(attr_value, value)
+                self._set_attribute_extra_price(attr_value.attribute_id.id, value)
         # ==================================================================== #
         # Delete Remaining Product Attributes Values...
         to_delete_values = self.object.attribute_value_ids.filtered(
@@ -124,7 +133,6 @@ class ProductsAttributes:
     def _get_attributes_values(self, value_id):
         """
         Get List of Attributes Values for given Field
-        :param product: product.product
         :param value_id: str
         :return: dict
         """
@@ -142,6 +150,9 @@ class ProductsAttributes:
                 values += [attr_value.attribute_id[0].name]
             elif value_id == "name":
                 values += [attr_value.attribute_id[0].display_name]
+            # Attribute Extra Price
+            elif value_id == "price_extra":
+                values += [self._get_attribute_extra_price(attr_value.attribute_id[0].id)]
             # Walk on Extra Languages
             for iso_code in TransHelper.get_extra_iso():
                 if value_id != "value_"+iso_code:
@@ -149,6 +160,22 @@ class ProductsAttributes:
                 values += [TransHelper.get(attr_value, 'name', iso_code, attr_value.name)]
 
         return values
+
+    def _get_attribute_extra_price(self, attr_id):
+        """
+        Get Extra Price for an Attribute
+        :param attr_id: str
+        :return: float
+        """
+        # ====================================================================#
+        # Walk on Template Attributes Values
+        for attr_value in self.object.product_template_attribute_value_ids:
+            # Filter Attribute Id
+            if attr_value.attribute_id.id != attr_id:
+                continue
+            # Collect Values
+            return float(attr_value.price_extra)
+        return float(0)
 
     def _set_attribute_value(self, new_value):
         """
@@ -171,6 +198,30 @@ class ProductsAttributes:
         # ====================================================================#
         # Update Template Attribute Values with Variants Values
         self._set_variants_value_ids(new_value.attribute_id)
+
+    def _set_attribute_extra_price(self, attr_id, value):
+        """
+        Get Extra Price for an Attribute
+        :param attr_id: str
+        :param value: dict
+        :return: void
+        """
+        # ====================================================================#
+        # Check if a Value was Received
+        if "price_extra" not in value.keys():
+            return
+        extra_price = float(value["price_extra"])
+        # ====================================================================#
+        # Walk on Template Attributes Values
+        for attr_value in self.object.product_template_attribute_value_ids:
+            # Filter Attribute Id
+            if attr_value.attribute_id.id != attr_id:
+                continue
+            # Compare Values
+            if abs(attr_value.price_extra - extra_price) < 1e-03:
+                continue
+            # Update Value
+            attr_value.price_extra = extra_price
 
     @staticmethod
     def _set_attribute_value_langs(attr_value, field_values):

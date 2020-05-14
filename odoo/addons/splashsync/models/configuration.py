@@ -52,10 +52,17 @@ class ResConfigSettings(models.TransientModel):
     )
     splash_product_advanced_taxes = fields.Boolean(
         company_dependent=True,
-        string="Product Advanced taxes",
+        string="Product Advanced Taxes",
         default=False,
         help="Enable Advanced Taxes Mode."
     )
+    splash_product_advanced_variants = fields.Boolean(
+        company_dependent=True,
+        string="Product Advanced Variants",
+        default=False,
+        help="Enable to store Products Features on features_value_ids instead of Template attribute_line_ids."
+    )
+
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         # Load Current Company Configuration
@@ -68,6 +75,7 @@ class ResConfigSettings(models.TransientModel):
             splash_ws_host=config.splash_ws_host,
             splash_ws_user=config.splash_ws_user.id,
             splash_product_advanced_taxes=bool(config.splash_product_advanced_taxes),
+            splash_product_advanced_variants=bool(config.splash_product_advanced_variants),
         )
         return res
 
@@ -84,6 +92,7 @@ class ResConfigSettings(models.TransientModel):
             'splash_ws_host': self.splash_ws_host,
             'splash_ws_user': self.splash_ws_user,
             'splash_product_advanced_taxes': self.splash_product_advanced_taxes,
+            'splash_product_advanced_variants': self.splash_product_advanced_variants,
         })
         # ====================================================================#
         # Default Company => Copy Configuration to Main Parameters
@@ -94,6 +103,7 @@ class ResConfigSettings(models.TransientModel):
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
             self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_taxes', self.splash_product_advanced_taxes)
+            self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_variants', self.splash_product_advanced_variants)
 
     @staticmethod
     def get_base_url():

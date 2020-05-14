@@ -13,15 +13,16 @@
 #
 
 
-from odoo import api, models
+from odoo import api, models, fields
 import logging
 
 
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
 
-    @api.multi
-    def create_variant_ids(self):
-        _logger = logging.getLogger("SPLASH SYNC")
-        _logger.warning("Variants Auto-creation is disabled when Splash Module is Active")
-        return True
+    features_value_ids = fields.Many2many(
+        'product.attribute.value',
+        string="Features Values",
+        relation='product_variant_features',
+        help="Product Variants Features Only Values"
+    )

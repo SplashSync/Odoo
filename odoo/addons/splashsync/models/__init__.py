@@ -14,4 +14,6 @@
 
 from . import authentification
 from . import configuration
+from . import product
 from . import product_template
+

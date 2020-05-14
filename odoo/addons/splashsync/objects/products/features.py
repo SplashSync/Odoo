@@ -15,7 +15,7 @@
 from odoo import http
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, ValuesHelper
+from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, ValuesHelper, SettingsManager
 
 
 class ProductsFeatures:
@@ -75,6 +75,14 @@ class ProductsFeatures:
                 self.__getFeatureTranslatedFields(field_id, attr_value)
                 return
         # ==================================================================== #
+        # Check if Product has Advanced Feature Value
+        if SettingsManager.is_prd_adv_variants():
+            for attr_value in self.object.features_value_ids:
+                if attr_value.attribute_id.id == attr_id:
+                    self._out[field_id] = attr_value.name
+                    self.__getFeatureTranslatedFields(field_id, attr_value)
+                    return
+        # ==================================================================== #
         # Check if Product has Feature Value
         for attr_value in self.template.valid_product_attribute_value_ids:
             if attr_value.attribute_id.id == attr_id:
@@ -87,7 +95,7 @@ class ProductsFeatures:
 
     def setFeatureFields(self, field_id, field_data):
         """
-        Update Product Attributes Values
+        Update Product Features Values (Standard Mode)
         :param field_id: str
         :param field_data: hash
         :return: None
@@ -95,7 +103,7 @@ class ProductsFeatures:
         # ==================================================================== #
         # Check field_id this Feature Field...
         attr_id = self.decode(field_id)
-        if attr_id is None:
+        if attr_id is None or SettingsManager.is_prd_adv_variants():
             return
         self._in.__delitem__(field_id)
         # ==================================================================== #
@@ -133,65 +141,51 @@ class ProductsFeatures:
         else:
             self.__isEmptyFeatureTranslatedFields(field_id)
 
-    # def setFeatureFields(self, field_id, field_data):
-    #     """
-    #     Update Product Attributes Values (Mode 2 => FAIL)
-    #     :param field_id: str
-    #     :param field_data: hash
-    #     :return: None
-    #     """
-    #     # ==================================================================== #
-    #     # Check field_id this Feature Field...
-    #     attr_id = self.decode(field_id)
-    #     if attr_id is None:
-    #         return
-    #     self._in.__delitem__(field_id)
-    #     # ==================================================================== #
-    #     # Check if Product has Feature Value
-    #     attr_values = self.object.attribute_value_ids.filtered(
-    #         lambda l: l.attribute_id.create_variant == "no_variant" and l.attribute_id.id == attr_id
-    #     )
-    #     for attr_value in attr_values:
-    #         # ==================================================================== #
-    #         # Find or Create Attribute Value
-    #         new_value = ValuesHelper.touch(attr_value.attribute_id, field_data, True)
-    #         # ==================================================================== #
-    #         # Empty Value or Creation Fail => Remove Product Attribute
-    #         if new_value is None:
-    #             self.object.attribute_value_ids = [(3, attr_value.id, 0)]
-    #             # ====================================================================#
-    #             # Update Template Attribute Values with Variants Values
-    #             self._set_variants_value_ids(attr_value.attribute_id)
-    #             self.__isEmptyFeatureTranslatedFields(field_id)
-    #             return
-    #         # ====================================================================#
-    #         # If Values are Different => Update Values
-    #         if new_value.id != attr_value.id:
-    #             self.object.attribute_value_ids = [(3, attr_value.id, 0), (4, new_value.id, 0)]
-    #             # ====================================================================#
-    #             # Update Template Attribute Values with Variants Values
-    #             self._set_variants_value_ids(attr_value.attribute_id)
-    #         # ====================================================================#
-    #         # Update Product Attribute Translations
-    #         self.__setFeatureTranslatedFields(field_id, new_value)
-    #         return
-    #     # ==================================================================== #
-    #     # Add Product Feature Value
-    #     if field_data is not None and len(str(field_data)) > 0:
-    #         # Find or Create Attribute Value
-    #         new_value = ValuesHelper.touch(AttributesHelper.load(attr_id), str(field_data), True)
-    #         self.object.attribute_value_ids = [(4, new_value.id, 0)]
-    #         # ====================================================================#
-    #         # Update Template Attribute Values with Variants Values
-    #         self._set_variants_value_ids(new_value.attribute_id)
-    #
-    #         # for variant in self.object.product_variant_ids:
-    #         # LinesHelper.add(self.template, new_value)
-    #         self.__setFeatureTranslatedFields(field_id, new_value)
-    #     # ==================================================================== #
-    #     # Complete Empty Feature Translations
-    #     else:
-    #         self.__isEmptyFeatureTranslatedFields(field_id)
+    def setAdvancedFeatureFields(self, field_id, field_data):
+        """
+        Update Product Attributes Values (Mode 2 => FAIL)
+        :param field_id: str
+        :param field_data: hash
+        :return: None
+        """
+        # ==================================================================== #
+        # Check field_id this Feature Field...
+        attr_id = self.decode(field_id)
+        if attr_id is None or not SettingsManager.is_prd_adv_variants():
+            return
+        self._in.__delitem__(field_id)
+        # ====================================================================#
+        # Find Product Current Feature Values
+        current = self.object.features_value_ids.filtered(lambda v: v.attribute_id.id == attr_id)
+        # ==================================================================== #
+        # Empty Product Feature Value
+        if field_data is None or len(str(field_data)) == 0:
+            if len(current):
+                # Remove Product Feature
+                self.object.features_value_ids = [(3, current.id, 0)]
+            # Update Translations
+            self.__isEmptyFeatureTranslatedFields(field_id)
+            return
+        # ==================================================================== #
+        # Load Attribute
+        attribute = current.attribute_id if len(current) else AttributesHelper.load(attr_id)
+        # ==================================================================== #
+        # Find or Create Attribute Value
+        new_value = ValuesHelper.touch(attribute, field_data, True)
+        # ====================================================================#
+        # If Values are Similar => Nothing to Do => Exit
+        if len(current) == 1 and new_value.id == current.id:
+            self.__setFeatureTranslatedFields(field_id, new_value)
+            return
+        # ====================================================================#
+        # Update Feature Value => Remove Old Value => Add New Value
+        if len(current):
+            self.object.features_value_ids = [(3, current.id, 0), (4, new_value.id, 0)]
+        else:
+            self.object.features_value_ids = [(4, new_value.id, 0)]
+        # ====================================================================#
+        # Update Translations
+        self.__setFeatureTranslatedFields(field_id, new_value)
 
     # ====================================================================#
     # Products Feature Field Ids Management

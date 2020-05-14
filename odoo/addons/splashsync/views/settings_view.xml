@@ -46,9 +46,13 @@
 
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="splash_ws_expert"/>
+                            </div>
                             <div class="o_setting_right_pane">
                                 <label for="splash_ws_expert"/>
-                                <field name="splash_ws_expert" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
                                 <label for="splash_ws_host"/>
                                 <field name="splash_ws_host" class="o_light_label"/>
                             </div>
@@ -66,10 +70,13 @@
                     <h2>Products Settings</h2>
 
                     <div class="row mt16 o_settings_container">
+
                         <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="splash_product_advanced_taxes" class="o_light_label"/>
+                            </div>
                             <div class="o_setting_right_pane">
                                 <label for="splash_product_advanced_taxes"/>
-                                <field name="splash_product_advanced_taxes" class="o_light_label"/>
                                 <div class="text-muted">
                                     Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sell and purchase taxes.
                                 </div>
@@ -78,6 +85,23 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="splash_product_advanced_variants" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="splash_product_advanced_variants"/>
+                                <div class="text-muted">
+                                    Enable to store Products Features on features_value_ids instead of Template attribute_line_ids.
+                                </div>
+                                <div class="text-muted">
+                                    This advanced feature require additional development on local system
+                                    but will be mandatory if your products have variants specific features.
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
