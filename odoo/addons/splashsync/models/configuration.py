@@ -50,6 +50,14 @@ class ResConfigSettings(models.TransientModel):
         default="2",
         help="ID of Local User used by Splash"
     )
+
+    splash_product_simplified_prices = fields.Boolean(
+        company_dependent=True,
+        string="Product Simplified Prices",
+        default=False,
+        help="Enable Simplified Mode to Store Product Extra Price at Product Level."
+    )
+
     splash_product_advanced_taxes = fields.Boolean(
         company_dependent=True,
         string="Product Advanced Taxes",
@@ -74,6 +82,7 @@ class ResConfigSettings(models.TransientModel):
             splash_ws_expert=bool(config.splash_ws_expert),
             splash_ws_host=config.splash_ws_host,
             splash_ws_user=config.splash_ws_user.id,
+            splash_product_simplified_prices=bool(config.splash_product_simplified_prices),
             splash_product_advanced_taxes=bool(config.splash_product_advanced_taxes),
             splash_product_advanced_variants=bool(config.splash_product_advanced_variants),
         )
@@ -91,6 +100,7 @@ class ResConfigSettings(models.TransientModel):
             'splash_ws_expert': self.splash_ws_expert,
             'splash_ws_host': self.splash_ws_host,
             'splash_ws_user': self.splash_ws_user,
+            'splash_product_simplified_prices': self.splash_product_simplified_prices,
             'splash_product_advanced_taxes': self.splash_product_advanced_taxes,
             'splash_product_advanced_variants': self.splash_product_advanced_variants,
         })
@@ -102,6 +112,7 @@ class ResConfigSettings(models.TransientModel):
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_expert', self.splash_ws_expert)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
+            self.env['ir.config_parameter'].sudo().set_param('splash_product_simplified_prices', self.splash_product_simplified_prices)
             self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_taxes', self.splash_product_advanced_taxes)
             self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_variants', self.splash_product_advanced_variants)
 

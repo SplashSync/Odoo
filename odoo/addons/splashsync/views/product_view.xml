@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) 2015-2020 Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+-->
+
+<odoo>
+
+    <record id="splashsync_product_normal_form_view" model="ir.ui.view">
+        <field name="name">splahsync.product.product.view.form.easy</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lst_price']" position="after">
+                <field name="variant_price_extra" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="splashsync_product_variant_easy_edit_view" model="ir.ui.view">
+        <field name="name">splahsync.product.product.view.form.easy</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lst_price']" position="after">
+                <field name="variant_price_extra" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

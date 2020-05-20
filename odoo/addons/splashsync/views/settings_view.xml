@@ -73,6 +73,23 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
+                                <field name="splash_product_simplified_prices" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="splash_product_simplified_prices"/>
+                                <div class="text-muted">
+                                    Enable Simplified Mode to Store Product Extra Price at Product Level. Once enabled, Attributes <i>extra_price</i> has no effect.
+                                </div>
+                                <div class="text-muted">
+                                    This mode introduce two Splash fields for different management methods.
+                                    Use <i>lst_price</i> only to fix Final Price whatever product is Simple or Variable.
+                                    Use <i>list_price</i> + <i>variant_price</i> to set Simple and Variable Prices separately.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
                                 <field name="splash_product_advanced_taxes" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
@@ -93,7 +110,7 @@
                             <div class="o_setting_right_pane">
                                 <label for="splash_product_advanced_variants"/>
                                 <div class="text-muted">
-                                    Enable to store Products Features on features_value_ids instead of Template attribute_line_ids.
+                                    Enable to store Products Features on <i>features_value_ids</i> instead of Template <i>attribute_line_ids</i>.
                                 </div>
                                 <div class="text-muted">
                                     This advanced feature require additional development on local system

@@ -55,7 +55,7 @@ class Product(
             "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback",
             "message_unread_counter",
-            "price", "lst_price", "list_price", "standard_price",
+            "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
         ]
 
     @staticmethod

@@ -20,6 +20,10 @@ import logging
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    # ====================================================================#
+    # !!! Odoo Core Features Overrides !!!
+    # ====================================================================#
+
     @api.multi
     def create_variant_ids(self):
         _logger = logging.getLogger("SPLASH SYNC")

@@ -16,7 +16,7 @@ from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import PricesHelper
 from odoo.addons.splashsync.models.configuration import ResConfigSettings
-from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
+from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper, AttributesHelper
 
 
 class ProductsPrices:
@@ -28,22 +28,44 @@ class ProductsPrices:
         # ==================================================================== #
         # Load Product Configuration
         is_adv_taxes = SettingsManager.is_prd_adv_taxes()
+        is_simple_prices = SettingsManager.is_prd_simple_prices()
         # ==================================================================== #
-        # Product Selling Price
-        FieldFactory.create(const.__SPL_T_PRICE__, "list_price", "Sell Price")
-        FieldFactory.microData("http://schema.org/Product", "price")
+        # Product Selling Base Price
+        FieldFactory.create(const.__SPL_T_PRICE__, "list_price", "Base Price (tax excl.)")
+        FieldFactory.description("Base Price for this Product & Variants.")
+        FieldFactory.microData("http://schema.org/Product", "basePrice")
+        # ==================================================================== #
+        # Product Final Selling Price
+        if is_simple_prices:
+            FieldFactory.create(const.__SPL_T_PRICE__, "lst_price", "Price (tax excl.)")
+            FieldFactory.description("Final Price for Selling this Product.")
+            FieldFactory.microData("http://schema.org/Product", "price")
+        # ==================================================================== #
+        # Product Selling Variant Price
+        if is_simple_prices:
+            FieldFactory.create(const.__SPL_T_PRICE__, "variant_price", "Variant Price (tax excl.)")
+            FieldFactory.description("Final Price for this Variant. If set to Zéro, we use Base Price.")
+            FieldFactory.microData("http://schema.org/Product", "variantPrice")
+        # ==================================================================== #
+        # Product Selling Extra Price (list_price - lst_price)
+        FieldFactory.create(const.__SPL_T_PRICE__, "variant_price_extra", "Variant Extra Price")
+        FieldFactory.microData("http://schema.org/Product", "extraPrice")
+        FieldFactory.isReadOnly()
+        # ==================================================================== #
+        # Product Cost Price
+        FieldFactory.create(const.__SPL_T_PRICE__, "standard_price", "Buy Price")
+        FieldFactory.microData("http://schema.org/Product", "wholesalePrice")
         if is_adv_taxes:
+            # ==================================================================== #
+            # Product Customers Taxes
             FieldFactory.create(const.__SPL_T_VARCHAR__, "list_price_tax_ids", "Sell Taxes Ids")
             FieldFactory.microData("http://schema.org/Product", "priceTaxIds")
             FieldFactory.isNotTested()
             FieldFactory.create(const.__SPL_T_VARCHAR__, "list_price_tax_names", "Sell Taxes Names")
             FieldFactory.microData("http://schema.org/Product", "priceTaxNames")
             FieldFactory.isNotTested()
-        # ==================================================================== #
-        # Product Cost Price
-        FieldFactory.create(const.__SPL_T_PRICE__, "standard_price", "Buy Price")
-        FieldFactory.microData("http://schema.org/Product", "wholesalePrice")
-        if is_adv_taxes:
+            # ==================================================================== #
+            # Product Supplier Taxes
             FieldFactory.create(const.__SPL_T_VARCHAR__, "standard_price_tax_ids", "Buy Taxes Ids")
             FieldFactory.microData("http://schema.org/Product", "wholesalePriceTaxIds")
             FieldFactory.isNotTested()
@@ -59,11 +81,22 @@ class ProductsPrices:
         # ==================================================================== #
         # Load Product Configuration
         is_adv_taxes = SettingsManager.is_prd_adv_taxes()
+        # Variant Price is List Price
+        if field_id == "variant_price":
+            field_id == "lst_price"
         # ==================================================================== #
-        # Read Sell Price
-        if field_id == "list_price":
+        # Read Sell Prices
+        if field_id in ["lst_price", "list_price"]:
             self._out[field_id] = PricesHelper.encode(
-                float(self.object.lst_price),
+                float(getattr(self.object, field_id)),
+                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
+                None,
+                CurrencyHelper.get_main_currency_code()
+            )
+            self._in.__delitem__(index)
+        if field_id in ["variant_price_extra"]:
+            self._out[field_id] = PricesHelper.encode(
+                float(self.object.lst_price - self.object.list_price),
                 TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
                 None,
                 CurrencyHelper.get_main_currency_code()
@@ -106,17 +139,33 @@ class ProductsPrices:
         if not self.isPricesFields(field_id):
             return
         # ==================================================================== #
-        # Update Price
-        self.setSimple(field_id, PricesHelper.taxExcluded(field_data) - self.object.price_extra)
+        # Extract Price
+        try:
+            tax_excl = float(PricesHelper.taxExcluded(field_data))
+        except TypeError:
+            tax_excl = 0
+        # ==================================================================== #
+        # Directs Updates of Buy Price
+        # Directs Updates of Base Price
+        if field_id in ["standard_price", "list_price"]:
+            self.setSimple(field_id, tax_excl)
+        # ==================================================================== #
+        # Updates of Final Sell Prices
+        elif field_id == "lst_price":
+            self._set_final_price(tax_excl)
+        # ==================================================================== #
+        # Updates of Variant Final Sell Prices
+        elif field_id == "variant_price":
+            self._set_variant_price(tax_excl)
         # ==================================================================== #
         # Load Product Configuration
         if SettingsManager.is_prd_adv_taxes():
             return
         # ==================================================================== #
         # Update Product Sell Taxes
-        if field_id == "list_price":
+        if field_id in ["lst_price", "list_price"]:
             tax_rate = PricesHelper.taxPercent(field_data)
-            if tax_rate > 0:
+            if tax_rate is not None and tax_rate > 0:
                 tax = TaxHelper.find_by_rate(tax_rate, 'sale')
                 if tax is None:
                     return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
@@ -128,7 +177,7 @@ class ProductsPrices:
         # Update Product Buy Taxes
         if field_id == "standard_price":
             tax_rate = PricesHelper.taxPercent(field_data)
-            if tax_rate > 0:
+            if tax_rate is not None and tax_rate > 0:
                 tax = TaxHelper.find_by_rate(tax_rate, 'purchase')
                 if tax is None:
                     return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
@@ -172,7 +221,7 @@ class ProductsPrices:
 
     @staticmethod
     def isPricesFields(field_id):
-        if field_id in ["list_price", "standard_price"]:
+        if field_id in ["lst_price", "list_price", "variant_price", "variant_price_extra", "standard_price"]:
             return True
         return False
 
@@ -185,3 +234,53 @@ class ProductsPrices:
             return True
         return False
 
+    def _set_variant_price(self, tax_excl):
+        """
+        Update Product Variant Price: list_price + variant_price_extra
+
+        If Variant Price is Zéro => Force to Base Price
+        """
+        self._in.__delitem__("variant_price")
+        if abs(tax_excl) < 1e-3:
+            self.object.variant_price_extra = 0
+            return
+        # ==================================================================== #
+        # Detect Potential Base Price on Inputs
+        if "list_price" in self._in:
+            # ==================================================================== #
+            # Extract Price
+            try:
+                list_price = float(PricesHelper.taxExcluded((self._in["list_price"])))
+            except TypeError:
+                list_price = 0
+            self.object.variant_price_extra = tax_excl - list_price
+        else:
+            self.object.variant_price_extra = tax_excl - self.object.list_price
+
+    def _set_final_price(self, tax_excl):
+        """
+        Update Product Final Price: lst_price
+
+        If Simple Product => Update if
+        If Variant with Simple Prices Mode => Update variant_price_extra
+        If Variant without Simple Prices Mode => Update list_price impacted by price_extra
+        """
+        # ==================================================================== #
+        # For Simple Products
+        if self.object.product_variant_count == 1:
+            self.object.list_price = tax_excl
+            self.object.variant_price_extra = 0
+        # ==================================================================== #
+        # For Variant Products with Simple Prices
+        elif SettingsManager.is_prd_simple_prices():
+            # ==================================================================== #
+            # Detect Base Price on Inputs
+            if "list_price" in self._in:
+                self.object.variant_price_extra = tax_excl - PricesHelper.taxExcluded((self._in["list_price"]))
+            else:
+                self.object.variant_price_extra = tax_excl - self.object.list_price
+        # ==================================================================== #
+        # For Variant Products without Simple Prices
+        else:
+            self.object.list_price = tax_excl - self.object.price_extra
+        self._in.__delitem__("lst_price")

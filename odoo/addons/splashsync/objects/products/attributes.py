@@ -16,7 +16,7 @@ from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper
-from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, TransHelper, ValuesHelper
+from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, TransHelper, ValuesHelper, SettingsManager
 
 
 class ProductsAttributes:
@@ -59,13 +59,14 @@ class ProductsAttributes:
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Product Variation Attribute Extra Price
-        FieldFactory.create(const.__SPL_T_DOUBLE__, "price_extra", "Extra Price")
-        FieldFactory.inlist("attributes")
-        FieldFactory.microData(
-            "http://schema.org/Product",
-            "VariantAttributeCode" if Framework.isDebugMode() else "VariantExtraPrice"
-        )
-        FieldFactory.isNotTested()
+        if not SettingsManager.is_prd_simple_prices():
+            FieldFactory.create(const.__SPL_T_DOUBLE__, "price_extra", "Extra Price")
+            FieldFactory.inlist("attributes")
+            FieldFactory.microData(
+                "http://schema.org/Product",
+                "VariantAttributeCode" if Framework.isDebugMode() else "VariantExtraPrice"
+            )
+            FieldFactory.isNotTested()
 
     def getAttributesFields(self, index, field_id):
         """
@@ -207,10 +208,15 @@ class ProductsAttributes:
         :return: void
         """
         # ====================================================================#
+        # Check if a Simple Prices Feature is Active
+        if SettingsManager.is_prd_simple_prices():
+            extra_price = 0
+        # ====================================================================#
         # Check if a Value was Received
-        if "price_extra" not in value.keys():
+        elif "price_extra" in value.keys():
+            extra_price = float(value["price_extra"])
+        else:
             return
-        extra_price = float(value["price_extra"])
         # ====================================================================#
         # Walk on Template Attributes Values
         for attr_value in self.object.product_template_attribute_value_ids:
