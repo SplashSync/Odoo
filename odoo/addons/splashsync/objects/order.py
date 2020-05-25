@@ -30,7 +30,7 @@ class Order(OdooObject, Orderlines):
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'display_name', 'client_order_ref', 'id']
+        return ['client_order_ref', 'name', 'date_order', 'type_name']
 
     @staticmethod
     def get_required_fields():
