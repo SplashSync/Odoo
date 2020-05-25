@@ -81,9 +81,6 @@ class ProductsPrices:
         # ==================================================================== #
         # Load Product Configuration
         is_adv_taxes = SettingsManager.is_prd_adv_taxes()
-        # Variant Price is List Price
-        if field_id == "variant_price":
-            field_id == "lst_price"
         # ==================================================================== #
         # Read Sell Prices
         if field_id in ["lst_price", "list_price"]:
@@ -94,6 +91,18 @@ class ProductsPrices:
                 CurrencyHelper.get_main_currency_code()
             )
             self._in.__delitem__(index)
+        # ==================================================================== #
+        # Variant Price is List Price
+        if field_id in ["variant_price"]:
+            self._out[field_id] = PricesHelper.encode(
+                float(getattr(self.object, "lst_price")),
+                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
+                None,
+                CurrencyHelper.get_main_currency_code()
+            )
+            self._in.__delitem__(index)
+        # ==================================================================== #
+        # Variant Extra Price
         if field_id in ["variant_price_extra"]:
             self._out[field_id] = PricesHelper.encode(
                 float(self.object.lst_price - self.object.list_price),
