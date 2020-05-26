@@ -32,19 +32,22 @@ class OdooClient(ClientInfo):
         # Use Default Icons Set
         self.loadDefaultIcons()
         # ====================================================================#
-        # Load Odoo Company Object
-        company = http.request.env['res.company']._get_main_company().read([])
-        # ====================================================================#
         # Override Info to Says we are Faker Mode
         self.short_desc = "Splash Odoo Client"
         self.long_desc = "Splash Client for connecting Odoo Erp Systems"
-        # ====================================================================#
-        # Company Information
-        self.company = company[0]["name"]
-        self.address = company[0]["street"]
-        self.zip = company[0]["zip"]
-        self.town = company[0]["city"]
-        self.country = company[0]["phone"]
-        self.www = company[0]["website"]
-        self.email = company[0]["email"]
-        self.phone = company[0]["phone"]
+        try:
+            # ====================================================================#
+            # Load Odoo Company Object
+            company = http.request.env['res.company']._get_main_company().read([])
+            # ====================================================================#
+            # Company Information
+            self.company = company[0]["name"]
+            self.address = company[0]["street"]
+            self.zip = company[0]["zip"]
+            self.town = company[0]["city"]
+            self.country = company[0]["phone"]
+            self.www = company[0]["website"]
+            self.email = company[0]["email"]
+            self.phone = company[0]["phone"]
+        except:
+            self.company = "Unable to fetch Main Company"
