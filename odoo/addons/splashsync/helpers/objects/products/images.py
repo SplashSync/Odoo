@@ -142,18 +142,18 @@ class ProductImagesHelper:
         # ====================================================================#
         # Identify Cover & First Visible
         cover_index, cover_image = ProductImagesHelper.find_cover(images_list)
-        visible_index, visible_image = ProductImagesHelper.__find_first(images_list, None, True)
+        visible_index, visible_image = ProductImagesHelper.__find_first(images_list, False, True)
         # ====================================================================#
         # One of Them NOT found
         if cover_index is None or visible_index is None:
             return None, None
-        # First Visible is Cover
-        if cover_index == visible_index:
-            return None, None
-        # First Cover is Visible
-        if ProductImagesHelper.is_visible(images_list[cover_index]):
-            Framework.log().warn("Cover is Not First Image")
-            return None, None
+        # # First Visible is Cover
+        # if cover_index == visible_index:
+        #     return None, None
+        # # First Cover is Visible
+        # if ProductImagesHelper.is_visible(images_list[cover_index]):
+        #     Framework.log().warn("Cover is Not First Image")
+        #     return None, None
 
         return visible_index, visible_image
 
@@ -174,6 +174,7 @@ class ProductImagesHelper:
         # Walk on Received Images
         for index, spl_image in images_list.items():
             keys = spl_image.keys()
+            Framework.log().dump(spl_image, "Find Image")
             if "image" not in keys:
                 continue
             if is_cover is not None:
@@ -181,6 +182,7 @@ class ProductImagesHelper:
                     continue
             if is_visible is not None:
                 if ProductImagesHelper.is_visible(spl_image) != is_visible:
+
                     continue
             return index, spl_image["image"]
 
