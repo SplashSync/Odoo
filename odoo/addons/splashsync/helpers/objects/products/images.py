@@ -48,7 +48,7 @@ class ProductImagesHelper:
             if value_id == "cover":
                 values += [True]
             elif value_id == "visible":
-                values += [not bool(isinstance(product.image_variant, bytes))]
+                values += [True]
             elif value_id == "position":
                 values += [position]
                 position += 1
