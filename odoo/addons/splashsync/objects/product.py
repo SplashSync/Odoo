@@ -66,7 +66,7 @@ class Product(
             "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
             "description": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 
-            "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active"},
+            "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
