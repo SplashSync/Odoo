@@ -66,7 +66,7 @@ class Product(
             "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
             "description": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 
-            "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
+            "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active"},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
@@ -80,6 +80,7 @@ class Product(
             "activity_summary": {"write": False},
             "image": {"group": "", "notest": True},
 
+            "type": {"group": "Meta", "itemtype": "http://schema.org/Product", "itemprop": "type", "notest": True},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
         }

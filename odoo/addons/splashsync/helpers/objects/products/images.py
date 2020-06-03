@@ -174,7 +174,6 @@ class ProductImagesHelper:
         # Walk on Received Images
         for index, spl_image in images_list.items():
             keys = spl_image.keys()
-            Framework.log().dump(spl_image, "Find Image")
             if "image" not in keys:
                 continue
             if is_cover is not None:

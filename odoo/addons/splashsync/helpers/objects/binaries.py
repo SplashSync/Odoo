@@ -54,9 +54,7 @@ class BinaryFields():
             # Build Splash Field Definition
             FieldFactory.create(self.__BinaryTypes__[field["type"]], fieldId, field["string"])
             FieldFactory.group("Others")
-
             FieldFactory.isReadOnly()
-
             if field["required"] or fieldId in self.get_required_fields():
                 FieldFactory.isRequired()
             if field["readonly"]:
@@ -121,7 +119,6 @@ class BinaryFields():
         )
         if isinstance(new_file, dict) and "raw" in new_file:
             self.setSimple(field_id, new_file["raw"], target)
-            Framework.log().warn("File contents updated")
         else:
             Framework.log().error("Unable to read file from Server")
 

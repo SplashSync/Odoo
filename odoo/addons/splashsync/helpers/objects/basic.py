@@ -23,6 +23,7 @@ class BasicFields():
         "boolean": const.__SPL_T_BOOL__,
         "char": const.__SPL_T_VARCHAR__,
         "text": const.__SPL_T_VARCHAR__,
+        "selection": const.__SPL_T_VARCHAR__,
         "integer": const.__SPL_T_INT__,
         "float": const.__SPL_T_DOUBLE__,
         "date": const.__SPL_T_DATE__,
@@ -81,6 +82,10 @@ class BasicFields():
                     FieldFactory.setMultilang(iso_code)
                     if iso_code != TransHelper.get_default_iso():
                         FieldFactory.association(fieldId)
+                # Selection >> Add Choices
+                if field["type"] is "selection":
+                    for key, value in field["selection"]:
+                        FieldFactory.addChoice(key, value)
                 # Force Urls generator options
                 if field["type"] is "char":
                     FieldFactory.addOption("Url_Prefix", "http://")
@@ -94,7 +99,7 @@ class BasicFields():
             return
         # Collect field value...
         field_type = fields_def[field_id]['type']
-        if field_type in ['char', 'text']:
+        if field_type in ['char', 'text', 'selection']:
             self.getSimpleStr(index, field_id)
             self.__getCoreTranslatedFields(field_id)
 
@@ -118,7 +123,7 @@ class BasicFields():
         # Update field value...
         field_type = fields_def[field_id]['type']
 
-        if field_type in ['char', 'text', 'integer', 'float']:
+        if field_type in ['char', 'text', 'selection', 'integer', 'float']:
             self.setSimple(field_id, field_data)
 
         if field_type in ['char', 'text']:
