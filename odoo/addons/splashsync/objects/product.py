@@ -51,7 +51,7 @@ class Product(
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automaticaly """
         return [
-            "id", "valuation", "cost_method", "tracking",
+            "id", "valuation", "cost_method",
             "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter",
