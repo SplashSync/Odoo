@@ -76,6 +76,8 @@ class Product(
             "outgoing_qty	": {"group": ""},
             "incoming_qty": {"group": ""},
 
+            "tracking": {"notest": True},
+
             "website": {"type": const.__SPL_T_URL__, "itemtype": "metadata", "itemprop": "metatype"},
             "activity_summary": {"write": False},
             "image": {"group": "", "notest": True},
