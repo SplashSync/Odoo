@@ -104,6 +104,8 @@ class Product(
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
             return False
+        if "type" not in reqFields:
+            reqFields['type'] = 'product'
         # ====================================================================#
         # Create a New Variable Product
         if self.is_new_variable_product():
@@ -141,7 +143,7 @@ class Product(
             for template in model.product_tmpl_id:
                 self.template = template
                 break
-        except Exception as exception:
+        except Exception:
             from splashpy import Framework
             Framework.log().warn("Unable to Load Odoo Product " + str(object_id))
             return False
