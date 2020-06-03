@@ -53,7 +53,7 @@ class Product(
         return [
             "id", "valuation", "cost_method",
             "image", "image_small", "image_medium", "image_variant",
-            "rating_last_image", "rating_last_feedback",
+            "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
         ]
