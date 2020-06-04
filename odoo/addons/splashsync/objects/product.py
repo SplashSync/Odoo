@@ -51,7 +51,7 @@ class Product(
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automaticaly """
         return [
-            "id", "valuation", "cost_method",
+            "id", "valuation", "cost_method", "type", "tracking",
             "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter",
@@ -76,13 +76,10 @@ class Product(
             "outgoing_qty	": {"group": ""},
             "incoming_qty": {"group": ""},
 
-            "tracking": {"notest": True},
-
             "website": {"type": const.__SPL_T_URL__, "itemtype": "metadata", "itemprop": "metatype"},
             "activity_summary": {"write": False},
             "image": {"group": "", "notest": True},
 
-            "type": {"group": "Meta", "itemtype": "http://schema.org/Product", "itemprop": "type", "notest": True},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
         }
