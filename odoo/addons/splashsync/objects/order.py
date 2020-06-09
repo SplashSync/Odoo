@@ -40,28 +40,23 @@ class Order(OdooObject, Orderlines):
             # 'partner_id', 'partner_invoice_id', 'partner_shipping_id',
             # 'pricelist_id', 'warehouse_id', 'picking_policy'
             'company_id', 'currency_id', 'journal_id'
-                ]
+        ]
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-                "name": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-                "state": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentStatus"},
+            "name": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
+            "state": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentStatus"},
 
-                "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
-                "date_due": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
-                "date_invoice": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "dateCreated"},
-                "reference": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
+            "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
+            "date_due": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
+            "date_invoice": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "dateCreated"},
+            "reference": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
 
-                "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-                "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
-
-                # "account.invoice.line[invoice_id]": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-
-                "activity_summary": {"write": False},
-
-                "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            # "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
          }
 
@@ -76,7 +71,6 @@ class Order(OdooObject, Orderlines):
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
             return False
-
         # ====================================================================#
         # TODO FOR DEV
         reqFields["partner_id"] = 11
