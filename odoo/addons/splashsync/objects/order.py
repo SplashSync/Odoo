@@ -11,12 +11,12 @@
 #  file that was distributed with this source code.
 #
 
-import logging
-from .model import OdooObject
+from . import OdooObject
 from splashpy import const
+from .orders import Orderslines
 
 
-class Order(OdooObject):
+class Order(OdooObject, Orderslines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
@@ -30,42 +30,44 @@ class Order(OdooObject):
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'display_name', 'client_order_ref', 'id']
+        return ['client_order_ref', 'name', 'date_order', 'type_name']
 
     @staticmethod
     def get_required_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['company_id', 'currency_id', 'journal_id']
+        return [
+            # 'name', 'date_order', 'currency_id',
+            # 'partner_id', 'partner_invoice_id', 'partner_shipping_id',
+            # 'pricelist_id', 'warehouse_id', 'picking_policy'
+        ]
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-                "name": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-                "state": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentStatus"},
 
-                "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
-                "date_due": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
-                "date_invoice": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "dateCreated"},
-                "reference": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
+            "activity_summary": {"write": False},
 
-                "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-                "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-                # "account.invoice.line[invoice_id]": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-        }
+         }
 
     # ====================================================================#
     # Object CRUD
     # ====================================================================#
 
     def create(self):
-        """Create a New Invoice"""
+        """Create a New Order"""
         # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
             return False
+
         # ====================================================================#
-        # Create a New Simple Product
+        # TODO FOR DEV
+        reqFields["partner_id"] = 11
+        # ====================================================================#
+        # Create a New Simple Order
         return self.getModel().create(reqFields)

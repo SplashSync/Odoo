@@ -11,7 +11,6 @@
 #  file that was distributed with this source code.
 #
 
-import logging
 from .model import OdooObject
 from splashpy import const
 
