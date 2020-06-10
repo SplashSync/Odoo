@@ -13,14 +13,11 @@
 
 import logging
 from .model import OdooObject
-from splashpy import const, Framework
-# from .thirdparties import Relatives
-from .thirdparties import Country
-from .thirdparties import Name
+from splashpy import const
 
 
-# class ThirdParty(OdooObject, Relatives, Country, Name):
-class ThirdParty(OdooObject, Country, Name):
+class ThirdParty(OdooObject):
+
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"
