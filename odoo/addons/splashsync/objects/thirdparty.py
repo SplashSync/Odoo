@@ -15,7 +15,9 @@ import logging
 from .model import OdooObject
 from splashpy import const
 
+
 class ThirdParty(OdooObject):
+
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"

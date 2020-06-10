@@ -31,7 +31,12 @@ class Orderslines:
         FieldFactory.microData("http://schema.org/OrderItem", "orderedItem")
         FieldFactory.isNotTested()
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "desc", "Product Desc")
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Product Ref.")
+        FieldFactory.inlist("Orderlines")
+        FieldFactory.microData("http://schema.org/Product", "ref")
+        FieldFactory.isNotTested()
+        # ==================================================================== #
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "desc", "Product Desc.")
         FieldFactory.inlist("Orderlines")
         FieldFactory.microData("http://schema.org/Product", "description")
         FieldFactory.isNotTested()
@@ -102,7 +107,8 @@ class Orderslines:
             # Collect Values
             if value_id == "product_id":
                 values += [ObjectsHelper.encode("Product", str(lin_value.product_id[0].id))]
-                # values += [lin_value.product_id[0].code]
+            elif value_id == "ref":
+                values += [lin_value.product_id[0].default_code]
             elif value_id == "desc":
                 values += [lin_value.name]
             elif value_id == "ord_qty":
