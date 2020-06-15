@@ -38,7 +38,7 @@ services:
         volumes:
             - ./docker/x86:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
-            - ../SplashSync-Py-Core:/mnt/splashpy
+            - ../Py-Core:/mnt/splashpy
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison"
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
         entrypoint:         bash /etc/odoo/entrypoint.sh odoo
@@ -52,6 +52,7 @@ services:
     db:
         image: postgres:10
         container_name: odoo-db
+        logging: { driver: "none" }
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo
@@ -65,6 +66,7 @@ services:
     toolkit:
         image: 'splashsync/toolkit'
         container_name: odoo-toolkit
+        logging: { driver: "none" }
         volumes:
             # Specify Local Configuration File
             - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'

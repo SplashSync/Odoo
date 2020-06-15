@@ -16,7 +16,7 @@ import logging
 import base64
 from odoo import http
 from splashpy.models.client import ClientInfo
-
+from splashpy import Framework
 
 class OdooClient(ClientInfo):
     """Define General Information about this Splash Client"""
@@ -24,13 +24,17 @@ class OdooClient(ClientInfo):
     def __init__(self):
         pass
 
+
     def complete(self):
         """
         Complete Client Module Information
         """
         # ====================================================================#
         # Use Default Icons Set
-        self.loadDefaultIcons()
+        # self.loadDefaultIcons()
+        # ====================================================================#
+        # Use Odoo Icons Set
+        self.loadOdooIcons()
         # ====================================================================#
         # Override Info to Says we are Faker Mode
         self.short_desc = "Splash Odoo Client"
@@ -51,3 +55,11 @@ class OdooClient(ClientInfo):
             self.phone = company[0]["phone"]
         except:
             self.company = "Unable to fetch Main Company"
+
+    def loadOdooIcons(self):
+        """Change Client Server Icons"""
+        from splashpy.componants.files import Files
+        import os
+        assets_path = os.path.dirname(os.path.realpath(__file__))+"/static/assets/img"
+        self.ico_raw = Files.getRawContents(assets_path + "/icon.png")
+        self.logo_raw = Files.getRawContents(assets_path + "/logo.png")
