@@ -338,8 +338,17 @@ class M2OHelper:
         if not isinstance(object_name, str) or not isinstance(index, str) or not isinstance(domain, str):
             return None
         # Execute Domain Search with Filter
-        results = http.request.env[domain].search([(index, 'ilike', object_name)] + filters)
-        if len(results) == 1:
+        results = http.request.env[domain].search([(index, '=ilike', object_name)] + filters)
+
+        # Results Found => Ok
+        if len(results) > 0:
+            # More than One Result Found => Ok but Warning
+            if len(results) > 1:
+                war = "More than One result by name search: "
+                war += "'"+object_name+"' Name was found "+str(len(results))+" times"
+                war += " on table '"+domain+"'. First value was used."
+                Framework.log().warn(war)
+            # Return first result
             return results[0].id
         else:
             return None
