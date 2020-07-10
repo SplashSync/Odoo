@@ -45,9 +45,10 @@ class ProductsRelations:
         if "public_categ_ids" in self.getModel().fields_get():
             FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ_ids", "Categorie Id")
             FieldFactory.microData("http://schema.org/Product", "publicCategoryId")
-            FieldFactory.isNotTested()
-            FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ", "Public Categorie")
+            FieldFactory.isReadOnly()
+            FieldFactory.create(const.__SPL_T_INLINE__, "public_categ", "Public Categorie")
             FieldFactory.microData("http://schema.org/Product", "publicCategory")
+            FieldFactory.addChoices(M2OHelper.get_name_values("product.public.category"))
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Website Alternate Products
