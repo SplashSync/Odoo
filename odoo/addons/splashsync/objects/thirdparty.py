@@ -117,7 +117,6 @@ class ThirdParty(OdooObject, Country, Name):
             return False
         # ====================================================================#
         # Create a New Simple 3rdP
-        self.object.is_company = 1
         newthirdP = self.getModel().create(reqFields)
 
         if newthirdP is None:
