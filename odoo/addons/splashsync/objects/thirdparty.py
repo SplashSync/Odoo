@@ -45,6 +45,8 @@ class ThirdParty(OdooObject, Country, Name):
         """Get List of Object Fields to Include in Lists"""
         return ["legal"]
 
+
+
     # @staticmethod
     # def get_composite_fields():
     #     """Get List of Fields NOT To Parse Automatically """
