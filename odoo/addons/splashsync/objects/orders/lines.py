@@ -18,7 +18,7 @@ from splashpy.helpers import ListHelper, PricesHelper, ObjectsHelper
 from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 
 
-class Orderslines:
+class Orderlines:
     """
     Access to Order line Fields
     """

@@ -13,10 +13,10 @@
 
 from . import OdooObject
 from splashpy import const
-from .orders import Orderslines
+from .orders import Orderlines
 
 
-class Order(OdooObject, Orderslines):
+class Order(OdooObject, Orderlines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
