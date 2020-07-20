@@ -43,14 +43,14 @@ class ThirdParty(OdooObject, Country, Name):
     @staticmethod
     def get_required_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ["legal"]
+        return ['name']
 
 
 
-    # @staticmethod
-    # def get_composite_fields():
-    #     """Get List of Fields NOT To Parse Automatically """
-    #     return ['name']
+    @staticmethod
+    def get_composite_fields():
+        """Get List of Fields NOT To Parse Automatically """
+        return ["id", 'message_follower_ids', 'image_medium', 'image_small']
 
     @staticmethod
     def get_configuration():
@@ -63,7 +63,6 @@ class ThirdParty(OdooObject, Country, Name):
                       "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "legal": {"group": "", "itemtype": "http://schema.org/Organization", "itemprop": "legalName"},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
@@ -78,23 +77,13 @@ class ThirdParty(OdooObject, Country, Name):
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-            "website": {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization",
-                        "itemprop": "url"},
+            "website": {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
             "activity_summary": {"write": False},
 
             "additional_info": {"notest": True},
-            "message_follower_ids": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
-            "image_medium": {"group": "Images", "write": False},
-            "image_small": {"group": "Images", "write": False},
-
         }
-
-    def order_inputs(self):
-        """Ensure Inputs are Correctly Ordered"""
-        from collections import OrderedDict
-        self._in = OrderedDict(sorted(self._in.items()))
 
     # ====================================================================#
     # Object CRUD
@@ -102,25 +91,24 @@ class ThirdParty(OdooObject, Country, Name):
 
     def create(self):
         """Create a New 3rdP"""
-        if "name" not in self._in:
-            self._in["name"] = self._in["legal"]
-            self._in.__delitem__("legal")
+        # ====================================================================#
+        # Safety Check
+        if "legal" not in self._in:
+            Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
+            return False
         # ====================================================================#
         # Order Fields Inputs
-        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
-        # reqFields = self.collectRequiredCoreFields()
-        reqFields = self._in
-        Framework.log().dump(reqFields)
-        if reqFields is False:
+        self._in["name"] = self._in["legal"]
+        req_fields = self.collectRequiredCoreFields()
+        self._in.__delitem__("name")
+        if req_fields.__len__() < 1:
             return False
         # ====================================================================#
         # Create a New Simple 3rdP
-        newthirdP = self.getModel().create(reqFields)
-
+        newthirdP = self.getModel().create(req_fields)
         if newthirdP is None:
+            Framework.log().error("ThirdParty is None")
             return False
-
-        self._in.__delitem__("name")
         return newthirdP

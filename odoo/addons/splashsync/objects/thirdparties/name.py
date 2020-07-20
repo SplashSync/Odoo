@@ -29,11 +29,13 @@ class Name:
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "last", "Last Name")
         FieldFactory.microData("http://schema.org/Person", "givenName")
-        FieldFactory.isNotTested()
+        FieldFactory.association('first')
+        # FieldFactory.isNotTested()
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "first", "First Name")
         FieldFactory.microData("http://schema.org/Person", "familyName")
-        FieldFactory.isNotTested()
+        FieldFactory.association('last')
+        # FieldFactory.isNotTested()
 
     def getNameFields(self, index, field_id):
         if field_id == "legal":
