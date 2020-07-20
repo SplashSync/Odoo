@@ -34,7 +34,6 @@ class Name:
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "first", "First Name")
         FieldFactory.microData("http://schema.org/Person", "familyName")
-        # FieldFactory.association('last')
         # FieldFactory.isNotTested()
 
     def getNameFields(self, index, field_id):
