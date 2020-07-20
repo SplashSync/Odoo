@@ -63,6 +63,8 @@ class ThirdParty(OdooObject, Country, Name):
                       "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
+            "type": {"notest": True},
+
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
