@@ -21,6 +21,8 @@ class Name:
     Manage Encode/Decode Concatenated Name
     """
 
+    varfullname = {"first": "", "last": "", "legal": ""}
+
     def buildNameFields(self):
         FieldFactory.create(const.__SPL_T_VARCHAR__, "legal", "Legal Name")
         FieldFactory.microData("http://schema.org/Organization", "legalName")
@@ -51,29 +53,26 @@ class Name:
         if field_data is None:
             field_data = ""
         if field_id == "legal":
+            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
             if Name.isactualdatadifferent(self, field_id, field_data):
-                first = Name.decodefullname(self)["first"]
-                last = Name.decodefullname(self)["last"]
-                setattr(self.object, "name", Name.encodefullname(first, last, str(field_data).strip()))
+                Name.varfullname[field_id] = str(field_data).strip()
             self._in.__delitem__(field_id)
         if field_id == "first":
+            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
             if Name.isactualdatadifferent(self, field_id, field_data):
-                last = Name.decodefullname(self)["last"]
-                legal = Name.decodefullname(self)["legal"]
-                setattr(self.object, "name", Name.encodefullname(str(field_data).strip(), last, legal))
+                Name.varfullname[field_id] = str(field_data).strip()
             self._in.__delitem__(field_id)
         if field_id == "last":
+            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
             if Name.isactualdatadifferent(self, field_id, field_data):
-                first = Name.decodefullname(self)["first"]
-                legal = Name.decodefullname(self)["legal"]
-                setattr(self.object, "name", Name.encodefullname(first, str(field_data).strip(), legal))
+                Name.varfullname[field_id] = str(field_data).strip()
             self._in.__delitem__(field_id)
-
+        if all(x not in self._in for x in ["first", "last", "legal"]):
+            setattr(self.object, "name", Name.encodefullname(Name.varfullname["first"], Name.varfullname["last"], Name.varfullname["legal"]))
 
     def decodefullname(self):
         elements = {"first": "", "last": "", "legal": ""}
         fullname = str(getattr(self.object, "name")).strip()
-        # ATTENTION, je considere qu'il y a tjrs un nom legal, sinon il faut prevoir le coup
         if fullname is None:
             return
         if " - " not in fullname:
@@ -91,7 +90,7 @@ class Name:
     @staticmethod
     def encodefullname(first, last, legal):
         if legal == "":
-            legal = "Tiers"
+            legal = "Legal Name to Define"
         if (isinstance(first, str)) and (len(first) > 0):
             if (isinstance(last, str)) and (len(last) > 0):
                 result = first + ", " + last + " - " + legal   # first, last - legal
@@ -104,5 +103,3 @@ class Name:
     def isactualdatadifferent(self, field_id, field_data):
         actualfield = Name.decodefullname(self)[field_id]
         return field_data != actualfield
-
-# Refacto : inversion if dans encode/decode

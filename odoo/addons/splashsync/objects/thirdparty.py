@@ -45,8 +45,6 @@ class ThirdParty(OdooObject, Country, Name):
         """Get List of Object Fields to Include in Lists"""
         return ['name']
 
-
-
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
@@ -57,14 +55,11 @@ class ThirdParty(OdooObject, Country, Name):
         """Get Hash of Fields Overrides"""
         return {
 
-            "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint",
-                      "itemprop": "email"},
-            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person",
-                      "itemprop": "telephone"},
+            "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
+            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
             "type": {"notest": True},
-
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
