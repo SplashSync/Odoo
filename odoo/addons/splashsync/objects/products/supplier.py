@@ -23,7 +23,10 @@ class ProductsSupplier:
     Access to product First Supplier Fields
     """
     # Static List of First Supplier Field Ids
-    supplierFields = ["supplier_name", "supplier_sku", "supplier_min_qty", "supplier_price"]
+    supplierFields = [
+        "supplier_name", "supplier_sku", "supplier_min_qty",
+        "supplier_price", "supplier_currency"
+    ]
 
     def buildSupplierFields(self):
         # ==================================================================== #
@@ -50,6 +53,11 @@ class ProductsSupplier:
         # First Supplier MOQ
         FieldFactory.create(const.__SPL_T_INT__, "supplier_min_qty", "Supplier MOQ")
         FieldFactory.microData("http://schema.org/Product", "supplierMinQty")
+        FieldFactory.association("supplier_name", "supplier_price")
+        # ====================================================================#
+        # First Supplier Currency
+        FieldFactory.create(const.__SPL_T_CURRENCY__, "supplier_currency", "Supplier Currency")
+        FieldFactory.microData("http://schema.org/Product", "supplierCurrency")
         FieldFactory.association("supplier_name", "supplier_price")
 
     def getSupplierFields(self, index, field_id):
@@ -116,6 +124,8 @@ class ProductsSupplier:
             return supplier.min_qty
         elif value_id == "supplier_price":
             return supplier.price
+        elif value_id == "supplier_currency":
+            return supplier.currency_id.name
 
         return None
 
@@ -133,8 +143,8 @@ class ProductsSupplier:
         if field_id == "supplier_name":
             # ====================================================================#
             # Validate & Update Supplier Partner
-            new_partner = M2OHelper.verify_name(field_data, "name", SupplierHelper.vendorDomain, SupplierHelper.filter)
-            if new_partner is not None and new_partner > 0:
+            new_currency = M2OHelper.verify_name(field_data, "name", SupplierHelper.vendorDomain, SupplierHelper.filter)
+            if new_currency is not None and new_currency > 0:
                 M2OHelper.set_name(
                     supplier, "name", field_data,
                     domain=SupplierHelper.vendorDomain, filters=SupplierHelper.filter
@@ -145,6 +155,12 @@ class ProductsSupplier:
             supplier.min_qty = field_data
         elif field_id == "supplier_price":
             supplier.price = field_data
+        elif field_id == "supplier_currency":
+            # ====================================================================#
+            # Validate & Update Supplier Partner
+            new_currency = M2OHelper.verify_name(field_data, "name", "res.currency")
+            if new_currency is not None and new_currency > 0:
+                M2OHelper.set_name(supplier, "currency_id", field_data, domain="res.currency")
 
     def __has_supplier_info(self):
         """
