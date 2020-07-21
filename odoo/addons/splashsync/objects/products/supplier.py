@@ -15,249 +15,158 @@
 from odoo import http
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, ValuesHelper, SettingsManager
-
+from odoo.addons.splashsync.helpers import M2OHelper
+from odoo.addons.splashsync.helpers import SupplierHelper
 
 class ProductsSupplier:
     """
     Access to product First Supplier Fields
     """
-
-    # Static Prefix for Feature Attributes
-    prefix = "__feature_id__"
+    # Static List of First Supplier Field Ids
+    supplierFields = ["supplier_name", "supplier_sku", "supplier_min_qty", "supplier_price"]
 
     def buildSupplierFields(self):
-        pass
-        # from odoo.addons.splashsync.helpers import TransHelper
-        # # ====================================================================#
-        # # Set default System Language
-        # FieldFactory.setDefaultLanguage(TransHelper.get_default_iso())
-        # # ====================================================================#
-        # # Walk on Available Attributes
-        # for attribute in ProductsFeatures.find_all():
-        #     # ====================================================================#
-        #     # Walk on Available Languages
-        #     for iso_code, lang_name in TransHelper.get_all().items():
-        #         # ==================================================================== #
-        #         # Product Feature Field
-        #         FieldFactory.create(const.__SPL_T_VARCHAR__, self.encode(attribute), attribute.display_name)
-        #         FieldFactory.group("Features")
-        #         FieldFactory.microData("http://schema.org/Product", attribute.name)
-        #         # ==================================================================== #
-        #         # Add Language Params
-        #         FieldFactory.description("["+lang_name+"] "+attribute.display_name)
-        #         FieldFactory.setMultilang(iso_code)
-        #         # ==================================================================== #
-        #         # Filter Variants Attributes During Tests
-        #         if Framework.isDebugMode() and attribute.name in AttributesHelper.attr_test:
-        #             FieldFactory.isNotTested()
-        #         if iso_code != TransHelper.get_default_iso():
-        #             FieldFactory.association(self.encode(attribute))
+        # ==================================================================== #
+        # Safety Check
+        if "seller_ids" not in self.getModel().fields_get():
+            return
+        # ====================================================================#
+        # First Supplier Name
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "supplier_name", "Supplier Name")
+        FieldFactory.microData("http://schema.org/Product", "supplierName")
+        FieldFactory.addChoices(M2OHelper.get_name_values(SupplierHelper.vendorDomain, SupplierHelper.filter))
+        FieldFactory.isNotTested()
+        # ====================================================================#
+        # First Supplier Price
+        FieldFactory.create(const.__SPL_T_DOUBLE__, "supplier_price", "Supplier Price")
+        FieldFactory.microData("http://schema.org/Product", "supplierPrice")
+        FieldFactory.association("supplier_name")
+        # ====================================================================#
+        # First Supplier SKU
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "supplier_sku", "Supplier SKU")
+        FieldFactory.microData("http://schema.org/Product", "mpn")
+        FieldFactory.association("supplier_name", "supplier_price")
+        # ====================================================================#
+        # First Supplier MOQ
+        FieldFactory.create(const.__SPL_T_INT__, "supplier_min_qty", "Supplier MOQ")
+        FieldFactory.microData("http://schema.org/Product", "supplierMinQty")
+        FieldFactory.association("supplier_name", "supplier_price")
 
     def getSupplierFields(self, index, field_id):
         """
-        Get Product Attributes List
+        Get Product First Supplier Fields
         :param index: str
         :param field_id: str
         :return: None
         """
         # ==================================================================== #
-        # Check field_id this Feature Field...
-        attr_id = self.decode(field_id)
-        if attr_id is None:
+        # Check field_id this First Supplier Field...
+        if not self.isSupplierField(field_id):
             return
+        # ==================================================================== #
+        # Read First Supplier Value
+        self._out[field_id] = self.__get_supplier_values(field_id)
         self._in.__delitem__(index)
-        self._out[field_id] = None
-        # ==================================================================== #
-        # Check if Product has Attribute Value
-        for attr_value in self.object.attribute_value_ids:
-            if attr_value.attribute_id.id == attr_id:
-                self._out[field_id] = attr_value.name
-                self.__getFeatureTranslatedFields(field_id, attr_value)
-                return
-        # ==================================================================== #
-        # Check if Product has Advanced Feature Value
-        if SettingsManager.is_prd_adv_variants():
-            for attr_value in self.object.features_value_ids:
-                if attr_value.attribute_id.id == attr_id:
-                    self._out[field_id] = attr_value.name
-                    self.__getFeatureTranslatedFields(field_id, attr_value)
-                    return
-        # ==================================================================== #
-        # Check if Product has Feature Value
-        for attr_value in self.template.valid_product_attribute_value_ids:
-            if attr_value.attribute_id.id == attr_id:
-                self._out[field_id] = attr_value.name
-                self.__getFeatureTranslatedFields(field_id, attr_value)
-                return
-        # ==================================================================== #
-        # Complete Not Found Feature Translations
-        self.__isEmptyFeatureTranslatedFields(field_id)
 
-    # def setFeatureFields(self, field_id, field_data):
-    #     """
-    #     Update Product Features Values (Standard Mode)
-    #     :param field_id: str
-    #     :param field_data: hash
-    #     :return: None
-    #     """
-    #     # ==================================================================== #
-    #     # Check field_id this Feature Field...
-    #     attr_id = self.decode(field_id)
-    #     if attr_id is None or SettingsManager.is_prd_adv_variants():
-    #         return
-    #     self._in.__delitem__(field_id)
-    #     # ==================================================================== #
-    #     # Check if Product has Feature Value
-    #     attr_lines = self.template.attribute_line_ids.filtered(
-    #         lambda l: l.attribute_id.create_variant == "no_variant" and l.attribute_id.id == attr_id
-    #     )
-    #     for attr_line in attr_lines:
-    #         # ==================================================================== #
-    #         # Find or Create Attribute Value
-    #         new_value = ValuesHelper.touch(attr_line.attribute_id, field_data, True)
-    #         # ==================================================================== #
-    #         # Empty Value or Creation Fail => Remove Product Attribute
-    #         if new_value is None:
-    #             self.template.attribute_line_ids = [(3, attr_line.id, 0)]
-    #             self.__isEmptyFeatureTranslatedFields(field_id)
-    #             return
-    #         # ====================================================================#
-    #         # If Values are Different => Update Values
-    #         if len(attr_line.value_ids) != 1 or new_value.id != attr_line.value_ids[0].id:
-    #             attr_line.value_ids = [(6, 0, [new_value.id])]
-    #         # ====================================================================#
-    #         # Update Product Attribute Translations
-    #         self.__setFeatureTranslatedFields(field_id, new_value)
-    #         return
-    #     # ==================================================================== #
-    #     # Add Product Feature Value
-    #     if field_data is not None and len(str(field_data)) > 0:
-    #         # Find or Create Attribute Value
-    #         new_value = ValuesHelper.touch(AttributesHelper.load(attr_id), str(field_data), True)
-    #         LinesHelper.add(self.template, new_value)
-    #         self.__setFeatureTranslatedFields(field_id, new_value)
-    #     # ==================================================================== #
-    #     # Complete Empty Feature Translations
-    #     else:
-    #         self.__isEmptyFeatureTranslatedFields(field_id)
-    #
-    # def setAdvancedFeatureFields(self, field_id, field_data):
-    #     """
-    #     Update Product Attributes Values (Mode 2 => FAIL)
-    #     :param field_id: str
-    #     :param field_data: hash
-    #     :return: None
-    #     """
-    #     # ==================================================================== #
-    #     # Check field_id this Feature Field...
-    #     attr_id = self.decode(field_id)
-    #     if attr_id is None or not SettingsManager.is_prd_adv_variants():
-    #         return
-    #     self._in.__delitem__(field_id)
-    #     # ====================================================================#
-    #     # Find Product Current Feature Values
-    #     current = self.object.features_value_ids.filtered(lambda v: v.attribute_id.id == attr_id)
-    #     # ==================================================================== #
-    #     # Empty Product Feature Value
-    #     if field_data is None or len(str(field_data)) == 0:
-    #         if len(current):
-    #             # Remove Product Feature
-    #             self.object.features_value_ids = [(3, current.id, 0)]
-    #         # Update Translations
-    #         self.__isEmptyFeatureTranslatedFields(field_id)
-    #         return
-    #     # ==================================================================== #
-    #     # Load Attribute
-    #     attribute = current.attribute_id if len(current) else AttributesHelper.load(attr_id)
-    #     # ==================================================================== #
-    #     # Find or Create Attribute Value
-    #     new_value = ValuesHelper.touch(attribute, field_data, True)
-    #     # ====================================================================#
-    #     # If Values are Similar => Nothing to Do => Exit
-    #     if len(current) == 1 and new_value.id == current.id:
-    #         self.__setFeatureTranslatedFields(field_id, new_value)
-    #         return
-    #     # ====================================================================#
-    #     # Update Feature Value => Remove Old Value => Add New Value
-    #     if len(current):
-    #         self.object.features_value_ids = [(3, current.id, 0), (4, new_value.id, 0)]
-    #     else:
-    #         self.object.features_value_ids = [(4, new_value.id, 0)]
-    #     # ====================================================================#
-    #     # Update Translations
-    #     self.__setFeatureTranslatedFields(field_id, new_value)
-    #
-    # # ====================================================================#
-    # # Products Feature Field Ids Management
-    # # ====================================================================#
-    #
-    # @staticmethod
-    # def find_all():
-    #     """
-    #     Get List of All Available Attributes Types
-    #     :return: dict
-    #     """
-    #     return http.request.env["product.attribute"].search([("create_variant", "=", "no_variant")], order="id")
-    #
-    # # ====================================================================#
-    # # Products Feature Field Ids Management
-    # # ====================================================================#
-    #
-    # def encode(self, attribute):
-    #     """
-    #     Decode Filed Id to Extract Pointed Attribute Id
-    #     :param attribute: product.attribute
-    #     :return: string
-    #     """
-    #     return ProductsFeatures.prefix + str(attribute.id)
-    #
-    # def decode(self, field_id):
-    #     """
-    #     Decode Filed Id to Extract Pointed Attribute Id
-    #     :param field_id: str
-    #     :return: None|int
-    #     """
-    #     if not isinstance(field_id, str) or field_id.find(ProductsFeatures.prefix) != 0:
-    #         return None
-    #     try:
-    #         return int(field_id[len(ProductsFeatures.prefix): len(field_id)])
-    #     except:
-    #         return None
-    #
-    # # ====================================================================#
-    # # Products Feature Translations Management
-    # # ====================================================================#
-    #
-    # def __getFeatureTranslatedFields(self, field_id, attr_value):
-    #     from odoo.addons.splashsync.helpers import TransHelper
-    #     for iso_code in TransHelper.get_extra_iso():
-    #         iso_field_id = field_id+"_"+iso_code
-    #         for key, val in self._in.copy().items():
-    #             if iso_field_id != val:
-    #                 continue
-    #             self._out[iso_field_id] = TransHelper.get(attr_value, 'name', iso_code, attr_value.name)
-    #             self._in.__delitem__(key)
-    #
-    # def __setFeatureTranslatedFields(self, field_id, attr_value):
-    #     from odoo.addons.splashsync.helpers import TransHelper
-    #     for iso_code in TransHelper.get_extra_iso():
-    #         iso_field_id = field_id+"_"+iso_code
-    #         if iso_field_id not in self._in.keys():
-    #             continue
-    #         TransHelper.set(attr_value, 'name', iso_code, self._in[iso_field_id])
-    #         self._in.__delitem__(iso_field_id)
-    #
-    # def __isEmptyFeatureTranslatedFields(self, field_id):
-    #     from odoo.addons.splashsync.helpers import TransHelper
-    #     for iso_code in TransHelper.get_extra_iso():
-    #         iso_field_id = field_id+"_"+iso_code
-    #         # Read Mode
-    #         for key, val in self._in.copy().items():
-    #             if iso_field_id != val:
-    #                 continue
-    #             self._out[iso_field_id] = ""
-    #             self._in.__delitem__(key)
-    #         # Write Mode
-    #         if iso_field_id in self._in.keys():
-    #             self._in.__delitem__(iso_field_id)
+    def setSupplierFields(self, field_id, field_data):
+        """
+        Set Product First Supplier Fields
+        :param field_id: str
+        :param field_data: hash
+        :return: None
+        """
+        # ==================================================================== #
+        # Check field_id this First Supplier Field...
+        if not self.isSupplierField(field_id):
+            return
+        # ====================================================================#
+        # Try to fetch Current First Supplier
+        supplier = SupplierHelper.first(self.object)
+        # ====================================================================#
+        # Try to Create if Valid Supplier Info Provided
+        if supplier is None and self.__has_supplier_info():
+            supplier = SupplierHelper.create(self.object, self._in["supplier_name"], self._in["supplier_price"])
+        # ====================================================================#
+        # Unable to Load/Create Supplier Info
+        if supplier is None:
+            self._in.__delitem__(field_id)
+            return
+        # ====================================================================#
+        # Update Supplier Info
+        return self.__set_supplier_values(field_id, field_data, supplier)
+
+    def __get_supplier_values(self, value_id):
+        """
+        Get List of Attributes Values for given Field
+        :param value_id: str
+        :return: dict
+        """
+        # ====================================================================#
+        # Load First Product Supplier Info
+        supplier = SupplierHelper.first(self.object)
+        if supplier is None:
+            return None
+        # ====================================================================#
+        # Get Value
+        if value_id == "supplier_name":
+            return supplier.name.name
+        elif value_id == "supplier_sku":
+            return supplier.product_code
+        elif value_id == "supplier_min_qty":
+            return supplier.min_qty
+        elif value_id == "supplier_price":
+            return supplier.price
+
+        return None
+
+    def __set_supplier_values(self, field_id, field_data, supplier):
+        """
+        Set Product Supplier Fields
+        :param field_id: str
+        :param field_data: hash
+        :param supplier: product.supplierinfo
+        :return: None
+        """
+        # ====================================================================#
+        # Set Value
+        self._in.__delitem__(field_id)
+        if field_id == "supplier_name":
+            # ====================================================================#
+            # Validate & Update Supplier Partner
+            new_partner = M2OHelper.verify_name(field_data, "name", SupplierHelper.vendorDomain, SupplierHelper.filter)
+            if new_partner is not None and new_partner > 0:
+                M2OHelper.set_name(
+                    supplier, "name", field_data,
+                    domain=SupplierHelper.vendorDomain, filters=SupplierHelper.filter
+                )
+        elif field_id == "supplier_sku":
+            supplier.product_code = field_data
+        elif field_id == "supplier_min_qty":
+            supplier.min_qty = field_data
+        elif field_id == "supplier_price":
+            supplier.price = field_data
+
+    def __has_supplier_info(self):
+        """
+        Verify Product Supplier Info are Available on Input Fields
+        :return: bool
+        """
+        # ====================================================================#
+        # Check Required Data are there
+        if "supplier_name" not in self._in:
+            return False
+        if str(self._in["supplier_name"]).__len__() < 3:
+            return False
+        if "supplier_price" not in self._in:
+            return False
+        try:
+            if float(self._in["supplier_price"]) <= 0:
+                return False
+        except Exception:
+            return False
+
+        return True
+
+    @staticmethod
+    def isSupplierField(field_id):
+        return field_id in ProductsSupplier.supplierFields

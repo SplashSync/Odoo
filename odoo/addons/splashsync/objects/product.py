@@ -58,6 +58,7 @@ class Product(
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
+            "service_to_purchase"
         ]
 
     @staticmethod
