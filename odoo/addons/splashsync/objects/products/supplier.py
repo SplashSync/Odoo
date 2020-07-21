@@ -58,7 +58,7 @@ class ProductsSupplier:
         # First Supplier Currency
         FieldFactory.create(const.__SPL_T_CURRENCY__, "supplier_currency", "Supplier Currency")
         FieldFactory.microData("http://schema.org/Product", "supplierCurrency")
-        FieldFactory.association("supplier_name", "supplier_price")
+        FieldFactory.isNotTested()
 
     def getSupplierFields(self, index, field_id):
         """
