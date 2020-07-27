@@ -55,12 +55,12 @@ class ProductsSupplier:
         # First Supplier SKU
         FieldFactory.create(const.__SPL_T_VARCHAR__, "supplier_sku", "Supplier SKU")
         FieldFactory.microData("http://schema.org/Product", "mpn")
-        FieldFactory.association("supplier_name", "supplier_price")
+        FieldFactory.association("supplier_name", "supplier_price_dbl")
         # ====================================================================#
         # First Supplier MOQ
         FieldFactory.create(const.__SPL_T_INT__, "supplier_min_qty", "Supplier MOQ")
         FieldFactory.microData("http://schema.org/Product", "supplierMinQty")
-        FieldFactory.association("supplier_name", "supplier_price")
+        FieldFactory.association("supplier_name", "supplier_price_dbl")
         # ====================================================================#
         # First Supplier Currency
         FieldFactory.create(const.__SPL_T_CURRENCY__, "supplier_currency", "Supplier Currency")
