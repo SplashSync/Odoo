@@ -27,6 +27,8 @@ class ProductsSupplier:
         "supplier_name", "supplier_sku", "supplier_min_qty",
         "supplier_price", "supplier_price_dbl", "supplier_currency"
     ]
+    # Static Storage for New Supplier Price
+    supplierCreatePrice = None
 
     def buildSupplierFields(self):
         # ==================================================================== #
@@ -98,7 +100,7 @@ class ProductsSupplier:
         # ====================================================================#
         # Try to Create if Valid Supplier Info Provided
         if supplier is None and self.__has_supplier_info():
-            supplier = SupplierHelper.create(self.object, self._in["supplier_name"], self._in["supplier_price_dbl"])
+            supplier = SupplierHelper.create(self.object, self._in["supplier_name"], self.supplierCreatePrice)
         # ====================================================================#
         # Unable to Load/Create Supplier Info
         if supplier is None:
@@ -194,15 +196,22 @@ class ProductsSupplier:
         if str(self._in["supplier_name"]).__len__() < 3:
             return False
         # ====================================================================#
-        # Check Required Data are there
-        if "supplier_price" in self._in:
-            self._in["supplier_price_dbl"] = float(PricesHelper.taxExcluded(self._in["supplier_price"]))
-        # ====================================================================#
         # Check Supplier Price is there
-        if "supplier_price_dbl" not in self._in:
+        if "supplier_price_dbl" not in self._in and "supplier_price" not in self._in:
+            return False
+        # ====================================================================#
+        # Detect Received Supplier Price
+        self.supplierCreatePrice = None
+        if "supplier_price_dbl" in self._in:
+            self.supplierCreatePrice = self._in["supplier_price_dbl"]
+        if "supplier_price" in self._in:
+            self.supplierCreatePrice = PricesHelper.taxExcluded(self._in["supplier_price"])
+        # ====================================================================#
+        # Verify Supplier Price is Valid
+        if self.supplierCreatePrice is None:
             return False
         try:
-            if float(self._in["supplier_price_dbl"]) <= 0:
+            if float(self.supplierCreatePrice) <= 0:
                 return False
         except Exception:
             return False
