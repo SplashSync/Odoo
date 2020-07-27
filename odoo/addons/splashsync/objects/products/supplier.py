@@ -15,8 +15,8 @@
 from odoo import http
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers import M2OHelper
-from odoo.addons.splashsync.helpers import SupplierHelper
+from splashpy.helpers import PricesHelper
+from odoo.addons.splashsync.helpers import M2OHelper, SettingsManager, TaxHelper, SupplierHelper
 
 class ProductsSupplier:
     """
@@ -25,7 +25,7 @@ class ProductsSupplier:
     # Static List of First Supplier Field Ids
     supplierFields = [
         "supplier_name", "supplier_sku", "supplier_min_qty",
-        "supplier_price", "supplier_currency"
+        "supplier_price", "supplier_price_dbl", "supplier_currency"
     ]
 
     def buildSupplierFields(self):
@@ -40,10 +40,15 @@ class ProductsSupplier:
         FieldFactory.addChoices(M2OHelper.get_name_values(SupplierHelper.vendorDomain, SupplierHelper.filter))
         FieldFactory.isNotTested()
         # ====================================================================#
-        # First Supplier Price
-        FieldFactory.create(const.__SPL_T_DOUBLE__, "supplier_price", "Supplier Price")
-        FieldFactory.microData("http://schema.org/Product", "supplierPrice")
+        # First Supplier Price as Double
+        FieldFactory.create(const.__SPL_T_DOUBLE__, "supplier_price_dbl", "Supplier Price (Float)")
+        FieldFactory.microData("http://schema.org/Product", "supplierPriceDbl")
         FieldFactory.association("supplier_name")
+        # ==================================================================== #
+        # First Supplier Price
+        FieldFactory.create(const.__SPL_T_PRICE__, "supplier_price", "Supplier Price")
+        FieldFactory.microData("http://schema.org/Product", "supplierPrice")
+        FieldFactory.isNotTested()
         # ====================================================================#
         # First Supplier SKU
         FieldFactory.create(const.__SPL_T_VARCHAR__, "supplier_sku", "Supplier SKU")
@@ -93,7 +98,7 @@ class ProductsSupplier:
         # ====================================================================#
         # Try to Create if Valid Supplier Info Provided
         if supplier is None and self.__has_supplier_info():
-            supplier = SupplierHelper.create(self.object, self._in["supplier_name"], self._in["supplier_price"])
+            supplier = SupplierHelper.create(self.object, self._in["supplier_name"], self._in["supplier_price_dbl"])
         # ====================================================================#
         # Unable to Load/Create Supplier Info
         if supplier is None:
@@ -122,8 +127,18 @@ class ProductsSupplier:
             return supplier.product_code
         elif value_id == "supplier_min_qty":
             return supplier.min_qty
-        elif value_id == "supplier_price":
+        elif value_id == "supplier_price_dbl":
             return supplier.price
+        elif value_id == "supplier_price":
+            # ==================================================================== #
+            # Load Product Configuration
+            is_adv_taxes = SettingsManager.is_prd_adv_taxes()
+            return PricesHelper.encode(
+                float(supplier.price),
+                TaxHelper.get_tax_rate(self.object.taxes_id, 'purchase') if not is_adv_taxes else float(0),
+                None,
+                supplier.currency_id.name
+            )
         elif value_id == "supplier_currency":
             return supplier.currency_id.name
 
@@ -153,8 +168,13 @@ class ProductsSupplier:
             supplier.product_code = field_data
         elif field_id == "supplier_min_qty":
             supplier.min_qty = field_data
-        elif field_id == "supplier_price":
+        elif field_id == "supplier_price_dbl":
             supplier.price = field_data
+        elif field_id == "supplier_price":
+            try:
+                supplier.price = float(PricesHelper.taxExcluded(field_data))
+            except TypeError:
+                supplier.price = 0
         elif field_id == "supplier_currency":
             # ====================================================================#
             # Validate & Update Supplier Partner
@@ -168,15 +188,21 @@ class ProductsSupplier:
         :return: bool
         """
         # ====================================================================#
-        # Check Required Data are there
+        # Check Supplier SKU is there
         if "supplier_name" not in self._in:
             return False
         if str(self._in["supplier_name"]).__len__() < 3:
             return False
-        if "supplier_price" not in self._in:
+        # ====================================================================#
+        # Check Required Data are there
+        if "supplier_price" in self._in:
+            self._in["supplier_price_dbl"] = float(PricesHelper.taxExcluded(self._in["supplier_price"]))
+        # ====================================================================#
+        # Check Supplier Price is there
+        if "supplier_price_dbl" not in self._in:
             return False
         try:
-            if float(self._in["supplier_price"]) <= 0:
+            if float(self._in["supplier_price_dbl"]) <= 0:
                 return False
         except Exception:
             return False
