@@ -50,6 +50,7 @@ class ProductsSupplier:
         # First Supplier Price
         FieldFactory.create(const.__SPL_T_PRICE__, "supplier_price", "Supplier Price")
         FieldFactory.microData("http://schema.org/Product", "supplierPrice")
+        FieldFactory.isWriteOnly(Framework.isDebugMode())
         FieldFactory.isNotTested()
         # ====================================================================#
         # First Supplier SKU
