@@ -90,7 +90,7 @@ class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
 
     def create(self):
         """
-        Create a New 3rdP
+        Create a New ThirdParty
         :return: ThirdParty Object
         """
         # ====================================================================#
