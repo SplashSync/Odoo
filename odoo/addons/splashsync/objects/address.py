@@ -16,15 +16,15 @@ from .model import OdooObject
 from splashpy import const, Framework
 from .thirdparties import Relatives
 from .thirdparties import Country
-from .thirdparties import Name
+from .thirdparties import AddrName
 
 
-class ThirdParty(OdooObject, Relatives, Country, Name):
+class Address(OdooObject, Country, AddrName, Relatives):
     # ====================================================================#
     # Splash Object Definition
-    name = "ThirdParty"
-    desc = "Odoo Partner"
-    icon = "fa fa-user"
+    name = "Address"
+    desc = "Odoo Address"
+    icon = "fa fa-address-card-o"
 
     @staticmethod
     def getDomain():
@@ -32,22 +32,22 @@ class ThirdParty(OdooObject, Relatives, Country, Name):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '=', None)]
+        return [('parent_id', '<>', None), ('child_ids', '=', False)]
 
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'email', "is_company"]
+        return ['name', 'email']
 
     @staticmethod
     def get_required_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name']
+        return ['parent_id', 'type', 'name']
 
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ["id", 'message_follower_ids', 'image_medium', 'image_small']
+        return ["id", 'message_follower_ids', 'image_medium', 'image_small', 'company_name', 'vat', "credit_limit", "street2"]
 
     @staticmethod
     def get_configuration():
@@ -63,12 +63,12 @@ class ThirdParty(OdooObject, Relatives, Country, Name):
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
-            "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"group": "Address"},
-            "country_code": {"group": "Address"},
+            "city": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
+            "country_name": {"notest": True, "group": "Address"},
+            "country_code": {"notest": True, "group": "Address"},
 
-            "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
-            "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
+            # "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
+            # "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
             "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
@@ -86,25 +86,23 @@ class ThirdParty(OdooObject, Relatives, Country, Name):
     # ====================================================================#
 
     def create(self):
-        """Create a New 3rdP"""
+        """Create a New Address"""
         # ====================================================================#
         # Safety Check
-        if "legal" not in self._in:
+        if "first" not in self._in:
             Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
             return False
         # ====================================================================#
-        # Order Fields Inputs
-        # ====================================================================#
         # Init List of required Fields
-        self._in["name"] = self._in["legal"]
+        self._in["name"] = self._in["first"]
         req_fields = self.collectRequiredCoreFields()
         self._in.__delitem__("name")
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
         # Create a New Simple 3rdP
-        newthirdP = self.getModel().create(req_fields)
-        if newthirdP is None:
-            Framework.log().error("ThirdParty is None")
+        newAddress = self.getModel().create(req_fields)
+        if newAddress is None:
+            Framework.log().error("Address is None")
             return False
-        return newthirdP
+        return newAddress

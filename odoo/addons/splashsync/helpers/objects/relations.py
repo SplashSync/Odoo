@@ -221,9 +221,9 @@ class M2OHelper:
         :param object_type: str
         :return: str
         """
-        object_id = M2OHelper.get_id()
+        object_id = M2OHelper.get_id(inputs, field)
         if isinstance(object_id, int) and object_id > 0:
-            return ObjectsHelper.encode(object_type, object_id)
+            return ObjectsHelper.encode(object_type, str(object_id))
         return None
 
     @staticmethod
@@ -301,7 +301,10 @@ class M2OHelper:
         :param filters: list    Additionnal Search Filters
         :return: void
         """
-        object_id = ObjectsHelper.id(field_data)
+        try:
+            object_id = int(ObjectsHelper.id(field_data))
+        except Exception:
+            return None
         if isinstance(object_id, int) and object_id > 0:
             return M2OHelper.set_id(inputs, field, object_id, domain, filters)
         return None

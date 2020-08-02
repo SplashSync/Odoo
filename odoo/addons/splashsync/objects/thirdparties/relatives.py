@@ -14,8 +14,8 @@
 
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from splashpy.helpers import ListHelper, ObjectsHelper
-from odoo.addons.splashsync.helpers import SettingsManager, M2MHelper
+from splashpy.helpers import ObjectsHelper
+from odoo.addons.splashsync.helpers import M2OHelper
 
 
 class Relatives:
@@ -23,54 +23,24 @@ class Relatives:
     Access to relatives partners
     """
     def buildRelativesFields(self):
+        FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "parent_id", "Parent")
+        if self.name is "Address":
+            FieldFactory.isRequired()
 
-        # ==================================================================== #
-        FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "thirdP")
-        FieldFactory.name("Thirdparty")
-        FieldFactory.inlist("Relatives")
-        FieldFactory.isNotTested()
-        # ==================================================================== #
-        # FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "child", "Child")
-        # FieldFactory.inlist("Relatives")
         # FieldFactory.isNotTested()
-        # ==================================================================== #
-
 
     def getRelativesFields(self, index, field_id):
-        base_field_id = ListHelper.initOutput(self._out, "Relatives", field_id)
-        if base_field_id is None:
+        # Check is Requested Field
+        if field_id != "parent_id":
             return
 
-        # ==================================================================== #
-        # Read Parent Data
-        field_values = self._get_parent_values(base_field_id)
-        for pos in range(len(field_values)):
-            ListHelper.insert(self._out, "Relatives", field_id, "parent-" + str(pos), field_values[pos])
-
-        # ==================================================================== #
-        # Read Child Data
-        field_values = self._get_child_values(base_field_id)
-        for pos in range(len(field_values)):
-            ListHelper.insert(self._out, "Relatives", field_id, "child-" + str(pos), field_values[pos])
+        self._out[field_id] = M2OHelper.get_object(self.object, "parent_id", "ThirdParty")
         self._in.__delitem__(index)
 
+    def setRelativesFields(self, field_id, field_data):
+        # Check is Requested Field
+        if field_id != "parent_id":
+            return
 
-    def _get_parent_values(self, value_id):
-        values = []
-
-        for field_value in self.object.parent_id:
-            # Collect Values
-
-            if value_id == "thirdP":
-                values += [ObjectsHelper.encode("ThirdParty", str(field_value.id))]
-        return values
-
-    def _get_child_values(self, value_id):
-        values = []
-
-        for field_value in self.object.child_ids:
-            # Collect Values
-
-            if value_id == "thirdP":
-                values += [ObjectsHelper.encode("ThirdParty", str(field_value.id))]
-        return values
+        M2OHelper.set_object(self.object, "parent_id", field_data, domain="res.partner")
+        self._in.__delitem__(field_id)

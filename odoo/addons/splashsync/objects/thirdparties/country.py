@@ -35,7 +35,7 @@ class Country:
 
     def getCountryFields(self, index, field_id):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
         if field_id == "country_code":
@@ -49,7 +49,7 @@ class Country:
 
     def setCountryFields(self, field_id, field_data):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
         if field_id == "country_code":
@@ -62,7 +62,7 @@ class Country:
 
 
     @staticmethod
-    def isRelationFields(field_id):
+    def isCountryFields(field_id):
         if field_id in [
             "country_name", "country_code"
         ]:

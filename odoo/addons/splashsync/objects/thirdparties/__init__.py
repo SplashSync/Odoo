@@ -15,3 +15,5 @@
 # from .address import Address
 from .country import Country
 from .name import Name
+from .addrname import AddrName
+from .relatives import Relatives
