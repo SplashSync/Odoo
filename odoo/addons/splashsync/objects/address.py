@@ -58,7 +58,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"notest": True},
+            "type": {"notest": True, "choices": ["invoice", "delivery", "other"]},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
