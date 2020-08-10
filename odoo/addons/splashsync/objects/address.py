@@ -47,7 +47,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ["id", 'message_follower_ids', 'image_medium', 'image_small', 'company_name', 'vat', "credit_limit", "street2"]
+        return ["id", 'message_follower_ids', 'image_medium', 'image_small', 'company_name', 'vat', "credit_limit", "street2", "type"]
 
     @staticmethod
     def get_configuration():
@@ -58,7 +58,6 @@ class Address(OdooObject, Country, AddrName, Relatives):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"notest": True},
 
             "street": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
@@ -88,10 +87,6 @@ class Address(OdooObject, Country, AddrName, Relatives):
     def create(self):
         """Create a New Address"""
         Framework.log().dump(self._in)
-        # ====================================================================#
-        # Test
-        if self._in["type"] == "private":
-            self._in["type"] = "invoice"
         # ====================================================================#
         # Safety Check
         if "first" not in self._in:
