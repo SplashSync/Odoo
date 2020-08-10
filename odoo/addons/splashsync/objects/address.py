@@ -32,7 +32,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '<>', None), ('child_ids', '=', False)]
+        return [('parent_id', '<>', None), ('child_ids', '=', False), ('type', '<>', 'private')]
 
     @staticmethod
     def get_listed_fields():

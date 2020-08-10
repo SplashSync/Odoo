@@ -16,8 +16,6 @@ from . import controllers
 from . import models
 from . import objects
 from odoo.api import Environment, SUPERUSER_ID
-from splashpy import Framework
-
 
 
 def post_init_hook(cr, registry):
@@ -30,7 +28,6 @@ def post_init_hook(cr, registry):
     env['ir.config_parameter'].sudo().set_param('splash_ws_expert', True)
     env['ir.config_parameter'].sudo().set_param('splash_ws_host', "http://toolkit/ws/soap")
     env['ir.config_parameter'].sudo().set_param('splash_ws_user', 2)
-    Framework.log().dump(env)
     # ====================================================================#
     # Ensure Install of an Extra Language
     env['res.lang'].load_lang('fr_FR')
