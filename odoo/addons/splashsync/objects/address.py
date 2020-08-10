@@ -32,7 +32,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '<>', None), ('child_ids', '=', False), ('type', '<>', 'contact')]
+        return [('parent_id', '<>', None), ('child_ids', '=', False)]
 
     @staticmethod
     def get_listed_fields():
@@ -60,12 +60,12 @@ class Address(OdooObject, Country, AddrName, Relatives):
             "name": {"required": False, "write": False},
             "type": {"notest": True},
 
-            "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
+            "street": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
-            "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
-            "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"group": "Address"},
-            "country_code": {"group": "Address"},
+            "zip": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
+            "city": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
+            "country_name": {"notest": True, "group": "Address"},
+            "country_code": {"notest": True, "group": "Address"},
 
             # "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
             # "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
@@ -87,6 +87,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
 
     def create(self):
         """Create a New Address"""
+        Framework.log().dump(self._in)
         # ====================================================================#
         # Safety Check
         if "first" not in self._in:
