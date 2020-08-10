@@ -32,7 +32,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '<>', None), ('child_ids', '=', False), ('type', '<>', 'private')]
+        return [('parent_id', '<>', None), ('child_ids', '=', False)]
 
     @staticmethod
     def get_listed_fields():
@@ -88,6 +88,10 @@ class Address(OdooObject, Country, AddrName, Relatives):
     def create(self):
         """Create a New Address"""
         Framework.log().dump(self._in)
+        # ====================================================================#
+        # Test
+        if self._in["type"] == "private":
+            self._in["type"] = "invoice"
         # ====================================================================#
         # Safety Check
         if "first" not in self._in:
