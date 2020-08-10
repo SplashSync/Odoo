@@ -32,7 +32,7 @@ class Address(OdooObject, Country, AddrName, Relatives):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '<>', None), ('child_ids', '=', False)]
+        return [('parent_id', '<>', None), ('child_ids', '=', False), ('type', '<>', 'contact')]
 
     @staticmethod
     def get_listed_fields():
@@ -58,14 +58,14 @@ class Address(OdooObject, Country, AddrName, Relatives):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"notest": True, "choices": ["contact", "invoice", "delivery", "other"]},
+            "type": {"notest": True},
 
-            "street": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
+            "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
-            "city": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"notest": True, "group": "Address"},
-            "country_code": {"notest": True, "group": "Address"},
+            "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
+            "country_name": {"group": "Address"},
+            "country_code": {"group": "Address"},
 
             # "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
             # "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
