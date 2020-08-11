@@ -14,12 +14,12 @@
 import logging
 from .model import OdooObject
 from splashpy import const, Framework
-from .thirdparties import Relatives
+from .thirdparties import Parent
 from .thirdparties import Country
 from .thirdparties import AddrName
 
 
-class Address(OdooObject, Country, AddrName, Relatives):
+class Address(OdooObject, Country, AddrName, Parent):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"
@@ -66,8 +66,6 @@ class Address(OdooObject, Country, AddrName, Relatives):
             "country_name": {"notest": True, "group": "Address"},
             "country_code": {"notest": True, "group": "Address"},
 
-            # "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
-            # "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
             "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},

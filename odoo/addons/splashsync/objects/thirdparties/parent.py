@@ -18,18 +18,18 @@ from splashpy.helpers import ObjectsHelper
 from odoo.addons.splashsync.helpers import M2OHelper
 
 
-class Relatives:
+class Parent:
     """
-    Access to relatives partners
+    Access to Parent partners
     """
-    def buildRelativesFields(self):
+    def buildParentFields(self):
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "parent_id", "Parent")
         if self.name is "Address":
             FieldFactory.isRequired()
 
         # FieldFactory.isNotTested()
 
-    def getRelativesFields(self, index, field_id):
+    def getParentFields(self, index, field_id):
         # Check is Requested Field
         if field_id != "parent_id":
             return
@@ -37,7 +37,7 @@ class Relatives:
         self._out[field_id] = M2OHelper.get_object(self.object, "parent_id", "ThirdParty")
         self._in.__delitem__(index)
 
-    def setRelativesFields(self, field_id, field_data):
+    def setParentFields(self, field_id, field_data):
         # Check is Requested Field
         if field_id != "parent_id":
             return
