@@ -17,9 +17,10 @@ from splashpy import const, Framework
 from .thirdparties import Parent
 from .thirdparties import Country
 from .thirdparties import AddrName
+from .thirdparties import Contact
 
 
-class Address(OdooObject, Country, AddrName, Parent):
+class Address(OdooObject, Country, AddrName, Parent, Contact):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"
@@ -47,7 +48,10 @@ class Address(OdooObject, Country, AddrName, Parent):
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ["id", 'message_follower_ids', 'image_medium', 'image_small', 'company_name', 'vat', "credit_limit", "street2", "type"]
+        return [
+            "id", 'message_follower_ids', 'image_medium', 'image_small',
+            'company_name', 'vat', "credit_limit", "street2", "street", "zip", "city"
+        ]
 
     @staticmethod
     def get_configuration():
@@ -59,12 +63,11 @@ class Address(OdooObject, Country, AddrName, Parent):
 
             "name": {"required": False, "write": False},
 
-            "street": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
-            # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
-            "zip": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
-            "city": {"notest": True, "group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"notest": True, "group": "Address"},
-            "country_code": {"notest": True, "group": "Address"},
+            "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
+            "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
+            "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
+            "country_name": {"group": "Address"},
+            "country_code": {"group": "Address"},
 
             "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
@@ -76,6 +79,9 @@ class Address(OdooObject, Country, AddrName, Parent):
             "additional_info": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
+
+            # "type": {"choices": {"contact": "Contact", "delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
+            "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
         }
 
     # ====================================================================#

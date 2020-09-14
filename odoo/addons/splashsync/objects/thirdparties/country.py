@@ -25,11 +25,13 @@ class Country:
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_COUNTRY__, "country_code", "Country Code")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressCountry")
+        # FieldFactory.association('country_name')
         # FieldFactory.isNotTested()
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "country_name", "Country Name")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressCountryName")
         FieldFactory.addChoices(M2OHelper.get_name_values("res.country"))
+        # FieldFactory.association('country_code')
         # FieldFactory.isNotTested()
 
 
