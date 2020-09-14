@@ -10,7 +10,6 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
@@ -26,8 +25,6 @@ class Parent:
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "parent_id", "Parent")
         if self.name is "Address":
             FieldFactory.isRequired()
-
-        # FieldFactory.isNotTested()
 
     def getParentFields(self, index, field_id):
         # Check is Requested Field

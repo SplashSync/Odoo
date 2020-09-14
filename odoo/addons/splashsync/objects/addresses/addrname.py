@@ -10,7 +10,6 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
@@ -27,12 +26,10 @@ class AddrName:
         FieldFactory.create(const.__SPL_T_VARCHAR__, "last", "Last Name")
         FieldFactory.microData("http://schema.org/Person", "givenName")
         FieldFactory.association('first')
-        # FieldFactory.isNotTested()
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "first", "First Name")
         FieldFactory.microData("http://schema.org/Person", "familyName")
         FieldFactory.isRequired()
-        # FieldFactory.isNotTested()
 
     def getAddrNameFields(self, index, field_id):
         if field_id == "first":

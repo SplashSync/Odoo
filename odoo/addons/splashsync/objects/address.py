@@ -9,7 +9,6 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 import logging
 from .model import OdooObject
@@ -80,7 +79,6 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
 
             "image": {"group": "Images", "notest": True},
 
-            # "type": {"choices": {"contact": "Contact", "delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
             "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
         }
 

@@ -10,7 +10,6 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
@@ -25,15 +24,12 @@ class Contact:
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_COUNTRY__, "street", "Street")
         FieldFactory.microData("http://schema.org/PostalAddress", "streetAddress")
-        # FieldFactory.isNotTested()
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "zip", "ZIP Code")
         FieldFactory.microData("http://schema.org/PostalAddress", "postalCode")
-        # FieldFactory.isNotTested()
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "city", "City Name")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressLocality")
-        # FieldFactory.isNotTested()
 
     def getContactFields(self, index, field_id):
 
