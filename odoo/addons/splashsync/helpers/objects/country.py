@@ -10,11 +10,10 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 from splashpy import const
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers import M2OHelper
+from .relations import M2OHelper
 
 
 class Country:
@@ -34,7 +33,6 @@ class Country:
         # FieldFactory.association('country_code')
         # FieldFactory.isNotTested()
 
-
     def getCountryFields(self, index, field_id):
         # Check if Relation Field...
         if not self.isCountryFields(field_id):
@@ -47,7 +45,6 @@ class Country:
         if field_id == "country_name":
             self._out[field_id] = M2OHelper.get_name(self.object, "country_id")
             self._in.__delitem__(index)
-
 
     def setCountryFields(self, field_id, field_data):
         # Check if Relation Field...

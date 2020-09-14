@@ -10,7 +10,6 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
 from .model import OdooObject
 from .thirdparty import ThirdParty
@@ -18,4 +17,3 @@ from .product import Product
 from .invoice import Invoice
 from .order import Order
 from .address import Address
-

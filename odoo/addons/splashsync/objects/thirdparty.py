@@ -14,9 +14,9 @@
 import logging
 from .model import OdooObject
 from splashpy import const, Framework
-from .thirdparties import Parent
-from .thirdparties import Country
 from .thirdparties import Name
+from odoo.addons.splashsync.helpers import Parent
+from odoo.addons.splashsync.helpers import Country
 
 
 class ThirdParty(OdooObject, Parent, Country, Name):

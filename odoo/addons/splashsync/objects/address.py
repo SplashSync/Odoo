@@ -14,10 +14,10 @@
 import logging
 from .model import OdooObject
 from splashpy import const, Framework
-from .thirdparties import Parent
-from .thirdparties import Country
 from .addresses import AddrName
 from .addresses import Contact
+from odoo.addons.splashsync.helpers import Parent
+from odoo.addons.splashsync.helpers import Country
 
 
 class Address(OdooObject, Country, AddrName, Parent, Contact):

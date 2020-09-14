@@ -15,7 +15,7 @@
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ObjectsHelper
-from odoo.addons.splashsync.helpers import M2OHelper
+from .relations import M2OHelper
 
 
 class Parent:
