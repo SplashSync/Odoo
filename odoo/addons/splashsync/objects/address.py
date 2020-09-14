@@ -16,8 +16,8 @@ from .model import OdooObject
 from splashpy import const, Framework
 from .thirdparties import Parent
 from .thirdparties import Country
-from .thirdparties import AddrName
-from .thirdparties import Contact
+from .addresses import AddrName
+from .addresses import Contact
 
 
 class Address(OdooObject, Country, AddrName, Parent, Contact):

@@ -13,6 +13,6 @@
 
 # from .relatives import Relatives
 # from .address import Address
-from .country import Country
-from .name import Name
-from .parent import Parent
+
+from .addrname import AddrName
+from .contact import Contact
