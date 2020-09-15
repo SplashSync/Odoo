@@ -35,34 +35,31 @@ class Name:
         FieldFactory.microData("http://schema.org/Person", "familyName")
 
     def getNameFields(self, index, field_id):
-        if field_id == "legal":
-            self._out[field_id] = Name.decodefullname(self)[field_id]
-            self._in.__delitem__(index)
-        if field_id == "first":
-            self._out[field_id] = Name.decodefullname(self)[field_id]
-            self._in.__delitem__(index)
-        if field_id == "last":
-            self._out[field_id] = Name.decodefullname(self)[field_id]
-            self._in.__delitem__(index)
+        # ==================================================================== #
+        # Filter on Field Id
+        if field_id not in ["legal", "first", "last"]:
+            return
+        # ==================================================================== #
+        # Read
+        self._out[field_id] = Name.decodefullname(self)[field_id]
+        self._in.__delitem__(index)
 
     def setNameFields(self, field_id, field_data):
+        # ==================================================================== #
+        # Safety Check
         if field_data is None:
             field_data = ""
-        if field_id == "legal":
-            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
-            if Name.isactualdatadifferent(self, field_id, field_data):
-                Name.varfullname[field_id] = str(field_data).strip()
-            self._in.__delitem__(field_id)
-        if field_id == "first":
-            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
-            if Name.isactualdatadifferent(self, field_id, field_data):
-                Name.varfullname[field_id] = str(field_data).strip()
-            self._in.__delitem__(field_id)
-        if field_id == "last":
-            Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
-            if Name.isactualdatadifferent(self, field_id, field_data):
-                Name.varfullname[field_id] = str(field_data).strip()
-            self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # Filter on Field Id
+        if field_id not in ["legal", "first", "last"]:
+            return
+        # ==================================================================== #
+        # WRITE
+        Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
+        if Name.isactualdatadifferent(self, field_id, field_data):
+            Name.varfullname[field_id] = str(field_data).strip()
+        self._in.__delitem__(field_id)
+
         if all(x not in self._in for x in ["first", "last", "legal"]):
             setattr(self.object, "name", Name.encodefullname(Name.varfullname["first"], Name.varfullname["last"], Name.varfullname["legal"]))
 

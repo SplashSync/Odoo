@@ -32,27 +32,29 @@ class Country:
         # FieldFactory.association('country_code')
 
     def getCountryFields(self, index, field_id):
-        # Check if Relation Field...
+        # ==================================================================== #
+        # Safety Check
         if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
+        # READ
         if field_id == "country_code":
             self._out[field_id] = M2OHelper.get_name(self.object, "country_id", index="code")
             self._in.__delitem__(index)
-        # ==================================================================== #
         if field_id == "country_name":
             self._out[field_id] = M2OHelper.get_name(self.object, "country_id")
             self._in.__delitem__(index)
 
     def setCountryFields(self, field_id, field_data):
-        # Check if Relation Field...
+        # ==================================================================== #
+        # Safety Check
         if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
+        # WRITE
         if field_id == "country_code":
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country", index="code")
             self._in.__delitem__(field_id)
-        # ==================================================================== #
         if field_id == "country_name":
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country")
             self._in.__delitem__(field_id)

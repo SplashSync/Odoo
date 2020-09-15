@@ -61,6 +61,7 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
+            "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
@@ -78,8 +79,6 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
             "additional_info": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
-
-            "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
         }
 
     # ====================================================================#
@@ -102,7 +101,7 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
-        # Create a New Simple 3rdP
+        # Create a New Simple Address
         newAddress = self.getModel().create(req_fields)
         if newAddress is None:
             Framework.log().error("Address is None")

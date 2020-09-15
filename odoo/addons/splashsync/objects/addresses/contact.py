@@ -32,7 +32,6 @@ class Contact:
         FieldFactory.microData("http://schema.org/PostalAddress", "addressLocality")
 
     def getContactFields(self, index, field_id):
-
         # ==================================================================== #
         # Filter on Field Id
         if field_id not in ["street", "zip", "city"]:
@@ -44,23 +43,19 @@ class Contact:
 
 
     def setContactFields(self, field_id, field_data):
-
         # ==================================================================== #
         # Filter on Field Id
         if field_id not in ["street", "zip", "city"]:
             return
-
         # ==================================================================== #
         # Detect Contact Types
         if self.is_a_contact():
             Framework.log().warn('Contact Address Type, field cannot be written!!')
-
         # ==================================================================== #
+        # WRITE
         if not self.is_a_contact() and (getattr(self.object, "parent_id") is not None):
             setattr(self.object, field_id, field_data)
-
         self._in.__delitem__(field_id)
-        # ==================================================================== #
 
     def is_a_contact(self):
         ctc = str(getattr(self.object, "type"))

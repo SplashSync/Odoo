@@ -58,10 +58,9 @@ class ThirdParty(OdooObject, Parent, Country, Name):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"notest": True},
+            "type": {"choices": {"contact": "Contact"}},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
-            # "street2": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postOfficeBoxNumber"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
             "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
             "country_name": {"group": "Address"},
@@ -69,6 +68,7 @@ class ThirdParty(OdooObject, Parent, Country, Name):
 
             "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
             "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
+
             "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
@@ -93,8 +93,6 @@ class ThirdParty(OdooObject, Parent, Country, Name):
             Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
             return False
         # ====================================================================#
-        # Order Fields Inputs
-        # ====================================================================#
         # Init List of required Fields
         self._in["name"] = self._in["legal"]
         req_fields = self.collectRequiredCoreFields()
@@ -102,7 +100,7 @@ class ThirdParty(OdooObject, Parent, Country, Name):
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
-        # Create a New Simple 3rdP
+        # Create a New Simple 3rd Party
         newthirdP = self.getModel().create(req_fields)
         if newthirdP is None:
             Framework.log().error("ThirdParty is None")

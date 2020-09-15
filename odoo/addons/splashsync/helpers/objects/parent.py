@@ -27,17 +27,21 @@ class Parent:
             FieldFactory.isRequired()
 
     def getParentFields(self, index, field_id):
-        # Check is Requested Field
+        # ==================================================================== #
+        # Filter on Field Id
         if field_id != "parent_id":
             return
-
+        # ==================================================================== #
+        # READ
         self._out[field_id] = M2OHelper.get_object(self.object, "parent_id", "ThirdParty")
         self._in.__delitem__(index)
 
     def setParentFields(self, field_id, field_data):
-        # Check is Requested Field
+        # ==================================================================== #
+        # Filter on Field Id
         if field_id != "parent_id":
             return
-
+        # ==================================================================== #
+        # WRITE
         M2OHelper.set_object(self.object, "parent_id", field_data, domain="res.partner")
         self._in.__delitem__(field_id)
