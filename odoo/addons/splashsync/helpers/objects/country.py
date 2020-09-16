@@ -30,6 +30,10 @@ class Country:
         FieldFactory.microData("http://schema.org/PostalAddress", "addressCountryName")
         FieldFactory.addChoices(M2OHelper.get_name_values("res.country"))
         # FieldFactory.association('country_code')
+        # ==================================================================== #
+        FieldFactory.create(const.__SPL_T_STATE__, "state_id", "State Code")
+        FieldFactory.microData("http://schema.org/PostalAddress", "addressRegion")
+
 
     def getCountryFields(self, index, field_id):
         # ==================================================================== #
@@ -44,6 +48,9 @@ class Country:
         if field_id == "country_name":
             self._out[field_id] = M2OHelper.get_name(self.object, "country_id")
             self._in.__delitem__(index)
+        if field_id == "state_id":
+            self._out[field_id] = M2OHelper.get_name(self.object, "state_id", index="code")
+            self._in.__delitem__(index)
 
     def setCountryFields(self, field_id, field_data):
         # ==================================================================== #
@@ -55,6 +62,9 @@ class Country:
         if field_id == "country_code":
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country", index="code")
             self._in.__delitem__(field_id)
+        if field_id == "state_id":
+            M2OHelper.set_name(self.object, "state_id", field_data, domain="res.country.state", index="code")
+            self._in.__delitem__(field_id)
         if field_id == "country_name":
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country")
             self._in.__delitem__(field_id)
@@ -62,8 +72,6 @@ class Country:
 
     @staticmethod
     def isCountryFields(field_id):
-        if field_id in [
-            "country_name", "country_code"
-        ]:
-            return True
-        return False
+        return field_id in [
+            "country_name", "country_code", "state_id"
+        ]

@@ -57,8 +57,11 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
         """Get Hash of Fields Overrides"""
         return {
 
+            "function": {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
+
             "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
-            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
+            "mobile": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
+            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Organization", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
             "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
@@ -69,7 +72,7 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
             "country_name": {"group": "Address"},
             "country_code": {"group": "Address"},
 
-            "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
+            "active": {"group": "Meta", "itemtype": "http://schema.org/Person", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 

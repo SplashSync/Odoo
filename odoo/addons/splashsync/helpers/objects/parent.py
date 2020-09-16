@@ -23,6 +23,7 @@ class Parent:
     """
     def buildParentFields(self):
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "parent_id", "Parent")
+        FieldFactory.microData("http://schema.org/Organization", "ID")
         if self.name is "Address":
             FieldFactory.isRequired()
 

@@ -22,7 +22,7 @@ class Contact:
 
     def buildContactFields(self):
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_COUNTRY__, "street", "Street")
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "street", "Street")
         FieldFactory.microData("http://schema.org/PostalAddress", "streetAddress")
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "zip", "ZIP Code")
