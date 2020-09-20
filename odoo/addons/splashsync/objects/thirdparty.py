@@ -15,11 +15,11 @@ import logging
 from .model import OdooObject
 from splashpy import const, Framework
 from .thirdparties import Name
-from odoo.addons.splashsync.helpers import Parent
-from odoo.addons.splashsync.helpers import Country
+from odoo.addons.splashsync.helpers import ParentHelper
+from odoo.addons.splashsync.helpers import CountryHelper
 
 
-class ThirdParty(OdooObject, Parent, Country, Name):
+class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"
@@ -32,12 +32,13 @@ class ThirdParty(OdooObject, Parent, Country, Name):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '=', None)]
+        """Filter on Search Query"""
+        return ParentHelper.thirdparty_filter()
 
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'email', "is_company"]
+        return ['name', 'email', 'is_company', 'type']
 
     @staticmethod
     def get_required_fields():
@@ -65,6 +66,7 @@ class ThirdParty(OdooObject, Parent, Country, Name):
             "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
             "country_name": {"group": "Address"},
             "country_code": {"group": "Address"},
+            "state_id": {"group": "Address"},
 
             "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
             "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
@@ -77,6 +79,7 @@ class ThirdParty(OdooObject, Parent, Country, Name):
             "activity_summary": {"write": False},
 
             "additional_info": {"notest": True},
+            "parent_id": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
         }
@@ -86,23 +89,72 @@ class ThirdParty(OdooObject, Parent, Country, Name):
     # ====================================================================#
 
     def create(self):
-        """Create a New 3rdP"""
+        """
+        Create a New 3rdP
+        :return: ThirdParty Object
+        """
         # ====================================================================#
-        # Safety Check
+        # Safety Check - Legal Name is Required
         if "legal" not in self._in:
             Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
             return False
         # ====================================================================#
-        # Init List of required Fields
+        # Load Legal Name Field in Name Field
         self._in["name"] = self._in["legal"]
+        # ====================================================================#
+        # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()
+        # ====================================================================#
+        # Delete Name Field
         self._in.__delitem__("name")
+        # ====================================================================#
+        # Safety Check
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
-        # Create a New Simple 3rd Party
-        newthirdP = self.getModel().create(req_fields)
-        if newthirdP is None:
+        # Create a New Simple ThirdParty
+        new_thirdparty = self.getModel().create(req_fields)
+        # ====================================================================#
+        # Safety Check - Error
+        if new_thirdparty is None:
             Framework.log().error("ThirdParty is None")
             return False
-        return newthirdP
+        # ====================================================================#
+        # Initialize ThirdParty Fullname buffer
+        self.object = new_thirdparty
+        self.fullname_buffer = self.decodefullname()
+
+        return new_thirdparty
+
+    def load(self, object_id):
+        """
+        Load Odoo Object by Id
+        :param object_id: str
+        :return: ThirdParty Object
+        """
+        # ====================================================================#
+        # Load Address
+        model = super(ThirdParty, self).load(object_id)
+        # ====================================================================#
+        # Safety Check - Loaded Object is a ThirdParty
+        if not ParentHelper.is_thirdparty(model):
+            Framework.log().warn('This Object is not a ThirdParty')
+            return False
+        # ====================================================================#
+        # Initialize ThirdParty fullname_buffer
+        if model:
+            self.object = model
+            self.fullname_buffer = self.decodefullname()
+
+        return model
+
+    def update(self, needed):
+        """
+        Update Current Odoo Object
+        :param needed: bool
+        :return: Thirdparty Object
+        """
+        self._in["name"] = True
+        self.setSimple("name", self.encodefullname())
+
+        return super(ThirdParty, self).update(needed)

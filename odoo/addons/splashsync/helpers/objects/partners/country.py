@@ -13,35 +13,32 @@
 
 from splashpy import const
 from splashpy.componants import FieldFactory
-from .relations import M2OHelper
+from odoo.addons.splashsync.helpers.objects.relations import M2OHelper
 
 
-class Country:
+class CountryHelper:
     """
-    Access to country
+    Access to Country Fields
     """
     def buildCountryFields(self):
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_COUNTRY__, "country_code", "Country Code")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressCountry")
-        # FieldFactory.association('country_name')
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "country_name", "Country Name")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressCountryName")
         FieldFactory.addChoices(M2OHelper.get_name_values("res.country"))
-        # FieldFactory.association('country_code')
         # ==================================================================== #
         FieldFactory.create(const.__SPL_T_STATE__, "state_id", "State Code")
         FieldFactory.microData("http://schema.org/PostalAddress", "addressRegion")
 
-
     def getCountryFields(self, index, field_id):
         # ==================================================================== #
-        # Safety Check
+        # Filter on Field Id
         if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
-        # READ
+        # Read Field Data
         if field_id == "country_code":
             self._out[field_id] = M2OHelper.get_name(self.object, "country_id", index="code")
             self._in.__delitem__(index)
@@ -54,11 +51,11 @@ class Country:
 
     def setCountryFields(self, field_id, field_data):
         # ==================================================================== #
-        # Safety Check
+        # Filter on Field Id
         if not self.isCountryFields(field_id):
             return
         # ==================================================================== #
-        # WRITE
+        # WRITE Field Data
         if field_id == "country_code":
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country", index="code")
             self._in.__delitem__(field_id)
@@ -69,9 +66,13 @@ class Country:
             M2OHelper.set_name(self.object, "country_id", field_data, domain="res.country")
             self._in.__delitem__(field_id)
 
-
     @staticmethod
     def isCountryFields(field_id):
+        """
+        Check if Field is a Country Field
+        :param field_id: str
+        :return: bool
+        """
         return field_id in [
             "country_name", "country_code", "state_id"
         ]

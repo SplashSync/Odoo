@@ -14,13 +14,14 @@
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ObjectsHelper
-from .relations import M2OHelper
+from odoo.addons.splashsync.helpers.objects.relations import M2OHelper
 
 
-class Parent:
+class ParentHelper:
     """
     Access to Parent partners
     """
+
     def buildParentFields(self):
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "parent_id", "Parent")
         FieldFactory.microData("http://schema.org/Organization", "ID")
@@ -33,7 +34,7 @@ class Parent:
         if field_id != "parent_id":
             return
         # ==================================================================== #
-        # READ
+        # Read Field Data
         self._out[field_id] = M2OHelper.get_object(self.object, "parent_id", "ThirdParty")
         self._in.__delitem__(index)
 
@@ -43,6 +44,43 @@ class Parent:
         if field_id != "parent_id":
             return
         # ==================================================================== #
-        # WRITE
+        # Write Field Data
         M2OHelper.set_object(self.object, "parent_id", field_data, domain="res.partner")
         self._in.__delitem__(field_id)
+
+    # ==================================================================== #
+    # Filters for Address Object & Thirdparty Object
+    @staticmethod
+    def address_filter():
+        """
+        Filter Address Objects (Parent, no Child, Address type except private)
+        :return: list of tuples
+        """
+        return [('parent_id', '<>', None),
+                ('child_ids', '=', False),
+                ('type', '<>', 'private')
+                ]
+
+    @staticmethod
+    def thirdparty_filter():
+        """
+        Filter Thirdparty Objects (No Parent)
+        :return: list of tuples
+        """
+        return [('parent_id', '=', None)]
+
+    # ==================================================================== #
+    # Detect Class of Partner Object
+    def is_address(self):
+        """
+        Detect if Object is an Address
+        :return: bool
+        """
+        return (M2OHelper.get_object(self, "parent_id", "ThirdParty") is not None) and (self.type != 'private') and ((M2OHelper.get_object(self, "child_ids", "Address") is None) or (M2OHelper.get_object(self, "child_ids", "ThirdParty") is None))
+
+    def is_thirdparty(self):
+        """
+        Detect if Object is a Thirdparty
+        :return: bool
+        """
+        return M2OHelper.get_object(self, "parent_id", "ThirdParty") is None

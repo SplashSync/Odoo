@@ -9,17 +9,18 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
+#
 
 import logging
 from .model import OdooObject
 from splashpy import const, Framework
 from .addresses import AddrName
 from .addresses import Contact
-from odoo.addons.splashsync.helpers import Parent
-from odoo.addons.splashsync.helpers import Country
+from odoo.addons.splashsync.helpers import ParentHelper
+from odoo.addons.splashsync.helpers import CountryHelper
 
 
-class Address(OdooObject, Country, AddrName, Parent, Contact):
+class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"
@@ -32,12 +33,13 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
 
     @staticmethod
     def objectsListFiltered():
-        return [('parent_id', '<>', None), ('child_ids', '=', False)]
+        """Filter on Search Query"""
+        return ParentHelper.address_filter()
 
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'email']
+        return ['name', 'email', 'type']
 
     @staticmethod
     def get_required_fields():
@@ -55,8 +57,7 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
-        return {
-
+        configuration = {
             "function": {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
 
             "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
@@ -64,13 +65,14 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Organization", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"choices": {"delivery": "Delivery Address", "invoice": "Invoice Address", "other": "Other Address"}},
+            "type": {"required": False},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
             "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
             "country_name": {"group": "Address"},
             "country_code": {"group": "Address"},
+            "state_id": {"group": "Address"},
 
             "active": {"group": "Meta", "itemtype": "http://schema.org/Person", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
@@ -84,29 +86,93 @@ class Address(OdooObject, Country, AddrName, Parent, Contact):
             "image": {"group": "Images", "notest": True},
         }
 
+        # ====================================================================#
+        # Type Configuration for DebugMode
+        if Framework.isDebugMode():
+            configuration["type"]["choices"] = {
+                "": "",
+                "delivery": "Delivery Address",
+                "invoice": "Invoice Address",
+                "other": "Other Address"
+            }
+
+        return configuration
+
     # ====================================================================#
     # Object CRUD
     # ====================================================================#
 
     def create(self):
-        """Create a New Address"""
-        Framework.log().dump(self._in)
+        """
+        Create a New Address
+        :return: Address Object
+        """
         # ====================================================================#
-        # Safety Check
+        # Safety Check - First Name is Required
         if "first" not in self._in:
-            Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
+            Framework.log().error("No Legal Name provided, Unable to create Address")
             return False
         # ====================================================================#
-        # Init List of required Fields
+        # Load First Name Field in Name Field
         self._in["name"] = self._in["first"]
+        # ====================================================================#
+        # Safety Check - Address Type is Required (Auto-provide if needed)
+        if "type" not in self._in:
+            self._in["type"] = "other"
+        # ====================================================================#
+        # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()
+        # ====================================================================#
+        # Delete Name Field
         self._in.__delitem__("name")
+        # ====================================================================#
+        # Safety Check
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
         # Create a New Simple Address
-        newAddress = self.getModel().create(req_fields)
-        if newAddress is None:
+        new_address = self.getModel().create(req_fields)
+        # ====================================================================#
+        # Safety Check - Error
+        if new_address is None:
             Framework.log().error("Address is None")
             return False
-        return newAddress
+        # ====================================================================#
+        # Initialize Address Fullname buffer
+        self.object = new_address
+        self.addr_fullname_buffer = self.decodefullname()
+
+        return new_address
+
+    def load(self, object_id):
+        """
+        Load Odoo Object by Id
+        :param object_id: str
+        :return: Address Object
+        """
+        # ====================================================================#
+        # Load Address
+        model = super(Address, self).load(object_id)
+        # ====================================================================#
+        # Safety Check - Loaded Object is an Address
+        if not ParentHelper.is_address(model):
+            Framework.log().warn('This Object is not an Address')
+            return False
+        # ====================================================================#
+        # Initialize Address Fullname buffer
+        if model:
+            self.object = model
+            self.addr_fullname_buffer = self.decodefullname()
+
+        return model
+
+    def update(self, needed):
+        """
+        Update Current Odoo Object
+        :param needed: bool
+        :return: Address Object
+        """
+        self._in["name"] = True
+        self.setSimple("name", self.encodefullname())
+
+        return super(Address, self).update(needed)

@@ -25,5 +25,5 @@ from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper
 from .products.suppliers import SupplierHelper
 
-from .country import Country
-from .parent import Parent
+from .partners.country import CountryHelper
+from .partners.parent import ParentHelper

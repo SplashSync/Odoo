@@ -19,8 +19,9 @@ class Name:
     """
     Manage Encode/Decode Concatenated Name
     """
-
-    varfullname = {"first": "", "last": "", "legal": ""}
+    # ==================================================================== #
+    # Init Buffer
+    fullname_buffer = {}
 
     def buildNameFields(self):
         FieldFactory.create(const.__SPL_T_VARCHAR__, "legal", "Legal Name")
@@ -40,34 +41,45 @@ class Name:
         if field_id not in ["legal", "first", "last"]:
             return
         # ==================================================================== #
-        # Read
-        self._out[field_id] = Name.decodefullname(self)[field_id]
+        # Read & Decode Field Data
+        self._out[field_id] = self.decodefullname()[field_id]
         self._in.__delitem__(index)
 
     def setNameFields(self, field_id, field_data):
-        # ==================================================================== #
-        # Safety Check
-        if field_data is None:
-            field_data = ""
         # ==================================================================== #
         # Filter on Field Id
         if field_id not in ["legal", "first", "last"]:
             return
         # ==================================================================== #
-        # WRITE
-        Name.varfullname[field_id] = Name.decodefullname(self)[field_id]
-        if Name.isactualdatadifferent(self, field_id, field_data):
-            Name.varfullname[field_id] = str(field_data).strip()
+        # Safety Check
+        if field_data is None:
+            field_data = ""
+        # ==================================================================== #
+        # WRITE Field Data in Buffer
+        self.fullname_buffer[field_id] = str(field_data).strip()
         self._in.__delitem__(field_id)
-
+        # ==================================================================== #
+        # Once all Fullname's Fields are Parsed, then Encode & Set Fullname
         if all(x not in self._in for x in ["first", "last", "legal"]):
-            setattr(self.object, "name", Name.encodefullname(Name.varfullname["first"], Name.varfullname["last"], Name.varfullname["legal"]))
+            setattr(self.object, "name", self.encodefullname())
 
     def decodefullname(self):
+        """
+        Decode Legal Name, Last Name & First Name from Thirdparty name
+        :return: dict
+        """
+        # ==================================================================== #
+        # Init dict
         elements = {"first": "", "last": "", "legal": ""}
+        # ==================================================================== #
+        # Get Fullname to decode
         fullname = str(getattr(self.object, "name")).strip()
+        # ==================================================================== #
+        # Saety Check
         if fullname is None:
             return
+        # ==================================================================== #
+        # Decode
         if " - " not in fullname:
             elements["legal"] = fullname
         if " - " in fullname:
@@ -78,12 +90,26 @@ class Name:
             else:
                 elements["first"] = residual.split(", ")[0].strip()
                 elements["last"] = residual.split(", ")[-1].strip()
+
         return elements
 
-    @staticmethod
-    def encodefullname(first, last, legal):
+    def encodefullname(self):
+        """
+        Encode First Name, Last Name & Legal Name from Buffer
+        :return: str
+        """
+        # ==================================================================== #
+        # Get Data To Encode
+        first = self.fullname_buffer["first"]
+        last = self.fullname_buffer["last"]
+        legal = self.fullname_buffer["legal"]
+        # ==================================================================== #
+        # Saety Warn
         if legal == "":
-            legal = "Legal Name to Define"
+            legal = "Legal Name not Defined"
+            Framework.log().warn("Legal Name not defined")
+        # ==================================================================== #
+        # Encode
         if (isinstance(first, str)) and (len(first) > 0):
             if (isinstance(last, str)) and (len(last) > 0):
                 result = first + ", " + last + " - " + legal   # first, last - legal
@@ -91,8 +117,5 @@ class Name:
                 result = first + " - " + legal                 # first - legal
         else:
             result = legal                                     # legal
-        return result
 
-    def isactualdatadifferent(self, field_id, field_data):
-        actualfield = Name.decodefullname(self)[field_id]
-        return field_data != actualfield
+        return result

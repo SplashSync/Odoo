@@ -37,7 +37,7 @@ class Contact:
         if field_id not in ["street", "zip", "city"]:
             return
         # ==================================================================== #
-        # Read
+        # Read Field Data
         self._out[field_id] = self.object[field_id]
         self._in.__delitem__(index)
 
@@ -48,17 +48,21 @@ class Contact:
         if field_id not in ["street", "zip", "city"]:
             return
         # ==================================================================== #
-        # Detect Contact Types
-        if self.is_a_contact():
-            Framework.log().warn('Contact Address Type, field cannot be written!!')
+        # Detect Contact Type & Not Parse Fields Street, Zip & City
+        if self.is_contact():
+            Framework.log().warn('Tis is a Contact Address Type, fields "street", "zip" and "city" cannot be written!!')
+            self._in.__delitem__(field_id)
+            return
         # ==================================================================== #
-        # WRITE
-        if not self.is_a_contact() and (getattr(self.object, "parent_id") is not None):
+        # Write Field Data & Security Check: Not Contact Type & Parent Id not None
+        if not self.is_contact() and (getattr(self.object, "parent_id") is not None):
             setattr(self.object, field_id, field_data)
         self._in.__delitem__(field_id)
 
-    def is_a_contact(self):
-        ctc = str(getattr(self.object, "type"))
-        if ctc == 'contact':
-            return True
-        return False
+    def is_contact(self):
+        """
+        Detect if Address Type is Contact
+        :return: bool
+        """
+        address_type = str(getattr(self.object, "type"))
+        return address_type == 'contact'
