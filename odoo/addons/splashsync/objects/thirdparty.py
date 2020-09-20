@@ -122,7 +122,7 @@ class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
         # ====================================================================#
         # Initialize ThirdParty Fullname buffer
         self.object = new_thirdparty
-        self.fullname_buffer = self.decodefullname()
+        self.initfullname()
 
         return new_thirdparty
 
@@ -144,7 +144,7 @@ class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
         # Initialize ThirdParty fullname_buffer
         if model:
             self.object = model
-            self.fullname_buffer = self.decodefullname()
+            self.initfullname()
 
         return model
 

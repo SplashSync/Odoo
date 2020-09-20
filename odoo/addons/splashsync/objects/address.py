@@ -140,7 +140,7 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
         # ====================================================================#
         # Initialize Address Fullname buffer
         self.object = new_address
-        self.addr_fullname_buffer = self.decodefullname()
+        self.initfullname()
 
         return new_address
 
@@ -162,7 +162,7 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
         # Initialize Address Fullname buffer
         if model:
             self.object = model
-            self.addr_fullname_buffer = self.decodefullname()
+            self.initfullname()
 
         return model
 

@@ -104,7 +104,7 @@ class Name:
         last = self.fullname_buffer["last"]
         legal = self.fullname_buffer["legal"]
         # ==================================================================== #
-        # Saety Warn
+        # Safety Warn
         if legal == "":
             legal = "Legal Name not Defined"
             Framework.log().warn("Legal Name not defined")
@@ -119,3 +119,8 @@ class Name:
             result = legal                                     # legal
 
         return result
+
+    def initfullname(self):
+        self.fullname_buffer = self.decodefullname()
+
+        return
