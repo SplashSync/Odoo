@@ -102,3 +102,8 @@ class AddrName:
                 result = first                                  # first
 
         return result                                           # ""
+
+    def initfullname(self):
+        self.addr_fullname_buffer = self.decodefullname()
+
+        return
