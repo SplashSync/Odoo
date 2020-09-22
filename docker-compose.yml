@@ -39,7 +39,7 @@ services:
             - ./docker/x86:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ../Py-Core:/mnt/splashpy
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison"
+#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison,purchase"
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
         entrypoint:         bash /etc/odoo/entrypoint.sh odoo
         hostname:           latest.odoo.local

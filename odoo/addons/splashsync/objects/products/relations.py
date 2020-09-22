@@ -46,7 +46,7 @@ class ProductsRelations:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ_ids", "Categorie Id")
             FieldFactory.microData("http://schema.org/Product", "publicCategoryId")
             FieldFactory.isReadOnly()
-            FieldFactory.create(const.__SPL_T_INLINE__, "public_categ", "Public Categorie")
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ", "Public Categorie")
             FieldFactory.microData("http://schema.org/Product", "publicCategory")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.public.category"))
             FieldFactory.isNotTested()

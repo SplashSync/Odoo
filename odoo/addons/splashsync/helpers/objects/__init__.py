@@ -24,3 +24,4 @@ from .relations import M2MHelper, M2OHelper
 
 from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper
+from .products.suppliers import SupplierHelper
