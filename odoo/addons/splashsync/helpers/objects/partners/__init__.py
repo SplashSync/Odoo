@@ -13,3 +13,4 @@
 
 from .country import CountryHelper
 from .parent import ParentHelper
+from .partners import PartnersHelper

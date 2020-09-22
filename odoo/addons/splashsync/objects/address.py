@@ -11,16 +11,16 @@
 #  file that was distributed with this source code.
 #
 
-import logging
-from .model import OdooObject
+from odoo.addons.splashsync.helpers import CountryHelper
+from odoo.addons.splashsync.helpers import ParentHelper
+from odoo.addons.splashsync.helpers import PartnersHelper
 from splashpy import const, Framework
 from .addresses import AddrName
 from .addresses import Contact
-from odoo.addons.splashsync.helpers import ParentHelper
-from odoo.addons.splashsync.helpers import CountryHelper
+from .model import OdooObject
 
 
-class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
+class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact, PartnersHelper):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"
@@ -34,7 +34,7 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
     @staticmethod
     def objectsListFiltered():
         """Filter on Search Query"""
-        return ParentHelper.address_filter()
+        return PartnersHelper.address_filter()
 
     @staticmethod
     def get_listed_fields():
@@ -155,7 +155,7 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact):
         model = super(Address, self).load(object_id)
         # ====================================================================#
         # Safety Check - Loaded Object is an Address
-        if not ParentHelper.is_address(model):
+        if not PartnersHelper.is_address(model):
             Framework.log().warn('This Object is not an Address')
             return False
         # ====================================================================#

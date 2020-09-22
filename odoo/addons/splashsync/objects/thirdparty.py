@@ -11,15 +11,15 @@
 #  file that was distributed with this source code.
 #
 
-import logging
-from .model import OdooObject
-from splashpy import const, Framework
-from .thirdparties import Name
-from odoo.addons.splashsync.helpers import ParentHelper
 from odoo.addons.splashsync.helpers import CountryHelper
+from odoo.addons.splashsync.helpers import ParentHelper
+from odoo.addons.splashsync.helpers import PartnersHelper
+from splashpy import const, Framework
+from .model import OdooObject
+from .thirdparties import Name
 
 
-class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
+class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name, PartnersHelper):
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"
@@ -33,7 +33,7 @@ class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
     @staticmethod
     def objectsListFiltered():
         """Filter on Search Query"""
-        return ParentHelper.thirdparty_filter()
+        return PartnersHelper.thirdparty_filter()
 
     @staticmethod
     def get_listed_fields():
@@ -137,7 +137,7 @@ class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name):
         model = super(ThirdParty, self).load(object_id)
         # ====================================================================#
         # Safety Check - Loaded Object is a ThirdParty
-        if not ParentHelper.is_thirdparty(model):
+        if not PartnersHelper.is_thirdparty(model):
             Framework.log().warn('This Object is not a ThirdParty')
             return False
         # ====================================================================#

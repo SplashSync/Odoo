@@ -12,19 +12,18 @@
 #  file that was distributed with this source code.
 #
 
-from .config import ObjectConfigurator
-from .lists import ListsHelper
 from .basic import BasicFields
-from .files import OddoFilesHelper
 from .binaries import BinaryFields
+from .config import ObjectConfigurator
 from .currency import CurrencyHelper
-from .taxes import TaxHelper
-from .trans import TransHelper
-from .relations import M2MHelper, M2OHelper
-
+from .files import OddoFilesHelper
+from .lists import ListsHelper
+from .partners.country import CountryHelper
+from .partners.parent import ParentHelper
+from .partners.partners import PartnersHelper
 from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper
 from .products.suppliers import SupplierHelper
-
-from .partners.country import CountryHelper
-from .partners.parent import ParentHelper
+from .relations import M2MHelper, M2OHelper
+from .taxes import TaxHelper
+from .trans import TransHelper

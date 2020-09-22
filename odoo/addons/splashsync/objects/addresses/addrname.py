@@ -12,7 +12,7 @@
 #  file that was distributed with this source code.
 #
 
-from splashpy import const, Framework
+from splashpy import const
 from splashpy.componants import FieldFactory
 
 
@@ -87,7 +87,7 @@ class AddrName:
         :return: str
         """
         # ==================================================================== #
-        # Init return as empty str
+        # Initialize Result as Empty String
         result = ""
         # ==================================================================== #
         # Get Data To Encode
@@ -104,6 +104,10 @@ class AddrName:
         return result                                           # ""
 
     def initfullname(self):
+        """
+        Initialize Fullname Buffer
+        :return:
+        """
         self.addr_fullname_buffer = self.decodefullname()
 
         return
