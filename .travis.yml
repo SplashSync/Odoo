@@ -39,7 +39,8 @@ install:
 
 script:
   # Run Splash Tests from Php ToolKit
-  - docker-compose exec toolkit php echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+  - docker-compose exec toolkit php echo 'memory_limit = -1' | sudo tee -a /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+#  - docker-compose exec toolkit php echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
 
