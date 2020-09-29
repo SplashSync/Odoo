@@ -40,6 +40,12 @@ install:
   - docker-compose exec toolkit php bin/console
   - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
 
+before_script:
+    - docker-compose exec toolkit php echo 'memory_limit = 2048M' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+    - docker-compose exec toolkit touch /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+    - docker-compose exec toolkit php echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+
+
 script:
   # Run Splash Tests from Php ToolKit
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
