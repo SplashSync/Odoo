@@ -156,7 +156,7 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact, Partne
         # ====================================================================#
         # Safety Check - Loaded Object is an Address
         if not PartnersHelper.is_address(model):
-            Framework.log().warn('This Object is not an Address')
+            Framework.log().error('This Object is not an Address')
             return False
         # ====================================================================#
         # Initialize Address Fullname buffer

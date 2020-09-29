@@ -13,6 +13,7 @@
 #
 
 from collections import OrderedDict
+
 from splashpy import const, Framework
 from splashpy.componants.fieldfactory import FieldFactory
 
@@ -83,9 +84,16 @@ class BasicFields():
                     if iso_code != TransHelper.get_default_iso():
                         FieldFactory.association(fieldId)
                 # Selection >> Add Choices
+                # And remove of choice "private" for Address Objects
                 if field["type"] is "selection":
+                    if ("private", "Private Address") in field["selection"] and (fieldId is "type"):
+                        field["selection"].remove(("private", "Private Address"))
                     for key, value in field["selection"]:
                         FieldFactory.addChoice(key, value)
+                # if field["type"] is "selection":
+                #     for key, value in field["selection"]:
+                #         FieldFactory.addChoice(key, value)
+
                 # Force Urls generator options
                 if field["type"] is "char":
                     FieldFactory.addOption("Url_Prefix", "http://")

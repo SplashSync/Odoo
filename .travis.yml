@@ -41,6 +41,7 @@ script:
   # Run Splash Tests from Php ToolKit
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
   - docker-compose exec toolkit php vendor/bin/phpunit -c phpunit.xml.dist
+  - docker-compose exec toolkit php echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 
 after_failure:
   - docker-compose exec toolkit curl -s -o /dev/null -w ''%{http_code}'' odoo:8069
