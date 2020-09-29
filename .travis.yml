@@ -24,7 +24,8 @@ cache:
   pip: ~
 
 before_install:
-  - docker-compose exec toolkit php echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+#  - docker-compose exec toolkit php echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - docker-compose exec toolkit php echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 
 install:
   # Load SplashPy Module
