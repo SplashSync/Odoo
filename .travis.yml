@@ -22,10 +22,9 @@ services:
 
 cache:
   pip: ~
-#
-#before_install:
-#  - docker-compose exec toolkit php echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-##  - echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
+before_install:
+  - docker-compose exec toolkit php echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 install:
   # Load SplashPy Module
@@ -40,10 +39,6 @@ install:
   # Wait Until Odoo Container Started
   - docker-compose exec toolkit php bin/console
   - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
-
-before_script:
-  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist --no-interaction
-
 
 script:
   # Run Splash Tests from Php ToolKit
