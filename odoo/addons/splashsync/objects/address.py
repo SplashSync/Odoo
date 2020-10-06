@@ -65,7 +65,11 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact, Partne
             "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Organization", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"required": False},
+            "type": {"required": False, "choices":{
+                "delivery": "Delivery Address",
+                "invoice": "Invoice Address",
+                "other": "Other Address"
+            }},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
@@ -90,7 +94,6 @@ class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact, Partne
         # Type Configuration for DebugMode
         if Framework.isDebugMode():
             configuration["type"]["choices"] = {
-                "": "",
                 "delivery": "Delivery Address",
                 "invoice": "Invoice Address",
                 "other": "Other Address"
