@@ -12,18 +12,132 @@
 #  file that was distributed with this source code.
 #
 
-import logging
-import base64
 from odoo import http
 from splashpy.models.client import ClientInfo
 from splashpy import Framework
+from odoo.addons.splashsync.helpers import SettingsManager
+
 
 class OdooClient(ClientInfo):
-    """Define General Information about this Splash Client"""
+    """
+    Build & Configure Splash Client & Server
+    Define General Information about this Splash Client
+    """
 
     def __init__(self):
         pass
 
+    @staticmethod
+    def get_mapped_objects():
+        """
+        Get List of Active Objects Class
+
+        :return: list
+        """
+        from odoo.addons.splashsync.objects import ThirdParty, Product
+        return [
+            Product(),
+        ]
+
+    @staticmethod
+    def get_mapped_widgets():
+        """
+        Get List of Active Widgets Class
+
+        :return: list
+        """
+        from splashpy.templates.widgets import Basic
+        return [
+            Basic(),
+        ]
+
+        return OdooClient.__mapped_widgets
+
+    @staticmethod
+    def get_server():
+        """
+        Build Splash Server
+
+        :return SplashServer
+        """
+        from splashpy.server import SplashServer
+        # ====================================================================#
+        # Init Odoo User & Company
+        SettingsManager.ensure_company()
+        # ====================================================================#
+        # Build Splash Server with Common Options
+        splash_server = SplashServer(
+            SettingsManager.get_id(),
+            SettingsManager.get_key(),
+            OdooClient.get_mapped_objects(),
+            OdooClient.get_mapped_widgets(),
+            OdooClient()
+        )
+        # ====================================================================#
+        # Force Ws Host if Needed
+        if SettingsManager.is_expert():
+            Framework.config().force_host(SettingsManager.get_host())
+
+        return splash_server
+
+    @staticmethod
+    def get_client():
+        """
+        Build Splash Client
+
+        :return SplashClient
+        """
+        from splashpy.client import SplashClient
+        # ====================================================================#
+        # Init Odoo User & Company
+        SettingsManager.ensure_company()
+        # ====================================================================#
+        # Build Splash Client with Common Options
+        splash_client = SplashClient(
+            SettingsManager.get_id(),
+            SettingsManager.get_key(),
+            OdooClient.get_mapped_objects(),
+            OdooClient.get_mapped_widgets(),
+            OdooClient()
+        )
+        # ====================================================================#
+        # Force Ws Host if Needed
+        if SettingsManager.is_expert():
+            Framework.config().force_host(SettingsManager.get_host())
+
+        return splash_client
+
+    # ====================================================================#
+    # OBJECTS COMMITS
+    # ====================================================================#
+
+    @staticmethod
+    def commit(splash_object, action, object_ids):
+        """
+        Execute Splash Commit for this Odoo Object
+
+        :return: bool
+        """
+        # Try to detect User Name
+        try:
+            from odoo.http import request
+            user_name = request.env.user.name
+        except Exception:
+            user_name = "Unknown User"
+        # Send Commit Notification
+        try:
+            return OdooClient.get_client().commit(
+                str(splash_object.name),
+                object_ids,
+                action,
+                user_name,
+                "[" + str(action).capitalize() + "]" + str(splash_object.desc) + " modified on Odoo"
+            )
+        except Exception as exception:
+            Framework.log().fromException(exception)
+            Framework.log().to_logging()
+            Framework.log().clear()
+            return False
 
     def complete(self):
         """
@@ -34,7 +148,7 @@ class OdooClient(ClientInfo):
         # self.loadDefaultIcons()
         # ====================================================================#
         # Use Odoo Icons Set
-        self.loadOdooIcons()
+        self.load_odoo_icons()
         # ====================================================================#
         # Override Info to Says we are Faker Mode
         self.short_desc = "Splash Odoo Client"
@@ -56,7 +170,7 @@ class OdooClient(ClientInfo):
         except:
             self.company = "Unable to fetch Main Company"
 
-    def loadOdooIcons(self):
+    def load_odoo_icons(self):
         """Change Client Server Icons"""
         from splashpy.componants.files import Files
         import os

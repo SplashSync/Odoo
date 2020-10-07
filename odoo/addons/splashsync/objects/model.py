@@ -49,7 +49,7 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     @staticmethod
     def get_composite_fields():
-        """Get List of Fields NOT To Parse Automaticaly """
+        """Get List of Fields NOT To Parse Automatically"""
         return ["id"]
 
     # ====================================================================#

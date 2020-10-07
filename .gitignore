@@ -131,3 +131,4 @@ dmypy.json
 /faker.db
 /docker/arm/
 /template/
+/plugins/

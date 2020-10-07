@@ -14,7 +14,7 @@
 
 
 from odoo import api, models, fields
-import logging
+from splashpy import const
 
 
 class ProductProduct(models.Model):
@@ -54,26 +54,45 @@ class ProductProduct(models.Model):
     @api.model
     def create(self, vals):
         res = super(ProductProduct, self).create(vals)
-        # _logger = logging.getLogger("SPLASH SYNC")
-        # _logger.warning("New Product Detected: "+str(res.id))
+
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_CREATE__)
 
         return res
 
     def write(self, vals):
         res = super(ProductProduct, self).write(vals)
-        if not self:
-            return res
-        # _logger = logging.getLogger("SPLASH SYNC")
-        # _logger.warning("Product Change Detected: "+str(self.id))
+
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_UPDATE__)
 
         return res
 
     def unlink(self):
         res = super(ProductProduct, self).unlink()
-        if not self:
-            return res
-        # _logger = logging.getLogger("SPLASH SYNC")
-        # _logger.warning("Product Delete Detected: "+str(self.id))
+
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_DELETE__)
 
         return res
+
+    def __do_splash_commit(self, action):
+        """
+        Execute Splash Commit for this Product
+        :param action: str
+
+        :return: void
+        """
+        # ====================================================================#
+        # Safety Check
+        if not self:
+            pass
+        # ====================================================================#
+        # Execute Splash Commit for this Product
+        from odoo.addons.splashsync.objects import Product
+        from odoo.addons.splashsync.client import OdooClient
+        OdooClient.commit(Product(), action, str(self.id))
 

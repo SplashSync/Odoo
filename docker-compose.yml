@@ -14,7 +14,7 @@
 ################################################################################
 # Docker Compose File
 #
-# This Docker File intend to Create a Complete Dev Envirenement
+# This Docker File intend to Create a Complete Dev Environment
 # for Splash Modules
 #
 # 172.120.0.99        latest.odoo.local
@@ -40,8 +40,8 @@ services:
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ../Py-Core:/mnt/splashpy
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,stock,website_sale_comparison,purchase"
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
-        entrypoint:         bash /etc/odoo/entrypoint.sh odoo
+        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
+#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo
         hostname:           latest.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
