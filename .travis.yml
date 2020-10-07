@@ -23,9 +23,6 @@ services:
 cache:
   pip: ~
 
-before_install:
-  - echo 'memory_limit = 2048M' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-
 install:
   # Load SplashPy Module
   - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../SplashSync-Py-Core
