@@ -90,6 +90,7 @@ class BasicFields():
                         field["selection"].remove(("private", "Private Address"))
                     for key, value in field["selection"]:
                         FieldFactory.addChoice(key, value)
+
                 # if field["type"] is "selection":
                 #     for key, value in field["selection"]:
                 #         FieldFactory.addChoice(key, value)
