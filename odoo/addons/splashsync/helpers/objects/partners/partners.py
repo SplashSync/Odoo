@@ -95,3 +95,15 @@ class PartnersHelper:
             return False
 
         return True
+
+    @staticmethod
+    def is_contact(model):
+        """
+        Detect if Address Type is Contact
+        :param model: Object
+        :return: bool
+        """
+        try:
+            return str(getattr(model, "type")) == 'contact'
+        except Exception:
+            return False

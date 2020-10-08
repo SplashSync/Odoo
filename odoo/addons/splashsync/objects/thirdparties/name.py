@@ -15,7 +15,7 @@ from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
 
-class Name:
+class ThirdPartyName:
     """
     Manage Encode/Decode Concatenated Name
     """
@@ -75,7 +75,7 @@ class Name:
         # Get Fullname to decode
         fullname = str(getattr(self.object, "name")).strip()
         # ==================================================================== #
-        # Saety Check
+        # Safety Check
         if fullname is None:
             return
         # ==================================================================== #

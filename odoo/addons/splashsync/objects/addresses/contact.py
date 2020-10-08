@@ -11,11 +11,12 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
+from odoo.addons.splashsync.helpers import PartnersHelper
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
 
-class Contact:
+class AddresseContact:
     """
     Manage type "contact" from Address class
     """
@@ -38,9 +39,7 @@ class Contact:
             return
         # ==================================================================== #
         # Read Field Data
-        self._out[field_id] = self.object[field_id]
-        self._in.__delitem__(index)
-
+        self.getSimple(index, field_id)
 
     def setContactFields(self, field_id, field_data):
         # ==================================================================== #
@@ -48,21 +47,13 @@ class Contact:
         if field_id not in ["street", "zip", "city"]:
             return
         # ==================================================================== #
-        # Detect Contact Type & Not Parse Fields Street, Zip & City
-        if self.is_contact():
-            Framework.log().warn('Tis is a Contact Address Type, fields "street", "zip" and "city" cannot be written!!')
+        # Safety Check - Detect Contact Type & Not Parse Fields Street, Zip & City
+        if PartnersHelper.is_contact(self.object):
+            Framework.log().warn("This Address is a Contact Type, Writing " + field_id + " skipped.")
             self._in.__delitem__(field_id)
             return
         # ==================================================================== #
-        # Write Field Data & Security Check: Not Contact Type & Parent Id not None
-        if not self.is_contact() and (getattr(self.object, "parent_id") is not None):
+        # Write Field Data & Security Check: Parent Id not None
+        if getattr(self.object, "parent_id") is not None:
             setattr(self.object, field_id, field_data)
         self._in.__delitem__(field_id)
-
-    def is_contact(self):
-        """
-        Detect if Address Type is Contact
-        :return: bool
-        """
-        address_type = str(getattr(self.object, "type"))
-        return address_type == 'contact'

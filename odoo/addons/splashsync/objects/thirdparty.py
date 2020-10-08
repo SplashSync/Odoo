@@ -15,10 +15,10 @@ from odoo.addons.splashsync.helpers import PartnersHelper
 from odoo.addons.splashsync.objects.partners import PartnersCountry, PartnersParent
 from splashpy import const, Framework
 from .model import OdooObject
-from .thirdparties import Name
+from .thirdparties import ThirdPartyName
 
 
-class ThirdParty(OdooObject, PartnersParent, PartnersCountry, Name, PartnersHelper):
+class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"

@@ -16,7 +16,7 @@ from splashpy import const
 from splashpy.componants import FieldFactory
 
 
-class AddrName:
+class AddresseName:
     """
     Manage Encode/Decode Concatenated AddrName
     """

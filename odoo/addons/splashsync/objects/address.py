@@ -14,12 +14,11 @@
 from odoo.addons.splashsync.helpers import PartnersHelper
 from odoo.addons.splashsync.objects.partners import PartnersCountry, PartnersParent
 from splashpy import const, Framework
-from .addresses import AddrName
-from .addresses import Contact
+from .addresses import AddresseName, AddresseContact
 from .model import OdooObject
 
 
-class Address(OdooObject, PartnersCountry, AddrName, PartnersParent, Contact, PartnersHelper):
+class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, AddresseContact):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"

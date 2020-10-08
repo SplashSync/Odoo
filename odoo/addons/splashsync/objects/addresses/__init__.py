@@ -11,5 +11,5 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
-from .addrname import AddrName
-from .contact import Contact
+from .contact import AddresseContact
+from .name import AddresseName
