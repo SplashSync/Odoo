@@ -12,10 +12,12 @@
 #  file that was distributed with this source code.
 #
 
+from collections import OrderedDict
+
+from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper, PricesHelper, ObjectsHelper
-from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 
 
 class Orderlines:
@@ -74,11 +76,16 @@ class Orderlines:
     def getLinesFields(self, index, field_id):
         """
         Get Order Lines List
+        :param index: str
+        :param field_id: str
+        :return: None
         """
         # ==================================================================== #
-        # Check if this Field is Orderlines List...
-        base_field_id = ListHelper.initOutput(self._out, "Orderlines", field_id)
-        if base_field_id is None:
+        # Init Lines List...
+        lines_list = ListHelper.initOutput(self._out, "Orderlines", field_id)
+        # ==================================================================== #
+        # Safety Check
+        if lines_list is None:
             return
         # ==================================================================== #
         # List Order Lines Ids
@@ -88,10 +95,14 @@ class Orderlines:
             if Framework.isDebugMode() and line.id == self.object.id:
                 continue
             # ==================================================================== #
-            # Read Product Lines Data
-            lin_values = self._get_lines_values(base_field_id)
-            for pos in range(len(lin_values)):
-                ListHelper.insert(self._out, "Orderlines", field_id, "attr-" + str(pos), lin_values[pos])
+            # Read Lines Data
+            lines_values = self._get_lines_values(lines_list)
+            for pos in range(len(lines_values)):
+                ListHelper.insert(self._out, "Orderlines", field_id, "line-" + str(pos), lines_values[pos])
+        # ==================================================================== #
+        # Force Lines Ordering
+        self._out["Orderlines"] = OrderedDict(sorted(self._out["Orderlines"].items()))
+
         self._in.__delitem__(index)
 
     def _get_lines_values(self, value_id):
@@ -103,33 +114,89 @@ class Orderlines:
         values = []
         # ====================================================================#
         # Walk on Product Attributes Values
-        for lin_value in self.object.order_line:
+        for orderline_field in self.object.order_line:
             # Collect Values
             if value_id == "product_id":
-                values += [ObjectsHelper.encode("Product", str(lin_value.product_id[0].id))]
-            elif value_id == "ref":
-                values += [lin_value.product_id[0].default_code]
-            elif value_id == "desc":
-                values += [lin_value.name]
-            elif value_id == "ord_qty":
-                values += [lin_value.product_uom_qty]
-            elif value_id == "delv_qty":
-                values += [lin_value.qty_delivered]
-            elif value_id == "inv_qty":
-                values += [lin_value.qty_invoiced]
-            elif value_id == "ut_price":
+                values += [ObjectsHelper.encode("Product", str(orderline_field.product_id[0].id))]
+            if value_id == "ref":
+                values += [orderline_field.product_id[0].default_code]
+            if value_id == "desc":
+                values += [orderline_field.name]
+            if value_id == "ord_qty":
+                values += [orderline_field.product_uom_qty]
+            if value_id == "delv_qty":
+                values += [orderline_field.qty_delivered]
+            if value_id == "inv_qty":
+                values += [orderline_field.qty_invoiced]
+            if value_id == "ut_price":
                 values += [PricesHelper.encode(
-                            float(lin_value.price_unit),
-                            TaxHelper.get_tax_rate(lin_value.tax_id, 'sale') if not SettingsManager.is_prd_adv_taxes() else float(0),
+                            float(orderline_field.price_unit),
+                            TaxHelper.get_tax_rate(orderline_field.tax_id, 'sale') if not SettingsManager.is_prd_adv_taxes() else float(0),
                             None,
                             CurrencyHelper.get_main_currency_code()
                             )]
-            elif value_id == "tax_name":
-                values += [M2MHelper.get_names(lin_value, "tax_id")]
-            elif value_id == "lead_time":
-                values += [lin_value.customer_lead]
+            if value_id == "tax_name":
+                values += [M2MHelper.get_names(orderline_field, "tax_id")]
+            if value_id == "lead_time":
+                values += [orderline_field.customer_lead]
 
         return values
+
+    #######################################
+
+    def setLinesFields(self, field_id, field_data):
+        """
+        Set Orderlines List
+        :param field_id: str
+        :param field_data: hash
+        :return: None
+        """
+        # ==================================================================== #
+        # Safety Check - field_id is an Orderlines List
+        if field_id != "Orderlines":
+            return
+        # ==================================================================== #
+        # Init Lines List
+        new_orderline = []
+        Framework.log().dump(field_data, "field_data")
+        # ==================================================================== #
+        # Safety Check
+        if not isinstance(field_data, dict):
+            return
+        # ==================================================================== #
+        # Force Orderlines Ordering
+        field_data = OrderedDict(sorted(field_data.items()))
+        # ==================================================================== #
+        # Walk on Lines Field...
+        for pos, line in field_data.items():
+            # Framework.log().dump(pos, "pos")
+            # Framework.log().dump(line, "line")
+            new_orderline.append(Orderlines._set_lines_values(line))
+        setattr(self.object, "order_line", new_orderline)
+        self._in.__delitem__(field_id)
+
+    @staticmethod
+    def _set_lines_values(line):
+        ord_line = {}
+        for key, value in line.items():
+            if key == "product_id":
+                ord_line["product_id[0].id"] = ObjectsHelper.id(value)
+            if key == "ref":
+                ord_line["product_id[0].default_code"] = value
+            if key == "desc":
+                ord_line["name"] = value
+            if key == "ord_qty":
+                ord_line["product_uom_qty"] = float(value)
+            if key == "delv_qty":
+                ord_line["qty_delivered"] = float(value)
+            if key == "inv_qty":
+                ord_line["qty_invoiced"] = float(value)
+            if key == "ut_price":
+                ord_line["price_unit"] = PricesHelper.extract(value, "ht")
+                ord_line["tax_id"] = TaxHelper.find_by_rate(PricesHelper.extract(value, "vat"), 'sale')
+            if key == "lead_time":
+                ord_line["customer_lead"] = float(value)
+        return ord_line
 
 
 class Invoicelines:
