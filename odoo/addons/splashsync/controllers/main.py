@@ -14,11 +14,7 @@
 
 from odoo import http
 from splashpy import Framework
-from splashpy.server import SplashServer
-from splashpy.templates.widgets import Basic
 from odoo.addons.splashsync.client import OdooClient
-from odoo.addons.splashsync.objects import ThirdParty, Product
-from odoo.addons.splashsync.helpers import SettingsManager
 
 class Webservice(http.Controller):
 
@@ -27,9 +23,8 @@ class Webservice(http.Controller):
         """
          Respond to Splash Webservice Requests
          """
-        return self.get_server().fromWerkzeug(http.request.httprequest)
+        return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
 
-    # @http.route('/splash/debug', type='http', auth='public', website=True)
     @http.route('/splash/debug', type='http', auth='user', website=True)
     def debug(self, **kw):
         """
@@ -38,7 +33,7 @@ class Webservice(http.Controller):
         from splashpy.client import SplashClient
         # ====================================================================#
         # Init Splash Framework
-        self.get_server()
+        OdooClient.get_server()
         # ====================================================================#
         # Load Server Info
         wsId, wsKey, wsHost = Framework.config().identifiers()
@@ -57,29 +52,3 @@ class Webservice(http.Controller):
             Framework.log().error('Connect Test Fail: ' + str(wsHost))
 
         return raw_html + Framework.log().to_html_list(True)
-
-    @staticmethod
-    def get_server():
-        """Build Splash Server"""
-        # ====================================================================#
-        # Init Odoo User & Company
-        SettingsManager.ensure_company()
-        # ====================================================================#
-        # Build Splash Server with Common Options
-        splash_objects = [
-            # ThirdParty(),
-            Product(),
-        ]
-        splash_server = SplashServer(
-            SettingsManager.get_id(),
-            SettingsManager.get_key(),
-            splash_objects,
-            [Basic()],
-            OdooClient()
-        )
-        # ====================================================================#
-        # Force Ws Host if Needed
-        if SettingsManager.is_expert():
-            Framework.config().force_host(SettingsManager.get_host())
-
-        return splash_server
