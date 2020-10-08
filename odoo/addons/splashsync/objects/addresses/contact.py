@@ -52,8 +52,4 @@ class AddresseContact:
             Framework.log().warn("This Address is a Contact Type, Writing " + field_id + " skipped.")
             self._in.__delitem__(field_id)
             return
-        # ==================================================================== #
-        # Write Field Data & Security Check: Parent Id not None
-        if getattr(self.object, "parent_id") is not None:
-            setattr(self.object, field_id, field_data)
-        self._in.__delitem__(field_id)
+        self.setSimple(field_id, field_data)
