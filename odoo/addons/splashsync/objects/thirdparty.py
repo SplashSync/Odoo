@@ -11,15 +11,14 @@
 #  file that was distributed with this source code.
 #
 
-from odoo.addons.splashsync.helpers import CountryHelper
-from odoo.addons.splashsync.helpers import ParentHelper
 from odoo.addons.splashsync.helpers import PartnersHelper
+from odoo.addons.splashsync.objects.partners import PartnersCountry, PartnersParent
 from splashpy import const, Framework
 from .model import OdooObject
 from .thirdparties import Name
 
 
-class ThirdParty(OdooObject, ParentHelper, CountryHelper, Name, PartnersHelper):
+class ThirdParty(OdooObject, PartnersParent, PartnersCountry, Name, PartnersHelper):
     # ====================================================================#
     # Splash Object Definition
     name = "ThirdParty"

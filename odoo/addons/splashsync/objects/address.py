@@ -11,16 +11,15 @@
 #  file that was distributed with this source code.
 #
 
-from odoo.addons.splashsync.helpers import CountryHelper
-from odoo.addons.splashsync.helpers import ParentHelper
 from odoo.addons.splashsync.helpers import PartnersHelper
+from odoo.addons.splashsync.objects.partners import PartnersCountry, PartnersParent
 from splashpy import const, Framework
 from .addresses import AddrName
 from .addresses import Contact
 from .model import OdooObject
 
 
-class Address(OdooObject, CountryHelper, AddrName, ParentHelper, Contact, PartnersHelper):
+class Address(OdooObject, PartnersCountry, AddrName, PartnersParent, Contact, PartnersHelper):
     # ====================================================================#
     # Splash Object Definition
     name = "Address"

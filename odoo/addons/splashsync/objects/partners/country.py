@@ -12,12 +12,12 @@
 #  file that was distributed with this source code.
 #
 
+from odoo.addons.splashsync.helpers.objects.relations import M2OHelper
 from splashpy import const
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers.objects.relations import M2OHelper
 
 
-class CountryHelper:
+class PartnersCountry:
     """
     Access to Country Fields
     """

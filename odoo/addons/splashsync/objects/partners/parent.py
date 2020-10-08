@@ -17,7 +17,7 @@ from splashpy.componants import FieldFactory
 from splashpy.helpers import ObjectsHelper
 
 
-class ParentHelper:
+class PartnersParent:
     """
     Access to Parent partners
     """

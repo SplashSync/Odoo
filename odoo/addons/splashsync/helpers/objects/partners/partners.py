@@ -39,55 +39,58 @@ class PartnersHelper:
         """
         return [('parent_id', '=', None)]
 
-    def is_partner(self):
+    @staticmethod
+    def is_partner(model):
         """
         Detect if Object is a Partner
+        :param model: Object
         :return: bool
         """
-        if not self._inherit == 'res.partner':
-            Framework.log().warn('This Object is not a Partner')
-            return False
-        return True
+        return model._inherit == 'res.partner'
 
-    def is_address(self):
+    @staticmethod
+    def is_address(model):
         """
         Detect if Object is an Address
+        :param model: Object
         :return: bool
         """
         # ==================================================================== #
         # Safety Check - Partner
-        if not PartnersHelper.is_partner(self):
+        if not PartnersHelper.is_partner(model):
             return False
         # ==================================================================== #
         # Check condition - Parent Id
-        if self.parent_id.id is False:
+        if model.parent_id.id is False:
             Framework.log().warn('This Object has no Parent')
             return False
         # ==================================================================== #
         # Check condition - No Child Ids
-        if self.child_ids.ids:
+        if model.child_ids.ids:
             Framework.log().warn('This Object has one (or few) Child(s)')
             return False
         # ==================================================================== #
         # Check condition - Type <> 'private'
-        if self.type == 'private':
+        if model.type == 'private':
             Framework.log().warn('This Object is Private')
             return False
 
         return True
 
-    def is_thirdparty(self):
+    @staticmethod
+    def is_thirdparty(model):
         """
         Detect if Object is a Thirdparty
+        :param model: Object
         :return: bool
         """
         # ==================================================================== #
         # Safety Check - Partner
-        if not PartnersHelper.is_partner(self):
+        if not PartnersHelper.is_partner(model):
             return False
         # ==================================================================== #
         # Check condition - No Parent Id
-        if self.parent_id.id is not False:
+        if model.parent_id.id is not False:
             Framework.log().warn('This Object has a Parent')
             return False
 
