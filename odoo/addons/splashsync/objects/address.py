@@ -14,16 +14,16 @@
 from odoo.addons.splashsync.helpers import PartnersHelper
 from odoo.addons.splashsync.objects.partners import PartnersCountry, PartnersParent
 from splashpy import const, Framework
+from .addresses import AddresseName, AddresseContact
 from .model import OdooObject
-from .thirdparties import ThirdPartyName
 
 
-class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
+class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, AddresseContact):
     # ====================================================================#
     # Splash Object Definition
-    name = "ThirdParty"
-    desc = "Odoo Partner"
-    icon = "fa fa-user"
+    name = "Address"
+    desc = "Odoo Address"
+    icon = "fa fa-address-card-o"
 
     @staticmethod
     def getDomain():
@@ -32,33 +32,38 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
     @staticmethod
     def objectsListFiltered():
         """Filter on Search Query"""
-        return PartnersHelper.thirdparty_filter()
+        return PartnersHelper.address_filter()
 
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name', 'email', 'is_company', 'type']
+        return ['name', 'email', 'type']
 
     @staticmethod
     def get_required_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['name']
+        return ['parent_id', 'type', 'name']
 
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ["id", 'message_follower_ids', 'image_medium', 'image_small']
+        return [
+            "id", 'message_follower_ids', 'image_medium', 'image_small',
+            'company_name', 'vat', "credit_limit", "street2", "street", "zip", "city"
+        ]
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
-        return {
+        configuration = {
+            "function": {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
 
             "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
-            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
+            "mobile": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
+            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Organization", "itemprop": "telephone"},
 
             "name": {"required": False, "write": False},
-            "type": {"choices": {"contact": "Contact"}},
+            "type": {"required": False},
 
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
@@ -67,10 +72,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
             "country_code": {"group": "Address"},
             "state_id": {"group": "Address"},
 
-            "customer": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "customer"},
-            "supplier": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "supplier"},
-
-            "active": {"group": "Meta", "itemtype": "http://schema.org/Organization", "itemprop": "active"},
+            "active": {"group": "Meta", "itemtype": "http://schema.org/Person", "itemprop": "active"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
@@ -78,10 +80,21 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
             "activity_summary": {"write": False},
 
             "additional_info": {"notest": True},
-            "parent_id": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
         }
+
+        # ====================================================================#
+        # Type Configuration for DebugMode
+        if Framework.isDebugMode():
+            configuration["type"]["choices"] = {
+                "contact": "Contact",
+                "delivery": "Delivery Address",
+                "invoice": "Invoice Address",
+                "other": "Other Address"
+            }
+
+        return configuration
 
     # ====================================================================#
     # Object CRUD
@@ -89,17 +102,21 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
 
     def create(self):
         """
-        Create a New ThirdParty
-        :return: ThirdParty Object
+        Create a New Address
+        :return: Address Object
         """
         # ====================================================================#
-        # Safety Check - Legal Name is Required
-        if "legal" not in self._in:
-            Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
+        # Safety Check - First Name is Required
+        if "first" not in self._in:
+            Framework.log().error("No Legal Name provided, Unable to create Address")
             return False
         # ====================================================================#
-        # Load Legal Name Field in Name Field
-        self._in["name"] = self._in["legal"]
+        # Load First Name Field in Name Field
+        self._in["name"] = self._in["first"]
+        # ====================================================================#
+        # Safety Check - Address Type is Required (Auto-provide if needed)
+        if "type" not in self._in:
+            self._in["type"] = "other"
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()
@@ -111,36 +128,36 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
-        # Create a New Simple ThirdParty
-        new_thirdparty = self.getModel().create(req_fields)
+        # Create a New Simple Address
+        new_address = self.getModel().create(req_fields)
         # ====================================================================#
         # Safety Check - Error
-        if new_thirdparty is None:
-            Framework.log().error("ThirdParty is None")
+        if new_address is None:
+            Framework.log().error("Address is None")
             return False
         # ====================================================================#
-        # Initialize ThirdParty Fullname buffer
-        self.object = new_thirdparty
+        # Initialize Address Fullname buffer
+        self.object = new_address
         self.initfullname()
 
-        return new_thirdparty
+        return new_address
 
     def load(self, object_id):
         """
         Load Odoo Object by Id
         :param object_id: str
-        :return: ThirdParty Object
+        :return: Address Object
         """
         # ====================================================================#
         # Load Address
-        model = super(ThirdParty, self).load(object_id)
+        model = super(Address, self).load(object_id)
         # ====================================================================#
-        # Safety Check - Loaded Object is a ThirdParty
-        if not PartnersHelper.is_thirdparty(model):
-            Framework.log().warn('This Object is not a ThirdParty')
+        # Safety Check - Loaded Object is an Address
+        if not PartnersHelper.is_address(model):
+            Framework.log().error('This Object is not an Address')
             return False
         # ====================================================================#
-        # Initialize ThirdParty fullname_buffer
+        # Initialize Address Fullname buffer
         if model:
             self.object = model
             self.initfullname()
@@ -151,9 +168,9 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         """
         Update Current Odoo Object
         :param needed: bool
-        :return: Thirdparty Object
+        :return: Address Object
         """
         self._in["name"] = True
         self.setSimple("name", self.encodefullname())
 
-        return super(ThirdParty, self).update(needed)
+        return super(Address, self).update(needed)

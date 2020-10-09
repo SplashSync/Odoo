@@ -51,7 +51,7 @@ class ListsHelper:
             offset = 0
         # ====================================================================#
         # Execute Search Query
-        results = self.getModel().search([], limit=limit, offset=offset, order='id')
+        results = self.getModel().search(self.objectsListFiltered(), limit=limit, offset=offset, order='id')
         # Init Results
         objects = {}
         # Walk on Results
@@ -64,8 +64,11 @@ class ListsHelper:
         # Add Metadata
         objects['meta'] = {
             'current': results.__len__(),
-            'total': self.getModel().search_count([])
+            'total': self.getModel().search_count(self.objectsListFiltered())
         }
 
         return objects
 
+    @staticmethod
+    def objectsListFiltered():
+        return []

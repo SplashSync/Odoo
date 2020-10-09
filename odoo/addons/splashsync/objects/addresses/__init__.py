@@ -11,5 +11,5 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
-from .objects import *
-from .settings import SettingsManager
+from .contact import AddresseContact
+from .name import AddresseName
