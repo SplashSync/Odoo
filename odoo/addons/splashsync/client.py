@@ -13,9 +13,9 @@
 #
 
 from odoo import http
-from splashpy.models.client import ClientInfo
-from splashpy import Framework
 from odoo.addons.splashsync.helpers import SettingsManager
+from splashpy import Framework
+from splashpy.models.client import ClientInfo
 
 
 class OdooClient(ClientInfo):
@@ -34,9 +34,11 @@ class OdooClient(ClientInfo):
 
         :return: list
         """
-        from odoo.addons.splashsync.objects import ThirdParty, Product
+        from odoo.addons.splashsync.objects import ThirdParty, Address, Product
         return [
             Product(),
+            ThirdParty(),
+            Address(),
         ]
 
     @staticmethod

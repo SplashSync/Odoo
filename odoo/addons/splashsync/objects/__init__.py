@@ -15,3 +15,6 @@
 from .model import OdooObject
 from .thirdparty import ThirdParty
 from .product import Product
+from .invoice import Invoice
+from .order import Order
+from .address import Address

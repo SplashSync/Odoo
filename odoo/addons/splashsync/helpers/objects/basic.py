@@ -13,6 +13,7 @@
 #
 
 from collections import OrderedDict
+
 from splashpy import const, Framework
 from splashpy.componants.fieldfactory import FieldFactory
 
