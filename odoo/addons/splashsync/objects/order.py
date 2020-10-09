@@ -41,6 +41,13 @@ class Order(OdooObject, Orderlines, CustomerHelper):
         ]
 
     @staticmethod
+    def get_composite_fields():
+        """Get List of Fields NOT To Parse Automatically """
+        return [
+            "id", "partner_id", "partner_invoice_id", "partner_shipping_id"
+        ]
+
+    @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
@@ -97,28 +104,28 @@ class Order(OdooObject, Orderlines, CustomerHelper):
 
         return new_order
 
-    def load(self, object_id):
-        """
-        Load Odoo Object by Id
-        :param object_id: str
-        :return: Order Object
-        """
-        # ====================================================================#
-        # Load Order
-        model = super(Order, self).load(object_id)
-        # ====================================================================#
-        # TODO: Safety Check - Loaded Object is an Order
-        # if not PartnersHelper.is_address(model):
-        #     Framework.log().error('This Object is not an Address')
-        #     return False
-
-        return model
-
-    def update(self, needed):
-        """
-        Update Current Odoo Object
-        :param needed: bool
-        :return: Order Object
-        """
-
-        return super(Order, self).update(needed)
+    # def load(self, object_id):
+    #     """
+    #     Load Odoo Object by Id
+    #     :param object_id: str
+    #     :return: Order Object
+    #     """
+    #     # ====================================================================#
+    #     # Load Order
+    #     model = super(Order, self).load(object_id)
+    #     # ====================================================================#
+    #     # TODO: Safety Check - Loaded Object is an Order
+    #     # if not PartnersHelper.is_address(model):
+    #     #     Framework.log().error('This Object is not an Address')
+    #     #     return False
+    #
+    #     return model
+    #
+    # def update(self, needed):
+    #     """
+    #     Update Current Odoo Object
+    #     :param needed: bool
+    #     :return: Order Object
+    #     """
+    #
+    #     return super(Order, self).update(needed)
