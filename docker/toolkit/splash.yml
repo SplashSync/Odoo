@@ -28,7 +28,7 @@ splash:
             host:               false
             connector:          soap
             config:
-                WsIdentifier:       ThisIsSplashWsId
+                WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
                 WsPath:             /splash
