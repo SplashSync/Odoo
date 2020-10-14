@@ -22,7 +22,7 @@ splash:
         ########################################################################
         # Odoo Connection [Company 1]
         odoo-1:
-            id:                 ThisIsSplashWsId
+            id:                 ThisIsOdooC1WsId
             key:                ThisIsYourEncryptionKeyForSplash
             name:               Odoo C1
             host:               false
@@ -37,7 +37,7 @@ splash:
         ########################################################################
         # Odoo Connection [Company 2]
 #        odoo-2:
-#            id:                 ThisIsSplashWsId
+#            id:                 ThisIsOdooC2WsId
 #            key:                ThisIsYourEncryptionKeyForSplash
 #            name:               Odoo C2
 #            host:               false

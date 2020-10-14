@@ -24,6 +24,9 @@ class OdooClient(ClientInfo):
     Define General Information about this Splash Client
     """
 
+    __splash_client = None
+    __splash_server = None
+
     def __init__(self):
         pass
 
@@ -90,12 +93,17 @@ class OdooClient(ClientInfo):
         :return SplashClient
         """
         from splashpy.client import SplashClient
+        if isinstance(OdooClient.__splash_client, SplashClient):
+            # ====================================================================#
+            # Ensure Framework is in Client Mode
+            Framework.setServerMode(False)
+            return OdooClient.__splash_client
         # ====================================================================#
         # Init Odoo User & Company
         SettingsManager.ensure_company()
         # ====================================================================#
         # Build Splash Client with Common Options
-        splash_client = SplashClient(
+        OdooClient.__splash_client = SplashClient(
             SettingsManager.get_id(),
             SettingsManager.get_key(),
             OdooClient.get_mapped_objects(),
@@ -103,11 +111,14 @@ class OdooClient(ClientInfo):
             OdooClient()
         )
         # ====================================================================#
+        # Ensure Framework is in Client Mode
+        Framework.setServerMode(False)
+        # ====================================================================#
         # Force Ws Host if Needed
         if SettingsManager.is_expert():
             Framework.config().force_host(SettingsManager.get_host())
 
-        return splash_client
+        return OdooClient.__splash_client
 
     # ====================================================================#
     # OBJECTS COMMITS
@@ -137,8 +148,7 @@ class OdooClient(ClientInfo):
             )
         except Exception as exception:
             Framework.log().fromException(exception)
-            Framework.log().to_logging()
-            Framework.log().clear()
+            Framework.log().to_logging().clear()
             return False
 
     def complete(self):

@@ -23,7 +23,7 @@ def post_init_hook(cr, registry):
     # ====================================================================#
     # Setup Default Configuration
     env = Environment(cr, SUPERUSER_ID, {})
-    env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsSplashWsId")
+    env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsOdooC1WsId")
     env['ir.config_parameter'].sudo().set_param('splash_ws_key', "ThisIsYourEncryptionKeyForSplash")
     env['ir.config_parameter'].sudo().set_param('splash_ws_expert', False)
     env['ir.config_parameter'].sudo().set_param('splash_ws_host', "www.splashsync.com/ws/soap")
