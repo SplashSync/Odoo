@@ -70,8 +70,11 @@ class SettingsManager():
         # ====================================================================#
         # Detect Company Id
         company_id = 1
-        if "c" in request.params.keys():
-            company_id = int(request.params['c'])
+        try:
+            if "c" in request.params.keys():
+                company_id = int(request.params['c'])
+        except Exception as e:
+            return company_id
         return company_id
 
     @staticmethod
