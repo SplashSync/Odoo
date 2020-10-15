@@ -34,10 +34,6 @@ class SettingsManager():
     @staticmethod
     def get_id():
         config = SettingsManager.get_configuration()
-
-        import logging
-        logging.warning("Splash Ws Id => "+config["splash_ws_id"])
-
         return config["splash_ws_id"]
 
     @staticmethod

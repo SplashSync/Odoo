@@ -27,7 +27,7 @@ class Partner(models.Model):
 
         # ====================================================================#
         # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_CREATE__)
+        # self.__do_splash_commit(const.__SPL_A_CREATE__)
 
         return res
 
@@ -36,7 +36,7 @@ class Partner(models.Model):
 
         # ====================================================================#
         # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_UPDATE__)
+        # self.__do_splash_commit(const.__SPL_A_UPDATE__)
 
         return res
 
@@ -45,7 +45,7 @@ class Partner(models.Model):
 
         # ====================================================================#
         # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_DELETE__)
+        # self.__do_splash_commit(const.__SPL_A_DELETE__)
 
         return res
 

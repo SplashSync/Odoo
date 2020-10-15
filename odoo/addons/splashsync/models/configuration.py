@@ -23,7 +23,7 @@ class ResConfigSettings(models.TransientModel):
         required=True,
         company_dependent=True,
         string="Server Identifier",
-        default="ThisIsOdooC1WsId",
+        default="ThisIsSplashWsId",
         help="Your Odoo Server Identifier, generated on your account."
     )
     splash_ws_key = fields.Char(
