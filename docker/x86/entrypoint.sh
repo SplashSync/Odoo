@@ -24,7 +24,7 @@ check_config "db_port" "$PORT"
 check_config "db_user" "$USER"
 check_config "db_password" "$PASSWORD"
 
-# Install Splash PyCore Module if not already instaled
+# Install Splash PyCore Module if not already installed
 if (pip3 list -l --format=columns | grep 'splashpy');
 then
   echo "Splash PyCore Module Already Installed"
