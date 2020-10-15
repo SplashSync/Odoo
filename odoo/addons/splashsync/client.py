@@ -147,8 +147,10 @@ class OdooClient(ClientInfo):
                 "[" + str(action).capitalize() + "]" + str(splash_object.desc) + " modified on Odoo"
             )
         except Exception as exception:
-            Framework.log().fromException(exception)
-            Framework.log().to_logging().clear()
+            splashLogger = Framework.log()
+            if splashLogger:
+                Framework.log().fromException(exception)
+                Framework.log().to_logging().clear()
             return False
 
     def complete(self):

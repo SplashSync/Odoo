@@ -102,8 +102,12 @@ class SettingsManager():
     def ensure_company():
         """Ensure Current User Company Requested One"""
         expected_company_id = SettingsManager.get_company_id()
-        if request.env.user.company_id.id != expected_company_id:
-            request.env.user.company_id = expected_company_id
+        try:
+            if request.env.user.company_id.id != expected_company_id:
+                request.env.user.company_id = expected_company_id
+        except RuntimeError as e:
+            return
+
 
     @staticmethod
     def reset():
