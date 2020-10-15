@@ -90,7 +90,7 @@ class PartnersHelper:
             return False
         # ==================================================================== #
         # Check condition - No Parent Id
-        if model.parent_id.id is not False:
+        if len(model.parent_id) > 0:
             Framework.log().warn('This Object has a Parent')
             return False
 
