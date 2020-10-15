@@ -23,7 +23,7 @@ def post_init_hook(cr, registry):
     # ====================================================================#
     # Setup Default Configuration For Testing
     env = Environment(cr, SUPERUSER_ID, {})
-    env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsSplashWsId")
+    env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsOdooC1WsId")
     env['ir.config_parameter'].sudo().set_param('splash_ws_key', "ThisIsYourEncryptionKeyForSplash")
     env['ir.config_parameter'].sudo().set_param('splash_ws_expert', True)
     env['ir.config_parameter'].sudo().set_param('splash_ws_host', "http://toolkit/ws/soap")
