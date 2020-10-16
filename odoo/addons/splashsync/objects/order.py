@@ -13,11 +13,11 @@
 
 from splashpy import const, Framework
 from . import OdooObject
-from .orders import Orderlines, OrderCore
+from .orders import Orderlines, OrderCore, OrderStatus
 
 
 # class Order(OdooObject, Orderlines, OrderCore):
-class Order(OdooObject, OrderCore):
+class Order(OdooObject, OrderCore, OrderStatus):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
@@ -41,14 +41,14 @@ class Order(OdooObject, OrderCore):
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ['id', 'date_order']
+        return ['id', 'date_order', 'state']
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
             "name": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
-            "state": {"write": False, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentStatus"},
+            # "state": {"write": False, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentStatus"},
 
             "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
             "date_due": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},
@@ -88,28 +88,17 @@ class Order(OdooObject, OrderCore):
 
         return new_order
 
-    # def load(self, object_id):
-    #     """
-    #     Load Odoo Object by Id
-    #     :param object_id: str
-    #     :return: Order Object
-    #     """
-    #     # ====================================================================#
-    #     # Load Order
-    #     model = super(Order, self).load(object_id)
-    #     # ====================================================================#
-    #     # TODO: Safety Check - Loaded Object is an Order
-    #     # if not PartnersHelper.is_address(model):
-    #     #     Framework.log().error('This Object is not an Address')
-    #     #     return False
-    #
-    #     return model
-    #
-    # def update(self, needed):
-    #     """
-    #     Update Current Odoo Object
-    #     :param needed: bool
-    #     :return: Order Object
-    #     """
-    #
-    #     return super(Order, self).update(needed)
+    def delete(self, object_id):
+        """Delete Odoo Object with Id"""
+        model = self.load(object_id)
+        # ====================================================================#
+        # Safety Check - Order Delete Allowed
+        if model is not False and model.state != 'cancel':
+            if Framework.isDebugMode():
+                model.state = 'cancel'
+            else:
+                return Framework.log().error(
+                    'You can not delete a sent quotation or a confirmed sales order. You must first cancel it.'
+                )
+
+        return super(Order, self).delete(object_id)
