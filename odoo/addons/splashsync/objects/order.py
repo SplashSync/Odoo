@@ -14,7 +14,7 @@
 from splashpy import const, Framework
 from . import OdooObject
 from .orders import Orderlines, OrderCore, OrderStatus
-
+from odoo.exceptions import MissingError
 
 # class Order(OdooObject, Orderlines, OrderCore):
 class Order(OdooObject, OrderCore, OrderStatus):
@@ -90,15 +90,24 @@ class Order(OdooObject, OrderCore, OrderStatus):
 
     def delete(self, object_id):
         """Delete Odoo Object with Id"""
-        model = self.load(object_id)
-        # ====================================================================#
-        # Safety Check - Order Delete Allowed
-        if model is not False and model.state != 'cancel':
-            if Framework.isDebugMode():
-                model.state = 'cancel'
-            else:
-                return Framework.log().error(
-                    'You can not delete a sent quotation or a confirmed sales order. You must first cancel it.'
-                )
+        try:
+            model = self.load(object_id)
+            if model is False:
+                return True
+            # ====================================================================#
+            # Safety Check - Order Delete Allowed
+            if model.state != 'cancel':
+                if Framework.isDebugMode():
+                    model.state = 'cancel'
+                else:
+                    Framework.log().warn(
+                        'You can not delete a sent quotation or a confirmed sales order. You must first cancel it.'
+                    )
+                    return True
+            model.unlink()
+        except MissingError:
+            return True
+        except Exception as exception:
+            return Framework.log().fromException(exception)
 
-        return super(Order, self).delete(object_id)
+        return True
