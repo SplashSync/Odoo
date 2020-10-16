@@ -11,13 +11,12 @@
 #  file that was distributed with this source code.
 #
 
-from odoo.addons.splashsync.helpers import CustomerHelper
 from splashpy import const, Framework
 from . import OdooObject
-from .orders import Orderlines
+from .orders import Orderlines, OrderCustomerData
 
 
-class Order(OdooObject, Orderlines, CustomerHelper):
+class Order(OdooObject, Orderlines, OrderCustomerData):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
@@ -36,22 +35,18 @@ class Order(OdooObject, Orderlines, CustomerHelper):
     @staticmethod
     def get_required_fields():
         """Get List of Object Fields to Include in Lists"""
-        return [
-            'partner_id', 'partner_invoice_id', 'partner_shipping_id',
-        ]
+        return ['partner_id', 'partner_invoice_id', 'partner_shipping_id']
 
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return [
-            "id", "partner_id", "partner_invoice_id", "partner_shipping_id"
-        ]
+        return ['id', 'partner_id', 'partner_invoice_id', 'partner_shipping_id']
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "name": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
+            "name": {"write": False, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
             "state": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentStatus"},
 
             "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
@@ -63,8 +58,7 @@ class Order(OdooObject, Orderlines, CustomerHelper):
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
             "date_order": {"type": const.__SPL_T_DATE__, "group": "", "itemtype": "http://schema.org/Order", "itemprop": "orderDate"},
-
-         }
+        }
 
     # ====================================================================#
     # Object CRUD
@@ -89,13 +83,15 @@ class Order(OdooObject, Orderlines, CustomerHelper):
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()
+        Framework.log().dump(req_fields, "req_fields")
+        Framework.log().dump(self._in, "self._in")
         # ====================================================================#
         # Safety Check
         if req_fields.__len__() < 1:
             return False
         # ====================================================================#
         # Create a New Simple Order
-        new_order = self.getModel().create(req_fields)
+        new_order = self.getModel().create(self._in)
         # ====================================================================#
         # Safety Check - Error
         if new_order is None:

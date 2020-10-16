@@ -17,13 +17,12 @@ from splashpy.componants import FieldFactory
 from splashpy.helpers import ObjectsHelper
 
 
-class CustomerHelper:
+class OrderCustomerData:
     """
     Access to Customer
     """
 
     def buildCustomerFields(self):
-        # TODO: customer (partner_id) peut être un 3rdP ou Address >> A gerer avec Address type "contact"
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "partner_id", "Customer")
         FieldFactory.microData("http://schema.org/Organization", "ID")
         FieldFactory.isRequired()
@@ -59,13 +58,6 @@ class CustomerHelper:
             return
         # ==================================================================== #
         # Write Field Data
-        if field_id == "partner_id":
-            M2OHelper.set_object(self.object, "partner_id", field_data, domain="res.partner")
-        # TODO: Filter on Address type ?
-        if field_id == "partner_invoice_id":
-            M2OHelper.set_object(self.object, "partner_invoice_id", field_data, domain="res.partner")
-        # TODO: Filter on Address type ?
-        if field_id == "partner_shipping_id":
-            M2OHelper.set_object(self.object, "partner_shipping_id", field_data, domain="res.partner")
+        M2OHelper.set_object(self.object, field_id, field_data, domain="res.partner")
 
         self._in.__delitem__(field_id)

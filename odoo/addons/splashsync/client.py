@@ -34,11 +34,12 @@ class OdooClient(ClientInfo):
 
         :return: list
         """
-        from odoo.addons.splashsync.objects import ThirdParty, Address, Product
+        from odoo.addons.splashsync.objects import ThirdParty, Address, Product, Order
         return [
             Product(),
             ThirdParty(),
             Address(),
+            Order(),
         ]
 
     @staticmethod

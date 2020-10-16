@@ -33,6 +33,16 @@ class Orderlines:
         FieldFactory.microData("http://schema.org/OrderItem", "orderedItem")
         FieldFactory.isNotTested()
         # ==================================================================== #
+        FieldFactory.create(const.__SPL_T_INT__, "id", "Line ID")
+        FieldFactory.inlist("Orderlines")
+        FieldFactory.microData("http://schema.org/OrderItem", "lineId")
+        FieldFactory.isNotTested()
+        # ==================================================================== #
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "state", "Line Status")
+        FieldFactory.inlist("Orderlines")
+        FieldFactory.microData("http://schema.org/OrderItem", "LineStatus")
+        FieldFactory.isNotTested()
+        # ==================================================================== #
         FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Product Ref.")
         FieldFactory.inlist("Orderlines")
         FieldFactory.microData("http://schema.org/Product", "ref")
@@ -120,6 +130,10 @@ class Orderlines:
                 values += [ObjectsHelper.encode("Product", str(orderline_field.product_id[0].id))]
             if value_id == "ref":
                 values += [orderline_field.product_id[0].default_code]
+            if value_id == "id":
+                values += [orderline_field.id]
+            if value_id == "state":
+                values += [orderline_field.state]
             if value_id == "desc":
                 values += [orderline_field.name]
             if value_id == "ord_qty":
@@ -158,7 +172,7 @@ class Orderlines:
         # ==================================================================== #
         # Init Lines List
         new_orderline = []
-        Framework.log().dump(field_data, "field_data")
+        # Framework.log().dump(field_data, "field_data")
         # ==================================================================== #
         # Safety Check
         if not isinstance(field_data, dict):
@@ -169,33 +183,54 @@ class Orderlines:
         # ==================================================================== #
         # Walk on Lines Field...
         for pos, line in field_data.items():
-            # Framework.log().dump(pos, "pos")
-            # Framework.log().dump(line, "line")
-            new_orderline.append(Orderlines._set_lines_values(line))
+            # TODO: set line state
+            for obj_line in self.object.order_line:
+                if int(obj_line.id) == int(line["id"]):
+                    # if line["state"] in ["done", "cancel"]:
+                    if line["state"] == "sale":
+                        for key, value in line.items():
+                            if key == "delv_qty":
+                                Framework.log().dump(obj_line.qty_delivered, "obj_line.qty_delivered")
+                                setattr(obj_line, "qty_delivered", float(value))
+                            if key == "inv_qty":
+                                setattr(obj_line, "qty_invoiced", float(value))
+                    if line["state"] != "sale":
+                        obj_line.product_uom_qty = 0
+                        obj_line.unlink()
+                        new_orderline.append(Orderlines._set_lines_values(line))
         setattr(self.object, "order_line", new_orderline)
         self._in.__delitem__(field_id)
 
     @staticmethod
     def _set_lines_values(line):
+        """
+        Set values of Line Fields
+        :param line:
+        :return: dict
+        """
         ord_line = {}
         for key, value in line.items():
-            if key == "product_id":
-                ord_line["product_id[0].id"] = ObjectsHelper.id(value)
-            if key == "ref":
-                ord_line["product_id[0].default_code"] = value
-            if key == "desc":
-                ord_line["name"] = value
-            if key == "ord_qty":
-                ord_line["product_uom_qty"] = float(value)
-            if key == "delv_qty":
-                ord_line["qty_delivered"] = float(value)
-            if key == "inv_qty":
-                ord_line["qty_invoiced"] = float(value)
-            if key == "ut_price":
-                ord_line["price_unit"] = PricesHelper.extract(value, "ht")
-                ord_line["tax_id"] = TaxHelper.find_by_rate(PricesHelper.extract(value, "vat"), 'sale')
-            if key == "lead_time":
-                ord_line["customer_lead"] = float(value)
+            # IF ORDER NOT CONFIRMED ("sale"), or NOT LOCKED ("done") or NOT CANCELLED ("cancel")
+            if line["state"] not in ["sale", "done", "cancel"]:
+                if key == "product_id":
+                    ord_line["product_id"] = int(ObjectsHelper.id(value))
+                if key == "ref":
+                    ord_line["product_id[0].default_code"] = value
+                if key == "desc":
+                    ord_line["name"] = value
+                if key == "ord_qty":
+                    ord_line["product_uom_qty"] = float(value)
+                if key == "delv_qty":
+                    ord_line["qty_delivered"] = float(value)
+                if key == "inv_qty":
+                    ord_line["qty_invoiced"] = float(value)
+                if key == "ut_price":
+                    ord_line["price_unit"] = PricesHelper.extract(value, "ht")
+                if key == "tax_name" and value is not None:
+                    ord_line["tax_id"] = TaxHelper.find_by_rate(PricesHelper.extract(value, "vat"), 'sale')
+                if key == "lead_time":
+                    ord_line["customer_lead"] = float(value)
+
         return ord_line
 
 
