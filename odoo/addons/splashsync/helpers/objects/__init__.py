@@ -18,7 +18,6 @@ from .config import ObjectConfigurator
 from .currency import CurrencyHelper
 from .files import OddoFilesHelper
 from .lists import ListsHelper
-from .orders.customer import CustomerHelper
 from .partners.partners import PartnersHelper
 from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper
