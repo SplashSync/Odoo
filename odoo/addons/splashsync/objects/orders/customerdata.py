@@ -51,7 +51,7 @@ class OrderCustomerData:
 
         self._in.__delitem__(index)
 
-    def setParentFields(self, field_id, field_data):
+    def setCustomerFields(self, field_id, field_data):
         # ==================================================================== #
         # Filter on Field Id
         if field_id not in ["partner_id", "partner_invoice_id", "partner_shipping_id"]:

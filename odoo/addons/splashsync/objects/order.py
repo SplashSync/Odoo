@@ -91,7 +91,7 @@ class Order(OdooObject, Orderlines, OrderCustomerData):
             return False
         # ====================================================================#
         # Create a New Simple Order
-        new_order = self.getModel().create(self._in)
+        new_order = self.getModel().create(req_fields)
         # ====================================================================#
         # Safety Check - Error
         if new_order is None:
