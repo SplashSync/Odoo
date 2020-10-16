@@ -12,5 +12,5 @@
 #  file that was distributed with this source code.
 #
 
-from .customerdata import OrderCustomerData
+from .core import OrderCore
 from .lines import Orderlines
