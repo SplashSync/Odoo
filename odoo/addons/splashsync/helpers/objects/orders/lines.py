@@ -252,13 +252,14 @@ class OrderLinesHelper:
         req_fields = {
             "order_id": order.id,
             "sequence": 10 + len(order.order_line),
+            "qty_delivered_method": 'manual',
         }
         # ====================================================================#
         # Link to Product
         try:
             req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
         except:
-            Framework.log().err("Unable to create Order Line, Product Id is Missing")
+            Framework.log().error("Unable to create Order Line, Product Id is Missing")
             return None
         # ==================================================================== #
         # Description
@@ -279,6 +280,9 @@ class OrderLinesHelper:
         # Create Order Line
         try:
             return http.request.env["sale.order.line"].create(req_fields)
-        except:
+        except Exception as exception:
+            Framework.log().error("Unable to create Order Line, please check inputs.")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Order Line")
             return None
 

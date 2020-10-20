@@ -144,7 +144,7 @@ class Orderlines:
 
     def setLinesFields(self, field_id, field_data):
         """
-        Set Orderlines List
+        Set Order Lines List
 
         :param field_id: str
         :param field_data: hash

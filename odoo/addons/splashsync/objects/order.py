@@ -11,12 +11,12 @@
 #  file that was distributed with this source code.
 #
 
-from splashpy import const, Framework
+from splashpy import Framework
 from . import OdooObject
-from .orders import Orderlines, OrderCore, OrderStatus, OrderDelivery
+from .orders import Orderlines, OrderCore, OrderStatus, OrderCarrier, OrderDelivery
 from odoo.exceptions import MissingError
 
-class Order(OdooObject, OrderCore, OrderDelivery, OrderStatus, Orderlines):
+class Order(OdooObject, OrderCore, OrderCarrier, OrderDelivery, OrderStatus, Orderlines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"

@@ -26,17 +26,29 @@ class OrderCore:
     __core_fields_ids = ['partner_id', 'partner_invoice_id', 'partner_shipping_id', 'date_order']
 
     def buildOrderCoreFields(self):
+        # ==================================================================== #
+        # Order Final Customer
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "partner_id", "Customer")
         FieldFactory.microData("http://schema.org/Organization", "ID")
+        FieldFactory.group("General")
         FieldFactory.isRequired()
+        # ==================================================================== #
+        # Order Billing Address
         FieldFactory.create(ObjectsHelper.encode("Address", const.__SPL_T_ID__), "partner_invoice_id", "Invoice Address")
         FieldFactory.microData("http://schema.org/Order", "billingAddress")
+        FieldFactory.group("General")
         FieldFactory.isRequired()
+        # ==================================================================== #
+        # Order Shipping Address
         FieldFactory.create(ObjectsHelper.encode("Address", const.__SPL_T_ID__), "partner_shipping_id", "Shipping Address")
         FieldFactory.microData("http://schema.org/Order", "orderDelivery")
+        FieldFactory.group("General")
         FieldFactory.isRequired()
+        # ==================================================================== #
+        # Order Date
         FieldFactory.create(const.__SPL_T_DATE__, "date_order", "Order Date")
         FieldFactory.microData("http://schema.org/Order", "orderDate")
+        FieldFactory.group("General")
         FieldFactory.isRequired()
 
     def getOrderCoreFields(self, index, field_id):
