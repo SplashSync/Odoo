@@ -21,7 +21,7 @@ class OrderLinesHelper:
     """Collection of Static Functions to manage Order & Invoices Lines content"""
 
     __generic_fields = [
-        'name', 'product_uom_qty', 'qty_delivered',
+        'name', 'product_uom_qty', 'qty_delivered_manual',
         'qty_invoiced', 'state', 'customer_lead', 'discount'
     ]
 
@@ -74,6 +74,37 @@ class OrderLinesHelper:
                 return Framework.log().error(ex)
 
         return True
+
+    @staticmethod
+    def complete_values(line_data):
+        """
+        Complete Order Line values with computed Information
+        - Detect Product ID based on Line Name
+
+
+        :param line_data: dict
+        :rtype: dict
+        """
+        from odoo.addons.splashsync.helpers import M2OHelper
+
+        # ====================================================================#
+        # Detect Wrong or Empty Product ID
+        # ====================================================================#
+        try:
+            if not M2OHelper.verify_id(ObjectsHelper.id(line_data["product_id"]), 'product.product'):
+                raise Exception("Invalid Product ID")
+        except Exception:
+            # ====================================================================#
+            # Try detection based on Line Description
+            try:
+                product_id = M2OHelper.verify_name(line_data["name"], 'default_code', 'product.product')
+                if int(product_id) > 0:
+                    line_data["product_id"] = ObjectsHelper.encode("Product", str(product_id))
+            except Exception:
+                pass
+
+        return line_data
+
 
     # ====================================================================#
     # RAW Order & Invoice Line Management
@@ -153,7 +184,7 @@ class OrderLinesHelper:
         :param field_data: mixed
         """
 
-        from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper, M2OHelper
+        from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
 
         # ==================================================================== #
         # [CORE] Order Line Fields
@@ -161,7 +192,7 @@ class OrderLinesHelper:
 
         # ==================================================================== #
         # Linked Product ID
-        if field_id == "product_id":
+        if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
             order_line.product_id = int(ObjectsHelper.id(field_data))
         # ==================================================================== #
         # Description

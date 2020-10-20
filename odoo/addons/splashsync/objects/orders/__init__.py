@@ -15,3 +15,4 @@
 from .core import OrderCore
 from .lines import Orderlines
 from .status import OrderStatus
+from .delivery import OrderDelivery

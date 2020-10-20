@@ -52,17 +52,16 @@ class Orderlines:
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
         # Qty Shipped/Delivered
-        FieldFactory.create(const.__SPL_T_INT__, "qty_delivered", "Delivered Qty")
+        FieldFactory.create(const.__SPL_T_INT__, "qty_delivered_manual", "Delivered Qty")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderDelivery")
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
-        FieldFactory.isNotTested()
         # ==================================================================== #
         # Qty Invoiced
         FieldFactory.create(const.__SPL_T_INT__, "qty_invoiced", "Invoiced Qty")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderQuantity")
-        FieldFactory.association("name@lines", "product_uom_qty@lines", "price_unit@lines")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         FieldFactory.isReadOnly()
         # ==================================================================== #
         # Line Unit Price (HT)
@@ -155,15 +154,21 @@ class Orderlines:
 
         # ==================================================================== #
         # Safety Check - field_id is an Order lines List
-        # Safety Check - Received List is Valid
-        if field_id != "lines" or not isinstance(field_data, dict):
+        if field_id != "lines":
             return
         self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # Safety Check - Received List is Valid
+        if not isinstance(field_data, dict):
+            return
         # ==================================================================== #
         # Walk on Received Order Lines...
         index = 0
         updated_order_line_ids = []
         for line_data in OrderedDict(sorted(field_data.items())).values():
+            # ==================================================================== #
+            # Complete Order Line values with computed Information
+            line_data = OrderLinesHelper.complete_values(line_data)
             # ==================================================================== #
             # Load or Create Order Line
             try:
