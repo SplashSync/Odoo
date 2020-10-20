@@ -13,7 +13,6 @@
 #
 
 from odoo import http
-from splashpy import Framework
 
 
 class TaxHelper:
@@ -27,6 +26,18 @@ class TaxHelper:
         for tax in taxes_ids:
             tax_rate += TaxHelper.__get_tax_rate(tax, type_tax_use)
         return tax_rate
+
+    @staticmethod
+    def get_name_values(type_tax_use='sale'):
+        """
+        Get a Relation Possible Values Dict
+
+        :param type_tax_use: str
+        :rtype: dict
+        """
+        from odoo.addons.splashsync.helpers import M2OHelper\
+
+        return M2OHelper.get_name_values(TaxHelper.tax_domain, [("type_tax_use", "=", type_tax_use)])
 
     @staticmethod
     def __get_tax_rate(tax, type_tax_use):
@@ -50,7 +61,13 @@ class TaxHelper:
 
     @staticmethod
     def find_by_rate(tax_rate, type_tax_use):
-        """Find Odoo Tax by Rate"""
+        """
+        Find Odoo Tax by Rate
+
+        :param tax_rate: float
+        :param type_tax_use: str
+        :rtype: account.tax|None
+        """
         taxes = TaxHelper.getModel().search([
             ("amount", "=", tax_rate),
             ("amount_type", "=", "percent"),
@@ -62,11 +79,16 @@ class TaxHelper:
 
     @staticmethod
     def __create_for_debug(tax_rate, type_tax_use):
-        """Create an Odoo Tax Rate For Debug"""
-        # Filter on Taxes types
+        """
+        Create an Odoo Tax Rate For Debug
+
+        :param tax_rate: float
+        :param type_tax_use: str
+        :rtype: account.tax
+        """
+        # from splashpy import Framework
         # if not Framework.isDebugMode():
         #     return None
-
         tax_data = {
             "amount": tax_rate,
             "amount_type": "percent",
@@ -80,5 +102,9 @@ class TaxHelper:
 
     @staticmethod
     def getModel():
-        """Get Taxes Model Class"""
+        """
+        Get Taxes Model Class
+
+        :rtype: str
+        """
         return http.request.env[TaxHelper.tax_domain].sudo()

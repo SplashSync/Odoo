@@ -14,236 +14,176 @@
 
 from collections import OrderedDict
 
-from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from splashpy.helpers import ListHelper, PricesHelper, ObjectsHelper
-
+from splashpy.helpers import ListHelper, ObjectsHelper
 
 class Orderlines:
     """
     Access to Order line Fields
     """
+
     def buildLinesFields(self):
+        """Build Order Lines Fields"""
+
+        from odoo.addons.splashsync.helpers import SettingsManager, TaxHelper
+
         # ==================================================================== #
-        # Order line child fields
+        # [CORE] Order Line Fields
         # ==================================================================== #
+
+        # ==================================================================== #
+        # Linked Product ID
         FieldFactory.create(ObjectsHelper.encode("Product", const.__SPL_T_ID__), "product_id", "Product ID")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/OrderItem", "orderedItem")
-        FieldFactory.isNotTested()
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/Product", "productID")
+        FieldFactory.association("product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_INT__, "id", "Line ID")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/OrderItem", "lineId")
-        FieldFactory.isNotTested()
+        # Description
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Product Desc.")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/partOfInvoice", "description")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "state", "Line Status")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/OrderItem", "LineStatus")
-        FieldFactory.isNotTested()
+        # Qty Ordered
+        FieldFactory.create(const.__SPL_T_INT__, "product_uom_qty", "Ordered Qty")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/QuantitativeValue", "value")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Product Ref.")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/Product", "ref")
-        FieldFactory.isNotTested()
-        # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "desc", "Product Desc.")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/Product", "description")
-        FieldFactory.isNotTested()
-        # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_DOUBLE__, "ord_qty", "Ordered Qty")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/OrderItem", "orderQuantity")
-        FieldFactory.isNotTested()
-        # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_DOUBLE__, "delv_qty", "Delivered Qty")
-        FieldFactory.inlist("Orderlines")
+        # Qty Shipped/Delivered
+        FieldFactory.create(const.__SPL_T_INT__, "qty_delivered", "Delivered Qty")
+        FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderDelivery")
-        FieldFactory.isNotTested()
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_DOUBLE__, "inv_qty", "Invoiced Qty")
-        FieldFactory.inlist("Orderlines")
+        # Qty Invoiced
+        FieldFactory.create(const.__SPL_T_INT__, "qty_invoiced", "Invoiced Qty")
+        FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderQuantity")
+        FieldFactory.association("name@lines", "product_uom_qty@lines", "price_unit@lines")
+        # ==================================================================== #
+        # Line Unit Price (HT)
+        FieldFactory.create(const.__SPL_T_PRICE__, "price_unit", "Unit Price")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/PriceSpecification", "price")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+        # ==================================================================== #
+        # Line Unit Price Reduction (Percent)
+        FieldFactory.create(const.__SPL_T_DOUBLE__, "discount", "Discount")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/Order", "discount")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+        # ==================================================================== #
+        # Sales Taxes (One)
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "tax_name", "Tax Name")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/PriceSpecification", "valueAddedTaxName")
+        FieldFactory.addChoices(TaxHelper.get_name_values("sale"))
+        FieldFactory.isReadOnly(not SettingsManager.is_sales_adv_taxes())
         FieldFactory.isNotTested()
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_PRICE__, "ut_price", "Unit Price")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/UnitPriceSpecification", "price")
+        # Sales Taxes (Multi)
+        FieldFactory.create(const.__SPL_T_INLINE__, "tax_names", "Taxes")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/PriceSpecification", "valueAddedTaxNames")
+        FieldFactory.addChoices(TaxHelper.get_name_values("sale"))
+        FieldFactory.isReadOnly(not SettingsManager.is_sales_adv_taxes())
         FieldFactory.isNotTested()
+
         # ==================================================================== #
+        # [EXTRA] Order Line Fields
+        # ==================================================================== #
+
+        # ==================================================================== #
+        # Product reference
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "product_ref", "Product Ref.")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/Product", "ref")
+        FieldFactory.isReadOnly().isNotTested()
+        # ==================================================================== #
+        # Delivery Lead Time
         FieldFactory.create(const.__SPL_T_DOUBLE__, "lead_time", "Customer LeadTime")
-        FieldFactory.inlist("Orderlines")
+        FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/Offer", "deliveryLeadTime")
         FieldFactory.isNotTested()
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "tax_name", "Taxes")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/Product", "priceTaxNames")
-        FieldFactory.isNotTested()
+        # Line Status
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "state", "Line Status")
+        FieldFactory.inlist("lines")
+        FieldFactory.microData("http://schema.org/OrderItem", "LineStatus")
+        FieldFactory.isReadOnly().isNotTested()
 
     def getLinesFields(self, index, field_id):
         """
         Get Order Lines List
+
         :param index: str
         :param field_id: str
         :return: None
         """
+        from odoo.addons.splashsync.helpers import OrderLinesHelper
+
         # ==================================================================== #
         # Init Lines List...
-        lines_list = ListHelper.initOutput(self._out, "Orderlines", field_id)
+        lines_list = ListHelper.initOutput(self._out, "lines", field_id)
         # ==================================================================== #
         # Safety Check
         if lines_list is None:
             return
         # ==================================================================== #
-        # List Order Lines Ids
-        for line in self.object.order_line:
-            # ==================================================================== #
-            # Debug Mode => Filter Current Order From List
-            if Framework.isDebugMode() and line.id == self.object.id:
-                continue
-            # ==================================================================== #
-            # Read Lines Data
-            lines_values = self._get_lines_values(lines_list)
-            for pos in range(len(lines_values)):
-                ListHelper.insert(self._out, "Orderlines", field_id, "line-" + str(pos), lines_values[pos])
+        # Read Lines Data
+        lines_values = OrderLinesHelper.get_values(self.object.order_line, lines_list)
+        for pos in range(len(lines_values)):
+            ListHelper.insert(self._out, "lines", field_id, "line-" + str(pos), lines_values[pos])
         # ==================================================================== #
         # Force Lines Ordering
-        self._out["Orderlines"] = OrderedDict(sorted(self._out["Orderlines"].items()))
-
+        self._out["lines"] = OrderedDict(sorted(self._out["lines"].items()))
         self._in.__delitem__(index)
-
-    def _get_lines_values(self, value_id):
-        """
-        Get List of Lines Values for given Field
-        :param value_id: str
-        :return: dict
-        """
-        values = []
-        # ====================================================================#
-        # Walk on Product Attributes Values
-        for orderline_field in self.object.order_line:
-            # Collect Values
-            if value_id == "product_id":
-                values += [ObjectsHelper.encode("Product", str(orderline_field.product_id[0].id))]
-            if value_id == "ref":
-                values += [orderline_field.product_id[0].default_code]
-            if value_id == "id":
-                values += [orderline_field.id]
-            if value_id == "state":
-                values += [orderline_field.state]
-            if value_id == "desc":
-                values += [orderline_field.name]
-            if value_id == "ord_qty":
-                values += [orderline_field.product_uom_qty]
-            if value_id == "delv_qty":
-                values += [orderline_field.qty_delivered]
-            if value_id == "inv_qty":
-                values += [orderline_field.qty_invoiced]
-            if value_id == "ut_price":
-                values += [PricesHelper.encode(
-                            float(orderline_field.price_unit),
-                            TaxHelper.get_tax_rate(orderline_field.tax_id, 'sale') if not SettingsManager.is_prd_adv_taxes() else float(0),
-                            None,
-                            CurrencyHelper.get_main_currency_code()
-                            )]
-            if value_id == "tax_name":
-                values += [M2MHelper.get_names(orderline_field, "tax_id")]
-            if value_id == "lead_time":
-                values += [orderline_field.customer_lead]
-
-        return values
-
-    #######################################
 
     def setLinesFields(self, field_id, field_data):
         """
         Set Orderlines List
+
         :param field_id: str
         :param field_data: hash
         :return: None
         """
+        from odoo.addons.splashsync.helpers import OrderLinesHelper
+
         # ==================================================================== #
-        # Safety Check - field_id is an Orderlines List
-        if field_id != "Orderlines":
+        # Safety Check - field_id is an Order lines List
+        # Safety Check - Received List is Valid
+        if field_id != "lines" or not isinstance(field_data, dict):
             return
-        # ==================================================================== #
-        # Init Lines List
-        new_orderline = []
-        # Framework.log().dump(field_data, "field_data")
-        # ==================================================================== #
-        # Safety Check
-        if not isinstance(field_data, dict):
-            return
-        # ==================================================================== #
-        # Force Orderlines Ordering
-        field_data = OrderedDict(sorted(field_data.items()))
-        # ==================================================================== #
-        # Walk on Lines Field...
-        for pos, line in field_data.items():
-            # TODO: set line state
-            for obj_line in self.object.order_line:
-                if int(obj_line.id) == int(line["id"]):
-                    # if line["state"] in ["done", "cancel"]:
-                    if line["state"] == "sale":
-                        for key, value in line.items():
-                            if key == "delv_qty":
-                                Framework.log().dump(obj_line.qty_delivered, "obj_line.qty_delivered")
-                                setattr(obj_line, "qty_delivered", float(value))
-                            if key == "inv_qty":
-                                setattr(obj_line, "qty_invoiced", float(value))
-                    if line["state"] != "sale":
-                        obj_line.product_uom_qty = 0
-                        obj_line.unlink()
-                        new_orderline.append(Orderlines._set_lines_values(line))
-        setattr(self.object, "order_line", new_orderline)
         self._in.__delitem__(field_id)
-
-    @staticmethod
-    def _set_lines_values(line):
-        """
-        Set values of Line Fields
-        :param line:
-        :return: dict
-        """
-        ord_line = {}
-        for key, value in line.items():
-            # IF ORDER NOT CONFIRMED ("sale"), or NOT LOCKED ("done") or NOT CANCELLED ("cancel")
-            if line["state"] not in ["sale", "done", "cancel"]:
-                if key == "product_id":
-                    ord_line["product_id"] = int(ObjectsHelper.id(value))
-                if key == "ref":
-                    ord_line["product_id[0].default_code"] = value
-                if key == "desc":
-                    ord_line["name"] = value
-                if key == "ord_qty":
-                    ord_line["product_uom_qty"] = float(value)
-                if key == "delv_qty":
-                    ord_line["qty_delivered"] = float(value)
-                if key == "inv_qty":
-                    ord_line["qty_invoiced"] = float(value)
-                if key == "ut_price":
-                    ord_line["price_unit"] = PricesHelper.extract(value, "ht")
-                if key == "tax_name" and value is not None:
-                    ord_line["tax_id"] = TaxHelper.find_by_rate(PricesHelper.extract(value, "vat"), 'sale')
-                if key == "lead_time":
-                    ord_line["customer_lead"] = float(value)
-
-        return ord_line
-
-
-class Invoicelines:
-    """
-    Access to Invoice line Fields
-    """
-    def buildLinesFields(self):
         # ==================================================================== #
-        # Order line child fields
+        # Walk on Received Order Lines...
+        index = 0
+        updated_order_line_ids = []
+        for line_data in OrderedDict(sorted(field_data.items())).values():
+            # ==================================================================== #
+            # Load or Create Order Line
+            try:
+                order_line = self.object.order_line[index]
+            except:
+                order_line = OrderLinesHelper.add_order_line(self.object, line_data)
+                if order_line is None:
+                    return
+            # ==================================================================== #
+            # Store Updated Order Line Id
+            updated_order_line_ids.append(order_line.id)
+            index += 1
+            # ==================================================================== #
+            # Check if Comment Order Line
+            if OrderLinesHelper.is_comment(order_line):
+                continue
+            # ==================================================================== #
+            # Update Order Line Values
+            if not OrderLinesHelper.set_values(order_line, line_data):
+                return
         # ==================================================================== #
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "product_id", "Product")
-        FieldFactory.inlist("Orderlines")
-        FieldFactory.microData("http://schema.org/Product", "orderedItem")
-        FieldFactory.isNotTested()
-        # ==================================================================== #
+        # Delete Remaining Order Lines...
+        for order_line in self.object.order_line:
+            if order_line.id not in updated_order_line_ids:
+                self.object.order_line = [(3, order_line.id, 0)]

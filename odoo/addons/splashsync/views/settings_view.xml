@@ -121,6 +121,27 @@
 
                     </div>
 
+                    <h2>Sales Settings</h2>
+
+                    <div class="row mt16 o_settings_container">
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="splash_sales_advanced_taxes" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="splash_sales_advanced_taxes"/>
+                                <div class="text-muted">
+                                    Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sales lines taxes.
+                                </div>
+                                <div class="text-muted">
+                                    By default, Splash will only use given price first detected Taxe Rate.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </xpath>
         </field>

@@ -86,7 +86,7 @@ class OrderStatus:
         # Order Global State
         if field_id == "state":
             state = self._get_odoo_status(field_data)
-            if isinstance(state, str):
+            if isinstance(state, str) and self.object.state != state:
                 self.object.state = state
             self._in.__delitem__(field_id)
 

@@ -16,8 +16,7 @@ from . import OdooObject
 from .orders import Orderlines, OrderCore, OrderStatus
 from odoo.exceptions import MissingError
 
-# class Order(OdooObject, Orderlines, OrderCore):
-class Order(OdooObject, OrderCore, OrderStatus):
+class Order(OdooObject, OrderCore, OrderStatus, Orderlines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
@@ -48,7 +47,6 @@ class Order(OdooObject, OrderCore, OrderStatus):
         """Get Hash of Fields Overrides"""
         return {
             "name": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
-            # "state": {"write": False, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentStatus"},
 
             "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
             "date_due": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},

@@ -29,6 +29,7 @@ class SettingsManager():
         'splash_product_simplified_prices': False,
         'splash_product_advanced_variants': False,
         'splash_product_advanced_taxes': False,
+        'splash_sales_advanced_taxes': False,
     }
 
     @staticmethod
@@ -63,6 +64,10 @@ class SettingsManager():
     @staticmethod
     def is_prd_adv_taxes():
         return bool(SettingsManager.get_configuration()["splash_product_advanced_taxes"])
+
+    @staticmethod
+    def is_sales_adv_taxes():
+        return bool(SettingsManager.get_configuration()["splash_sales_advanced_taxes"])
 
     @staticmethod
     def get_company_id():
@@ -153,4 +158,5 @@ class SettingsManager():
             "splash_product_simplified_prices": bool(parameters.get_param('splash_product_simplified_prices', False)),
             "splash_product_advanced_taxes": bool(parameters.get_param('splash_product_advanced_taxes', False)),
             "splash_product_advanced_variants": bool(parameters.get_param('splash_product_advanced_variants', False)),
+            "splash_sales_advanced_taxes": bool(parameters.get_param('splash_sales_advanced_taxes', False)),
         }
