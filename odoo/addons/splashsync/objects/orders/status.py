@@ -47,25 +47,25 @@ class OrderStatus:
         # Order is Canceled
         FieldFactory.create(const.__SPL_T_BOOL__, "isCanceled", "Is canceled")
         FieldFactory.microData("http://schema.org/OrderStatus", "OrderCancelled")
-        FieldFactory.group("General")
+        FieldFactory.group("Meta")
         FieldFactory.isReadOnly()
         # ====================================================================#
         # Order is Validated
         FieldFactory.create(const.__SPL_T_BOOL__, "isValidated", "Is Validated")
         FieldFactory.microData("http://schema.org/OrderStatus", "OrderPaymentDone")
-        FieldFactory.group("General")
+        FieldFactory.group("Meta")
         FieldFactory.isReadOnly()
         # ====================================================================#
         # Order is Processing
         FieldFactory.create(const.__SPL_T_BOOL__, "isProcessing", "Is Processing")
         FieldFactory.microData("http://schema.org/OrderStatus", "OrderProcessing")
-        FieldFactory.group("General")
+        FieldFactory.group("Meta")
         FieldFactory.isReadOnly()
         # ====================================================================#
         # Order is Closed
         FieldFactory.create(const.__SPL_T_BOOL__, "isClosed", "Is Closed")
         FieldFactory.microData("http://schema.org/OrderStatus", "OrderDelivered")
-        FieldFactory.group("General")
+        FieldFactory.group("Meta")
         FieldFactory.isReadOnly()
 
     def getStatusFields(self, index, field_id):

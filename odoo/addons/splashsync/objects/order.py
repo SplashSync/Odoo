@@ -13,10 +13,10 @@
 
 from splashpy import Framework
 from . import OdooObject
-from .orders import Orderlines, OrderCore, OrderStatus, OrderCarrier, OrderDelivery
+from .orders import Orderlines, OrderCore, OrderStatus, OrderCarrier, OrderDelivery, OrderRelations
 from odoo.exceptions import MissingError
 
-class Order(OdooObject, OrderCore, OrderCarrier, OrderDelivery, OrderStatus, Orderlines):
+class Order(OdooObject, OrderCore, OrderRelations, OrderCarrier, OrderDelivery, OrderStatus, Orderlines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"
@@ -47,6 +47,7 @@ class Order(OdooObject, OrderCore, OrderCarrier, OrderDelivery, OrderStatus, Ord
         """Get Hash of Fields Overrides"""
         return {
             "name": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
+            "client_order_ref": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderNumber"},
 
             "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
             "date_due": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},

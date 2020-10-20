@@ -17,3 +17,4 @@ from .lines import Orderlines
 from .status import OrderStatus
 from .delivery import OrderDelivery
 from .carrier import OrderCarrier
+from .relations import OrderRelations
