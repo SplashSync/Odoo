@@ -56,12 +56,14 @@ class Orderlines:
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderDelivery")
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+        FieldFactory.isNotTested()
         # ==================================================================== #
         # Qty Invoiced
         FieldFactory.create(const.__SPL_T_INT__, "qty_invoiced", "Invoiced Qty")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderQuantity")
         FieldFactory.association("name@lines", "product_uom_qty@lines", "price_unit@lines")
+        FieldFactory.isReadOnly()
         # ==================================================================== #
         # Line Unit Price (HT)
         FieldFactory.create(const.__SPL_T_PRICE__, "price_unit", "Unit Price")
