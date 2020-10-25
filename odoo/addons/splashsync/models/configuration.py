@@ -41,6 +41,13 @@ class ResConfigSettings(models.TransientModel):
         string="Advanced Mode",
         help="Check this to Enable Advanced Configuration"
     )
+
+    splash_ws_no_commits = fields.Boolean(
+        company_dependent=True,
+        string="Disable Commits",
+        help="Check this to Disable Change Commits to Splash Server"
+    )
+
     splash_ws_host = fields.Char(
         company_dependent=True,
         string="Splash Server",
@@ -98,6 +105,7 @@ class ResConfigSettings(models.TransientModel):
             splash_ws_id=config.splash_ws_id,
             splash_ws_key=config.splash_ws_key,
             splash_ws_expert=bool(config.splash_ws_expert),
+            splash_ws_no_commits=bool(config.splash_ws_no_commits),
             splash_ws_host=config.splash_ws_host,
             splash_ws_user=config.splash_ws_user.id,
             splash_product_simplified_prices=bool(config.splash_product_simplified_prices),
@@ -117,6 +125,7 @@ class ResConfigSettings(models.TransientModel):
             'splash_ws_id': self.splash_ws_id,
             'splash_ws_key': self.splash_ws_key,
             'splash_ws_expert': self.splash_ws_expert,
+            'splash_ws_no_commits': self.splash_ws_no_commits,
             'splash_ws_host': self.splash_ws_host,
             'splash_ws_user': self.splash_ws_user,
             'splash_product_simplified_prices': self.splash_product_simplified_prices,
@@ -130,6 +139,7 @@ class ResConfigSettings(models.TransientModel):
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_id', self.splash_ws_id)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_key', self.splash_ws_key)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_expert', self.splash_ws_expert)
+            self.env['ir.config_parameter'].sudo().set_param('splash_ws_no_commits', self.splash_ws_no_commits)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
             self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
             self.env['ir.config_parameter'].sudo().set_param('splash_product_simplified_prices', self.splash_product_simplified_prices)

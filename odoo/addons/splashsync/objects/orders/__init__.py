@@ -12,6 +12,7 @@
 #  file that was distributed with this source code.
 #
 
+from .address import OrderAddress
 from .core import OrderCore
 from .lines import Orderlines
 from .status import OrderStatus

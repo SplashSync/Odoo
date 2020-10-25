@@ -13,10 +13,10 @@
 
 from splashpy import Framework
 from . import OdooObject
-from .orders import Orderlines, OrderCore, OrderStatus, OrderCarrier, OrderDelivery, OrderRelations
+from .orders import Orderlines, OrderCore, OrderStatus, OrderCarrier, OrderDelivery, OrderRelations, OrderAddress
 from odoo.exceptions import MissingError
 
-class Order(OdooObject, OrderCore, OrderRelations, OrderCarrier, OrderDelivery, OrderStatus, Orderlines):
+class Order(OdooObject, OrderCore, OrderAddress, OrderRelations, OrderCarrier, OrderDelivery, OrderStatus, Orderlines):
     # ====================================================================#
     # Splash Object Definition
     name = "Order"

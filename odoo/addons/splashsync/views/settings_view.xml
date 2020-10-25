@@ -67,6 +67,20 @@
                         </div>
                     </div>
 
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="splash_ws_no_commits" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="splash_ws_no_commits"/>
+                                <div class="text-muted">
+                                    Check this to Disable Change Commits to Splash Server.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <h2>Products Settings</h2>
 
                     <div class="row mt16 o_settings_container">
