@@ -150,7 +150,7 @@ class OdooClient(ClientInfo):
         except Exception as exception:
             splashLogger = Framework.log()
             if splashLogger:
-                Framework.log().fromException(exception)
+                Framework.log().fromException(exception, False)
                 Framework.log().to_logging().clear()
             return False
 
