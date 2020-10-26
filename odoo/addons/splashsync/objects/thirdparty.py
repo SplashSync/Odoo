@@ -25,6 +25,18 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
     desc = "Odoo Partner"
     icon = "fa fa-user"
 
+    # ====================================================================#
+    # Object Default Configuration
+    # ====================================================================#
+    # Imports
+    enable_pull_created = True
+    enable_pull_updated = True
+    enable_pull_deleted = True
+    # Exports
+    enable_push_created = True
+    enable_push_updated = True
+    enable_push_deleted = False
+
     @staticmethod
     def getDomain():
         return 'res.partner'

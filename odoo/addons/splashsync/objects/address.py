@@ -25,6 +25,18 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
     desc = "Odoo Address"
     icon = "fa fa-envelope-o"
 
+    # ====================================================================#
+    # Object Default Configuration
+    # ====================================================================#
+    # Imports
+    enable_pull_created = True
+    enable_pull_updated = True
+    enable_pull_deleted = True
+    # Exports
+    enable_push_created = True
+    enable_push_updated = True
+    enable_push_deleted = False
+
     @staticmethod
     def getDomain():
         return 'res.partner'
