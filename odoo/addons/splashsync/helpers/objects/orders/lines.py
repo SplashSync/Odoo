@@ -25,6 +25,10 @@ class OrderLinesHelper:
         'qty_invoiced', 'state', 'customer_lead', 'discount'
     ]
 
+    __qty_fields = [
+        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced'
+    ]
+
     # ====================================================================#
     # Order & Invoice Line Management
     # ====================================================================#
@@ -139,6 +143,8 @@ class OrderLinesHelper:
         # Delivery Lead Time | Line Status
         # Line Unit Price Reduction (Percent)
         if field_id in OrderLinesHelper.__generic_fields:
+            if field_id in OrderLinesHelper.__qty_fields:
+                return int(getattr(order_line, field_id))
             return getattr(order_line, field_id)
         # ==================================================================== #
         # Line Unit Price (HT)

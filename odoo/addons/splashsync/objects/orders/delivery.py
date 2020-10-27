@@ -141,7 +141,7 @@ class OrderDelivery:
             # ====================================================================#
             # Qty Ordered | Qty Shipped/Delivered
             if field_id in ['product_uom_qty', 'qty_delivered']:
-                values += [getattr(order_line, field_id)]
+                values += [int(getattr(order_line, field_id))]
 
         return values
 
