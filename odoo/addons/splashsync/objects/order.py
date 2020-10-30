@@ -82,7 +82,7 @@ class Order(OdooObject, OrderCore, OrderAddress, OrderRelations, OrderCarrier, O
         # ====================================================================#
         # Safety Check - Error
         if new_order is None:
-            Framework.log().error("Order is None")
+            Framework.log().error("Order creation failed")
             return False
 
         return new_order

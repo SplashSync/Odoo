@@ -21,12 +21,12 @@ class OrderLinesHelper:
     """Collection of Static Functions to manage Order & Invoices Lines content"""
 
     __generic_fields = [
-        'name', 'product_uom_qty', 'qty_delivered_manual',
-        'qty_invoiced', 'state', 'customer_lead', 'discount'
+        'name', 'state', 'customer_lead', 'discount',
+        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
     ]
 
     __qty_fields = [
-        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced'
+        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
     ]
 
     # ====================================================================#
@@ -34,18 +34,18 @@ class OrderLinesHelper:
     # ====================================================================#
 
     @staticmethod
-    def get_values(order_lines, field_id):
+    def get_values(lines, field_id):
         """
         Get List of Lines Values for given Field
 
-        :param order_lines: recordset
+        :param lines: recordset
         :param field_id: str
         :return: dict
         """
         values = []
         # ====================================================================#
         # Walk on Lines
-        for order_line in order_lines.filtered(lambda r: r.display_type is False):
+        for order_line in lines.filtered(lambda r: r.display_type is False):
             # ====================================================================#
             # Check Line is Not a Comment Line
             if OrderLinesHelper.is_comment(order_line):
@@ -57,11 +57,11 @@ class OrderLinesHelper:
         return values
 
     @staticmethod
-    def set_values(order_line, line_data):
+    def set_values(line, line_data):
         """
         Set values of Order Line
 
-        :param order_line: sale.order.line
+        :param line: sale.order.line
         :param line_data: dict
         :rtype: bool
         """
@@ -71,7 +71,7 @@ class OrderLinesHelper:
             try:
                 # ====================================================================#
                 # Update Order Line data
-                OrderLinesHelper.__set_raw_value(order_line, field_id, field_data)
+                OrderLinesHelper.__set_raw_value(line, field_id, field_data)
             except Exception as ex:
                 # ====================================================================#
                 # Update Failed => Line may be protected
@@ -115,11 +115,11 @@ class OrderLinesHelper:
     # ====================================================================#
 
     @staticmethod
-    def __get_raw_values(order_line, field_id):
+    def __get_raw_values(line, field_id):
         """
         Line Single Value for given Field
 
-        :param order_line: sale.order.line
+        :param line: sale.order.line
         :param field_id: str
         :return: dict
         """
@@ -134,7 +134,7 @@ class OrderLinesHelper:
         # Linked Product ID
         if field_id == "product_id":
             try:
-                return ObjectsHelper.encode("Product", str(order_line.product_id[0].id))
+                return ObjectsHelper.encode("Product", str(line.product_id[0].id))
             except:
                 return None
         # ==================================================================== #
@@ -144,14 +144,17 @@ class OrderLinesHelper:
         # Line Unit Price Reduction (Percent)
         if field_id in OrderLinesHelper.__generic_fields:
             if field_id in OrderLinesHelper.__qty_fields:
-                return int(getattr(order_line, field_id))
-            return getattr(order_line, field_id)
+                return int(getattr(line, field_id))
+            return getattr(line, field_id)
         # ==================================================================== #
         # Line Unit Price (HT)
         if field_id == "price_unit":
             return PricesHelper.encode(
-                float(order_line.price_unit),
-                TaxHelper.get_tax_rate(order_line.tax_id, 'sale'),
+                float(line.price_unit),
+                TaxHelper.get_tax_rate(
+                    line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids,
+                    'sale'
+                ),
                 None,
                 CurrencyHelper.get_main_currency_code()
             )
@@ -160,11 +163,15 @@ class OrderLinesHelper:
         # Sales Taxes
         if field_id == "tax_name":
             try:
-                return order_line.tax_id[0].name
+                tax_ids = line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids
+                return tax_ids[0].name
             except:
                 return None
         if field_id == "tax_names":
-            return M2MHelper.get_names(order_line, "tax_id")
+            return M2MHelper.get_names(
+                line,
+                "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
+            )
 
         # ==================================================================== #
         # [EXTRA] Order Line Fields
@@ -174,23 +181,24 @@ class OrderLinesHelper:
         # Product reference
         if field_id == "product_ref":
             try:
-                return str(order_line.product_id[0].default_code)
+                return str(line.product_id[0].default_code)
             except:
                 return None
 
         return None
 
     @staticmethod
-    def __set_raw_value(order_line, field_id, field_data):
+    def __set_raw_value(line, field_id, field_data):
         """
         Set simple value of Order Line
 
-        :param order_line: sale.order.line
+        :param line: sale.order.line
         :param field_id: str
         :param field_data: mixed
         """
 
         from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
+        tax_field_id = "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
 
         # ==================================================================== #
         # [CORE] Order Line Fields
@@ -199,31 +207,35 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Linked Product ID
         if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
-            order_line.product_id = int(ObjectsHelper.id(field_data))
+            line.product_id = int(ObjectsHelper.id(field_data))
         # ==================================================================== #
         # Description
         # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
         # Delivery Lead Time | Line Status
         # Line Unit Price Reduction (Percent)
         if field_id in OrderLinesHelper.__generic_fields:
-            setattr(order_line, field_id, field_data)
+            setattr(line, field_id, field_data)
         # ==================================================================== #
         # Line Unit Price (HT)
         if field_id == "price_unit":
-            order_line.price_unit = PricesHelper.extract(field_data, "ht")
+            line.price_unit = PricesHelper.extract(field_data, "ht")
             if not SettingsManager.is_sales_adv_taxes():
-                order_line.tax_id = TaxHelper.find_by_rate(PricesHelper.extract(field_data, "vat"), 'sale')
+                setattr(
+                    line,
+                    tax_field_id,
+                    TaxHelper.find_by_rate(PricesHelper.extract(field_data, "vat"), 'sale')
+                )
         # ==================================================================== #
         # Sales Taxes
         if field_id == "tax_name" and SettingsManager.is_sales_adv_taxes():
             field_data = '["'+field_data+'"]' if isinstance(field_data, str) else "[]"
             M2MHelper.set_names(
-                order_line, "tax_id", field_data,
+                line, tax_field_id, field_data,
                 domain=TaxHelper.tax_domain, filters=[("type_tax_use", "=", 'sale')]
             )
         if field_id == "tax_names" and SettingsManager.is_sales_adv_taxes():
             M2MHelper.set_names(
-                order_line, "tax_id", field_data,
+                line, tax_field_id, field_data,
                 domain=TaxHelper.tax_domain, filters=[("type_tax_use", "=", 'sale')]
             )
 
@@ -234,13 +246,23 @@ class OrderLinesHelper:
         return True
 
     @staticmethod
-    def is_comment(order_line):
+    def is_comment(line):
         """
         Check if Order Line is Section or Note
-        :param order_line: sale.order.line
+        :param line: sale.order.line|account.invoice.line
         :return: bool
         """
-        return order_line.display_type is not False
+        return line.display_type is not False
+
+    @staticmethod
+    def is_order_line(order_line):
+        """
+        Check if Line is Order Line (or Invoice Line)
+
+        :param order_line: sale.order.line|account.invoice.line
+        :return: bool
+        """
+        return getattr(order_line, "_name") == "sale.order.line"
 
     # ====================================================================#
     # Order Specific Methods
@@ -290,5 +312,54 @@ class OrderLinesHelper:
             Framework.log().error("Unable to create Order Line, please check inputs.")
             Framework.log().fromException(exception, False)
             Framework.log().dump(req_fields, "New Order Line")
+            return None
+
+    # ====================================================================#
+    # Invoice Specific Methods
+    # ====================================================================#
+
+    @staticmethod
+    def add_invoice_line(invoice, line_data):
+        """
+        Add a New Line to an Invoice
+        :param invoice: account.invoice
+        :return: account.invoice.line
+        """
+        # ====================================================================#
+        # Prepare Minimal Order Line Data
+        req_fields = {
+            "invoice_id": invoice.id,
+            "account_id": invoice.account_id.id,
+            "sequence": 10 + len(invoice.invoice_line_ids),
+        }
+        # ====================================================================#
+        # Link to Product
+        try:
+            req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
+        except:
+            Framework.log().error("Unable to create Invoice Line, Product Id is Missing")
+            pass
+        # ==================================================================== #
+        # Description
+        # Qty Invoiced
+        for field_id in OrderLinesHelper.__generic_fields:
+            try:
+                req_fields[field_id] = line_data[field_id]
+            except:
+                pass
+        # ====================================================================#
+        # Unit Price
+        try:
+            req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
+        except:
+            pass
+        # ====================================================================#
+        # Create Order Line
+        try:
+            return http.request.env["account.invoice.line"].create(req_fields)
+        except Exception as exception:
+            Framework.log().error("Unable to create Invoice Line, please check inputs.")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Invoice Line")
             return None
 
