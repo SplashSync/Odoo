@@ -10,10 +10,5 @@
 #
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
-#
 
-from .core import InvoiceCore
-from .lines import InvoiceLines
-from .status import InvoiceStatus
-from .payments import InvoicePayments
-
+from .payments import InvoicePaymentsHelper
