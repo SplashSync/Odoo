@@ -29,9 +29,12 @@ class SupplierHelper:
         :param product: Product
         :return: None, product.supplierinfo
         """
-        if len(product.seller_ids) < 1:
-            return None
-        return product.seller_ids[0]
+        # ====================================================================#
+        # Filter Product Suppliers
+        productSuppliers = product.seller_ids.filtered(lambda r: r.product_id.id == product.id)
+        # ====================================================================#
+        # Return First Product Suppliers if Exists
+        return productSuppliers[0] if len(productSuppliers) > 0 else None
 
     @staticmethod
     def create(product, vendor_name, vendor_price):
