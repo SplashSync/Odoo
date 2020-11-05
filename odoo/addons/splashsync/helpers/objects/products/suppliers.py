@@ -62,7 +62,7 @@ class SupplierHelper:
             })
             # ====================================================================#
             # Connect Supplier Info
-            product.seller_ids = [(6, 0, [supplier.id])]
+            product.seller_ids = [(4, supplier.id, 0)]
 
             return supplier
         except Exception:
