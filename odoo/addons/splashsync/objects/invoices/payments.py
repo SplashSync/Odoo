@@ -25,40 +25,61 @@ class InvoicePayments:
 
     def buildPaymentsFields(self):
         """Build Invoice Payments Fields"""
-
-        from odoo.addons.splashsync.helpers import SettingsManager, TaxHelper
+        from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
 
         # ==================================================================== #
         # [CORE] Invoice Payments Fields
         # ==================================================================== #
 
-        # # ==================================================================== #
-        # # Payment Method Name
-        # FieldFactory.create(ObjectsHelper.encode("Product", const.__SPL_T_ID__), "product_id", "Product ID")
-        # FieldFactory.inlist("payments")
-        # FieldFactory.microData("http://schema.org/Invoice", "PaymentMethod")
-        # FieldFactory.association("product_uom_qty@lines", "price_unit@lines")
-        # # ==================================================================== #
-        # # Description
-        # FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Product Desc.")
-        # FieldFactory.inlist("payments")
-        # FieldFactory.microData("http://schema.org/partOfInvoice", "description")
-        # FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+        # ==================================================================== #
+        # Payment Method Code
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "journal_code", "Method")
+        FieldFactory.inlist("payments")
+        FieldFactory.microData("http://schema.org/Invoice", "PaymentMethod")
+        FieldFactory.addChoices(InvoicePaymentsHelper.get_payment_code_names())
+        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        # ==================================================================== #
+        # Payment Journal Name
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "journal_name", "Journal")
+        FieldFactory.inlist("payments")
+        FieldFactory.isReadOnly()
+        # ==================================================================== #
+        # Payment Journal Type
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "journal_type", "Journal Type")
+        FieldFactory.inlist("payments")
+        FieldFactory.isReadOnly()
+        # ==================================================================== #
+        # Payment Type
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "payment_type", "Type")
+        FieldFactory.inlist("payments")
+        FieldFactory.isReadOnly()
+        # ==================================================================== #
+        # Payment State
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "state", "Status")
+        FieldFactory.inlist("payments")
+        FieldFactory.isReadOnly()
         # ==================================================================== #
         # Payment Date
         FieldFactory.create(const.__SPL_T_DATE__, "payment_date", "Date")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "validFrom")
+        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
         # ==================================================================== #
         # Payment Transaction Id
-        FieldFactory.create(const.__SPL_T_INT__, "payment_reference", "Transaction Id")
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Number")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/Invoice", "paymentMethodId")
+        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
         # ==================================================================== #
         # Payment Amount
         FieldFactory.create(const.__SPL_T_DOUBLE__, "amount", "Amount")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "price")
+        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        if Framework.isDebugMode():
+            FieldFactory.addChoice(1.0, 1)
+            FieldFactory.addChoice(2.0, 2)
+            FieldFactory.addChoice(3.0, 3)
 
     def getPaymentsFields(self, index, field_id):
         """
@@ -95,47 +116,41 @@ class InvoicePayments:
         :param field_data: hash
         :return: None
         """
-        # from odoo.addons.splashsync.helpers import OrderLinesHelper
-        #
-        # # ==================================================================== #
-        # # Safety Check - field_id is an Order lines List
-        # if field_id != "lines":
-        #     return
-        # self._in.__delitem__(field_id)
-        # # ==================================================================== #
-        # # Safety Check - Received List is Valid
-        # if not isinstance(field_data, dict):
-        #     return
-        # # ==================================================================== #
-        # # Walk on Received Order Lines...
-        # index = 0
-        # updated_order_line_ids = []
-        # for line_data in OrderedDict(sorted(field_data.items())).values():
-        #     # ==================================================================== #
-        #     # Complete Order Line values with computed Information
-        #     line_data = OrderLinesHelper.complete_values(line_data)
-        #     # ==================================================================== #
-        #     # Load or Create Order Line
-        #     try:
-        #         order_line = self.object.order_line[index]
-        #     except:
-        #         order_line = OrderLinesHelper.add_order_line(self.object, line_data)
-        #         if order_line is None:
-        #             return
-        #     # ==================================================================== #
-        #     # Store Updated Order Line Id
-        #     updated_order_line_ids.append(order_line.id)
-        #     index += 1
-        #     # ==================================================================== #
-        #     # Check if Comment Order Line
-        #     if OrderLinesHelper.is_comment(order_line):
-        #         continue
-        #     # ==================================================================== #
-        #     # Update Order Line Values
-        #     if not OrderLinesHelper.set_values(order_line, line_data):
-        #         return
-        # # ==================================================================== #
-        # # Delete Remaining Order Lines...
-        # for order_line in self.object.order_line:
-        #     if order_line.id not in updated_order_line_ids:
-        #         self.object.order_line = [(3, order_line.id, 0)]
+        from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
+
+        # ==================================================================== #
+        # Safety Check - field_id is an Payment List
+        if field_id != "payments":
+            return
+        # ==================================================================== #
+        # Safety Check - Received List is Valid
+        if not isinstance(field_data, dict):
+            field_data = {}
+        # ==================================================================== #
+        # Walk on Received Payments...
+        index = 0
+        updated_payment_ids = []
+        for payment_data in OrderedDict(sorted(field_data.items())).values():
+            # ==================================================================== #
+            # Load or Create Order Line
+            try:
+                payment = self.object.payment_ids.sorted(key=lambda r: r.id)[index]
+            except:
+                payment = None
+            # ==================================================================== #
+            # Update Order Line Values
+            payment_id = InvoicePaymentsHelper.set_values(self.object, payment, payment_data)
+            if payment_id is None:
+                return
+            # ==================================================================== #
+            # Store Updated Order Line Id
+            updated_payment_ids.append(payment_id)
+            index += 1
+        # ==================================================================== #
+        # Delete Remaining Payments...
+        for payment in self.object.payment_ids:
+            if payment.id not in updated_payment_ids:
+                InvoicePaymentsHelper.remove(self.object, payment)
+        # ==================================================================== #
+        # Mark Field as Processed...
+        self._in.__delitem__(field_id)

@@ -27,6 +27,7 @@ class BasicFields():
         "selection": const.__SPL_T_VARCHAR__,
         "integer": const.__SPL_T_INT__,
         "float": const.__SPL_T_DOUBLE__,
+        "monetary": const.__SPL_T_DOUBLE__,
         "date": const.__SPL_T_DATE__,
         "datetime": const.__SPL_T_DATETIME__,
     }
@@ -90,7 +91,9 @@ class BasicFields():
                 # Force Urls generator options
                 if field["type"] is "char":
                     FieldFactory.addOption("Url_Prefix", "http://")
-                # FieldFactory.isReadOnly()
+                # Force Monetary as ReadOnly
+                if field["type"] is "monetary":
+                    FieldFactory.isReadOnly()
 
     def getCoreFields(self, index, field_id):
         # Load Basic Fields Definitions
@@ -104,7 +107,7 @@ class BasicFields():
             self.getSimpleStr(index, field_id)
             self.__getCoreTranslatedFields(field_id)
 
-        elif field_type in ['boolean', 'integer', 'float']:
+        elif field_type in ['boolean', 'integer', 'float', 'monetary']:
             self.getSimple(index, field_id)
 
         elif field_type in ['date']:

@@ -337,7 +337,6 @@ class OrderLinesHelper:
         try:
             req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
         except:
-            Framework.log().error("Unable to create Invoice Line, Product Id is Missing")
             pass
         # ==================================================================== #
         # Description

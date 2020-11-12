@@ -15,351 +15,407 @@
 from odoo import http
 from splashpy.helpers import PricesHelper, ObjectsHelper
 from splashpy import Framework
-
+from datetime import date, datetime
+from splashpy import const
+# from odoo.addons.splashsync.helpers import M2OHelper
+from collections import OrderedDict
 
 class InvoicePaymentsHelper:
     """Collection of Static Functions to manage Invoices Payments content"""
 
-    # __generic_fields = [
-    #     'name', 'state', 'customer_lead', 'discount',
-    #     'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
-    # ]
-    # #
-    # # __qty_fields = [
-    # #     'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
-    # # ]
-    #
-    # ====================================================================#
-    # Invoices Payments Management
-    # ====================================================================#
-    #
-    @staticmethod
-    def get_values(lines, field_id):
-        """
-        Get List of Lines Values for given Field
+    __generic_fields = [
+        'name', 'state', 'payment_type', 'communication'
+    ]
 
-        :param lines: recordset
+    __required_fields = [
+        'name', 'journal_code', 'payment_date', 'amount'
+    ]
+
+    __sales_types_filter = [
+        ('type', 'in', ["sale", "cash", "bank", "general"])
+    ]
+
+    __payment_method_id = None
+
+    @staticmethod
+    def get_values(payments, field_id):
+        """
+        Get List of Payments Values for given Field
+
+        :param payments: recordset
         :param field_id: str
         :return: dict
         """
         values = []
         # ====================================================================#
         # Walk on Lines
-        for order_line in lines.filtered(lambda r: r.display_type is False):
-            # ====================================================================#
-            # Check Line is Not a Comment Line
-            if OrderLinesHelper.is_comment(order_line):
-                continue
+        for payment_line in payments.sorted(key=lambda r: r.id):
             # ====================================================================#
             # Collect Values
-            values += [OrderLinesHelper.__get_raw_values(order_line, field_id)]
+            values += [InvoicePaymentsHelper.__get_raw_values(payment_line, field_id)]
 
         return values
-    #
+
+    @staticmethod
+    def set_values(invoice, payment, payment_data):
+        """
+        Set values of Payments Line
+
+        :param invoice: account.invoice
+        :param payment: None|account.payment
+        :param payment_data: dict
+        :rtype: None|int
+        """
+        # ====================================================================#
+        # Check if Payment Data are Valid
+        if not InvoicePaymentsHelper.validate(payment_data):
+            Framework.log().warn("Payment Data are incomplete or invalid")
+            return None
+        # ====================================================================#
+        # Check if Payment Data are Modified
+        if payment is not None and InvoicePaymentsHelper.compare(payment, payment_data):
+            Framework.log().warn("Payments are Similar >> Update Skipped")
+            return payment.id
+        # ====================================================================#
+        # Check if Invoice is Open
+        if invoice.state != 'open' and not Framework.isDebugMode():
+            Framework.log().error("Payments cannot be processed because the invoice is not open!")
+            return None
+
+        # ====================================================================#
+        # Recreate Payment
+        # ====================================================================#
+        try:
+            # ====================================================================#
+            # Remove Payment Item
+            if payment is not None:
+                if not InvoicePaymentsHelper.remove(invoice, payment):
+                    return None
+                else:
+                    Framework.log().warn("Payments Deleted")
+            # ====================================================================#
+            # Add Payment Item
+            payment = InvoicePaymentsHelper.add(invoice, payment_data)
+            if payment is not None:
+                Framework.log().warn("Payments Created")
+        except Exception as ex:
+            # ====================================================================#
+            # Update Failed => Line may be protected
+            Framework.log().error(ex)
+            return None
+
+        return payment.id if payment is not None else None
+
+    @staticmethod
+    def get_payment_code_names():
+        """
+        Get List of Available Payment Methods
+
+        :return: List of Available Payment Methods
+        :rtype: dict
+        """
+        # ====================================================================#
+        # Execute Domain Search with Filter
+        results = []
+        methods = http.request.env["account.journal"].search(InvoicePaymentsHelper.__sales_types_filter, limit=50)
+        # ====================================================================#
+        # Parse results
+        for method in methods:
+            results += [(
+                method.code,
+                "[%s] %s (%s)" % (method.code, method.name, method.type)
+            )]
+        return results
+
+    # ====================================================================#
+    # Add Payment Methods
+    # ====================================================================#
+
+    @staticmethod
+    def add(invoice, payment_data):
+        """
+        Add a New Payment to an Invoice
+
+        :param invoice: account.invoice
+        :param payment_data: str
+
+        :return: account.payment
+        """
+        # ====================================================================#
+        # Detect Payment Method
+        journal_id = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
+        if journal_id is None:
+            return None
+        # ====================================================================#
+        # Detect Payment Method Id
+        payment_type = "inbound" if float(payment_data["amount"]) > 0 else 'outbound'
+        payment_method_id = InvoicePaymentsHelper.__detect_payment_type(payment_type)
+        if payment_method_id is None:
+            return None
+        # ====================================================================#
+        # Detect Payment Date
+        try:
+            payment_date = datetime.strptime(payment_data["payment_date"], const.__SPL_T_DATECAST__).date()
+        except:
+            Framework.log().error("Unable to format payment date.")
+            return None
+        # ====================================================================#
+        # Prepare Minimal Payment Data
+        req_fields = {
+            "invoice_ids": [invoice.id],
+            "partner_id": invoice.partner_id.id,
+            "partner_type": 'customer',
+            "journal_id": journal_id,
+            "name": payment_data["name"],
+            "communication": payment_data["name"],
+            "amount": payment_data["amount"],
+            "payment_date": payment_date,
+            "payment_type": payment_type,
+            "payment_method_id": payment_method_id,
+            "state": "draft"
+        }
+        # ====================================================================#
+        # Create Payment
+        try:
+            # ==================================================================== #
+            # Unit Tests - Ensure Invoice is Open
+            if Framework.isDebugMode() and invoice.state != 'open':
+                invoice.state = 'open'
+
+            Framework.log().dump(invoice.id)
+            Framework.log().dump(invoice.state, 'State Before')
+            Framework.log().dump(payment_data)
+
+            # ====================================================================#
+            # Create Raw Payment
+            payment = http.request.env["account.payment"].create(req_fields)
+            # ====================================================================#
+            # Add Payment to Invoice
+            Framework.log().dump(invoice.state, 'State Middle 1')
+            invoice.payment_ids = [(4, payment.id, 0)]
+            Framework.log().dump(invoice.state, 'State Middle 2')
+            # ====================================================================#
+            # Validate Payment
+            payment.post()
+
+            return payment
+        except Exception as exception:
+            Framework.log().error("Unable to create Payment, please check inputs.")
+            Framework.log().fromException(exception, False)
+            return None
+
+        Framework.log().dump(invoice.state, 'State After')
+
+
+    @staticmethod
+    def validate(payment_data):
+        """
+        Verify all Required Payment Data are There
+
+        :param payment_data: dict
+
+        :return: bool
+        """
+        for key in InvoicePaymentsHelper.__required_fields:
+            if key not in payment_data:
+                return False
+
+        return True
+
+    @staticmethod
+    def compare(payment, data):
+        """
+        Compare a Payment with Received Data
+
+        :param payment: account.payment
+        :param data: dict
+
+        :return: True if Similar
+        :rtype: bool
+        """
+
+        # ==================================================================== #
+        # Compare Payment Number
+        if payment.name != data["name"]:
+            return False
+        # ==================================================================== #
+        # Compare Payment Method
+        if payment.journal_id.code != data["journal_code"]:
+            return False
+        # ==================================================================== #
+        # Compare Payment Date
+        try:
+            payment_date = datetime.strptime(data["payment_date"], const.__SPL_T_DATECAST__).date()
+            if payment.payment_date != payment_date:
+                return False
+        except Exception:
+            return False
+        # ==================================================================== #
+        # Compare Payment Amount
+        if abs(payment.amount - float(data["amount"])) >= 0.001:
+            return False
+
+        return True
+
+    @staticmethod
+    def remove(invoice, payment):
+        """
+        Remove a Payment fom an Invoice
+
+        :param invoice: account.invoice
+        :param payment: account.payment
+
+        :rtype: bool
+        """
+        try:
+            # ==================================================================== #
+            # Unit Tests - Ensure Invoice is Open
+            if Framework.isDebugMode() and invoice.state != 'open':
+                invoice.state = 'open'
+            # ====================================================================#
+            # Unit Tests => Force Journal to Allow Update Posted
+            # if Framework.isDebugMode():
+            payment.journal_id.update_posted = True
+
+            # ====================================================================#
+            # Cancel Payment
+            if payment.state == "posted":
+                payment.cancel()
+            # ====================================================================#
+            # Remove Payment
+            invoice.payment_ids = [(3, payment.id, 0)]
+
+            return True
+        except Exception as exception:
+            Framework.log().fromException(exception, False)
+            return False
+
+    # ====================================================================#
+    # Private Methods
+    # ====================================================================#
+
+    @staticmethod
+    def __get_raw_values(payment, field_id):
+        """
+        Line Single Value for given Field
+
+        :param payment: account.payment
+        :param field_id: str
+        :return: dict
+        """
+
+        from odoo.addons.splashsync.helpers import M2OHelper
+
+        # ==================================================================== #
+        # Generic Fields
+        if field_id in InvoicePaymentsHelper.__generic_fields:
+            return getattr(payment, field_id)
+        # ==================================================================== #
+        # Payment Method
+        if field_id == "journal_code":
+            return M2OHelper.get_name(payment, "journal_id", "code")
+        if field_id == "journal_type":
+            return M2OHelper.get_name(payment, "journal_id", "type")
+        if field_id == "journal_name":
+            return M2OHelper.get_name(payment, "journal_id")
+        # ==================================================================== #
+        # Payment Date
+        if field_id == "payment_date":
+            if isinstance(payment.payment_date, date):
+                return payment.payment_date.strftime(const.__SPL_T_DATECAST__)
+            else:
+                return
+        # ==================================================================== #
+        # Payment Amount
+        if field_id == "amount":
+            return float(getattr(payment, field_id))
+
+
+
+    @staticmethod
+    def __detect_journal_id(journal_code):
+        """
+        Search for Journal using Payment method Code
+
+        :param journal_code: str
+
+        :return: int|None
+        """
+        from odoo.addons.splashsync.helpers import M2OHelper
+        try:
+            journal_id = M2OHelper.verify_name(
+                journal_code,
+                "code",
+                "account.journal",
+                InvoicePaymentsHelper.__sales_types_filter
+            )
+            return journal_id if isinstance(journal_id, int) and journal_id > 0 else None
+        except:
+            Framework.log().error("Unable to detect Journal Id (Payment Method)")
+            return None
+
+    @staticmethod
+    def __detect_payment_type(mode ='inbound'):
+        """
+        Search for Manual Payment Method Id
+
+        :return: int|None
+        """
+        from odoo.addons.splashsync.helpers import M2OHelper
+        try:
+            payment_method_id = M2OHelper.verify_name(
+                "manual",
+                "name",
+                "account.payment.method",
+                [('payment_type', '=', mode)]
+            )
+            return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
+        except:
+            Framework.log().error("Unable to detect manual payments method")
+            return None
+
     # @staticmethod
-    # def set_values(line, line_data):
+    # def __set_raw_value(payment, field_id, field_data):
     #     """
-    #     Set values of Order Line
+    #     Set simple value of Payment
     #
-    #     :param line: sale.order.line
-    #     :param line_data: dict
-    #     :rtype: bool
-    #     """
-    #     # ====================================================================#
-    #     # Walk on Data to Update
-    #     for field_id, field_data in line_data.items():
-    #         try:
-    #             # ====================================================================#
-    #             # Update Order Line data
-    #             OrderLinesHelper.__set_raw_value(line, field_id, field_data)
-    #         except Exception as ex:
-    #             # ====================================================================#
-    #             # Update Failed => Line may be protected
-    #             return Framework.log().error(ex)
-    #
-    #     return True
-    #
-    # @staticmethod
-    # def complete_values(line_data):
-    #     """
-    #     Complete Order Line values with computed Information
-    #     - Detect Product ID based on Line Name
-    #
-    #
-    #     :param line_data: dict
-    #     :rtype: dict
-    #     """
-    #     from odoo.addons.splashsync.helpers import M2OHelper
-    #
-    #     # ====================================================================#
-    #     # Detect Wrong or Empty Product ID
-    #     # ====================================================================#
-    #     try:
-    #         if not M2OHelper.verify_id(ObjectsHelper.id(line_data["product_id"]), 'product.product'):
-    #             raise Exception("Invalid Product ID")
-    #     except Exception:
-    #         # ====================================================================#
-    #         # Try detection based on Line Description
-    #         try:
-    #             product_id = M2OHelper.verify_name(line_data["name"], 'default_code', 'product.product')
-    #             if int(product_id) > 0:
-    #                 line_data["product_id"] = ObjectsHelper.encode("Product", str(product_id))
-    #         except Exception:
-    #             pass
-    #
-    #     return line_data
-    #
-    #
-    # # ====================================================================#
-    # # RAW Order & Invoice Line Management
-    # # ====================================================================#
-    #
-    # @staticmethod
-    # def __get_raw_values(line, field_id):
-    #     """
-    #     Line Single Value for given Field
-    #
-    #     :param line: sale.order.line
-    #     :param field_id: str
-    #     :return: dict
-    #     """
-    #
-    #     from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
-    #
-    #     # ==================================================================== #
-    #     # [CORE] Order Line Fields
-    #     # ==================================================================== #
-    #
-    #     # ==================================================================== #
-    #     # Linked Product ID
-    #     if field_id == "product_id":
-    #         try:
-    #             return ObjectsHelper.encode("Product", str(line.product_id[0].id))
-    #         except:
-    #             return None
-    #     # ==================================================================== #
-    #     # Description
-    #     # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
-    #     # Delivery Lead Time | Line Status
-    #     # Line Unit Price Reduction (Percent)
-    #     if field_id in OrderLinesHelper.__generic_fields:
-    #         if field_id in OrderLinesHelper.__qty_fields:
-    #             return int(getattr(line, field_id))
-    #         return getattr(line, field_id)
-    #     # ==================================================================== #
-    #     # Line Unit Price (HT)
-    #     if field_id == "price_unit":
-    #         return PricesHelper.encode(
-    #             float(line.price_unit),
-    #             TaxHelper.get_tax_rate(
-    #                 line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids,
-    #                 'sale'
-    #             ),
-    #             None,
-    #             CurrencyHelper.get_main_currency_code()
-    #         )
-    #
-    #     # ==================================================================== #
-    #     # Sales Taxes
-    #     if field_id == "tax_name":
-    #         try:
-    #             tax_ids = line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids
-    #             return tax_ids[0].name
-    #         except:
-    #             return None
-    #     if field_id == "tax_names":
-    #         return M2MHelper.get_names(
-    #             line,
-    #             "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
-    #         )
-    #
-    #     # ==================================================================== #
-    #     # [EXTRA] Order Line Fields
-    #     # ==================================================================== #
-    #
-    #     # ==================================================================== #
-    #     # Product reference
-    #     if field_id == "product_ref":
-    #         try:
-    #             return str(line.product_id[0].default_code)
-    #         except:
-    #             return None
-    #
-    #     return None
-    #
-    # @staticmethod
-    # def __set_raw_value(line, field_id, field_data):
-    #     """
-    #     Set simple value of Order Line
-    #
-    #     :param line: sale.order.line
+    #     :param payment: account.payment
     #     :param field_id: str
     #     :param field_data: mixed
     #     """
-    #
-    #     from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
-    #     tax_field_id = "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
+    #     from odoo.addons.splashsync.helpers import M2OHelper
     #
     #     # ==================================================================== #
     #     # [CORE] Order Line Fields
     #     # ==================================================================== #
     #
     #     # ==================================================================== #
-    #     # Linked Product ID
-    #     if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
-    #         line.product_id = int(ObjectsHelper.id(field_data))
+    #     # Generic Fields
+    #     if field_id in InvoicePaymentsHelper.__generic_fields:
+    #         setattr(payment, field_id, field_data)
     #     # ==================================================================== #
-    #     # Description
-    #     # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
-    #     # Delivery Lead Time | Line Status
-    #     # Line Unit Price Reduction (Percent)
-    #     if field_id in OrderLinesHelper.__generic_fields:
-    #         setattr(line, field_id, field_data)
+    #     # Payment Method
+    #     if field_id == "journal_code":
+    #         M2OHelper.set_name(payment, "journal_id", field_data, "code", "account.journal")
     #     # ==================================================================== #
-    #     # Line Unit Price (HT)
-    #     if field_id == "price_unit":
-    #         line.price_unit = PricesHelper.extract(field_data, "ht")
-    #         if not SettingsManager.is_sales_adv_taxes():
-    #             setattr(
-    #                 line,
-    #                 tax_field_id,
-    #                 TaxHelper.find_by_rate(PricesHelper.extract(field_data, "vat"), 'sale')
-    #             )
+    #     # Payment Date
+    #     if field_id == "payment_date" and isinstance(field_data, str):
+    #         try:
+    #             payment.payment_date = datetime.strptime(field_data, const.__SPL_T_DATECAST__).date()
+    #         except Exception:
+    #             pass
     #     # ==================================================================== #
-    #     # Sales Taxes
-    #     if field_id == "tax_name" and SettingsManager.is_sales_adv_taxes():
-    #         field_data = '["'+field_data+'"]' if isinstance(field_data, str) else "[]"
-    #         M2MHelper.set_names(
-    #             line, tax_field_id, field_data,
-    #             domain=TaxHelper.tax_domain, filters=[("type_tax_use", "=", 'sale')]
-    #         )
-    #     if field_id == "tax_names" and SettingsManager.is_sales_adv_taxes():
-    #         M2MHelper.set_names(
-    #             line, tax_field_id, field_data,
-    #             domain=TaxHelper.tax_domain, filters=[("type_tax_use", "=", 'sale')]
-    #         )
+    #     # Payment Amount
+    #     if field_id == "amount":
+    #         payment.amount = float(field_data)
     #
-    #     # ==================================================================== #
-    #     # [EXTRA] Order Line Fields
-    #     # ==================================================================== #
+    #     # Framework.log().dump(payment.state)
+    #     # if payment.state is 'draft':
+    #
+    #     # try:
+    #     #
+    #     # except Exception as exception:
+    #     #     Framework.log().fromException(exception, False)
     #
     #     return True
-    #
-    # @staticmethod
-    # def is_comment(line):
-    #     """
-    #     Check if Order Line is Section or Note
-    #     :param line: sale.order.line|account.invoice.line
-    #     :return: bool
-    #     """
-    #     return line.display_type is not False
-    #
-    # @staticmethod
-    # def is_order_line(order_line):
-    #     """
-    #     Check if Line is Order Line (or Invoice Line)
-    #
-    #     :param order_line: sale.order.line|account.invoice.line
-    #     :return: bool
-    #     """
-    #     return getattr(order_line, "_name") == "sale.order.line"
-    #
-    # # ====================================================================#
-    # # Order Specific Methods
-    # # ====================================================================#
-    #
-    # @staticmethod
-    # def add_order_line(order, line_data):
-    #     """
-    #     Add a New Line to an Order
-    #     :param order: sale.order
-    #     :return: sale.order.line
-    #     """
-    #     # ====================================================================#
-    #     # Prepare Minimal Order Line Data
-    #     req_fields = {
-    #         "order_id": order.id,
-    #         "sequence": 10 + len(order.order_line),
-    #         "qty_delivered_method": 'manual',
-    #     }
-    #     # ====================================================================#
-    #     # Link to Product
-    #     try:
-    #         req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-    #     except:
-    #         Framework.log().error("Unable to create Order Line, Product Id is Missing")
-    #         return None
-    #     # ==================================================================== #
-    #     # Description
-    #     # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
-    #     # Delivery Lead Time | Line Status
-    #     for field_id in OrderLinesHelper.__generic_fields:
-    #         try:
-    #             req_fields[field_id] = line_data[field_id]
-    #         except:
-    #             pass
-    #     # ====================================================================#
-    #     # Unit Price
-    #     try:
-    #         req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
-    #     except:
-    #         pass
-    #     # ====================================================================#
-    #     # Create Order Line
-    #     try:
-    #         return http.request.env["sale.order.line"].create(req_fields)
-    #     except Exception as exception:
-    #         Framework.log().error("Unable to create Order Line, please check inputs.")
-    #         Framework.log().fromException(exception, False)
-    #         Framework.log().dump(req_fields, "New Order Line")
-    #         return None
-    #
-    # # ====================================================================#
-    # # Invoice Specific Methods
-    # # ====================================================================#
-    #
-    # @staticmethod
-    # def add_invoice_line(invoice, line_data):
-    #     """
-    #     Add a New Line to an Invoice
-    #     :param invoice: account.invoice
-    #     :return: account.invoice.line
-    #     """
-    #     # ====================================================================#
-    #     # Prepare Minimal Order Line Data
-    #     req_fields = {
-    #         "invoice_id": invoice.id,
-    #         "account_id": invoice.account_id.id,
-    #         "sequence": 10 + len(invoice.invoice_line_ids),
-    #     }
-    #     # ====================================================================#
-    #     # Link to Product
-    #     try:
-    #         req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-    #     except:
-    #         Framework.log().error("Unable to create Invoice Line, Product Id is Missing")
-    #         pass
-    #     # ==================================================================== #
-    #     # Description
-    #     # Qty Invoiced
-    #     for field_id in OrderLinesHelper.__generic_fields:
-    #         try:
-    #             req_fields[field_id] = line_data[field_id]
-    #         except:
-    #             pass
-    #     # ====================================================================#
-    #     # Unit Price
-    #     try:
-    #         req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
-    #     except:
-    #         pass
-    #     # ====================================================================#
-    #     # Create Order Line
-    #     try:
-    #         return http.request.env["account.invoice.line"].create(req_fields)
-    #     except Exception as exception:
-    #         Framework.log().error("Unable to create Invoice Line, please check inputs.")
-    #         Framework.log().fromException(exception, False)
-    #         Framework.log().dump(req_fields, "New Invoice Line")
-    #         return None
 
