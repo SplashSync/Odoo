@@ -14,7 +14,6 @@
 
 from odoo import http
 from splashpy import Framework
-from odoo.addons.splashsync.models.configuration import ResConfigSplash
 
 class SettingsManager():
 
@@ -90,7 +89,7 @@ class SettingsManager():
             return SettingsManager.__current__
         # ====================================================================#
         # Load Splash Configuration For Company
-        config = ResConfigSplash.get_config(company_id)
+        config = http.request.env['res.config.splash'].get_config(company_id)
         if config is None:
             raise Exception("[SPLASH] Unable to find configuration")
         # ====================================================================#
@@ -125,8 +124,11 @@ class SettingsManager():
         # ====================================================================#
         # Detect Company Id from Request Query
         try:
-            if "c" in http.request.params.keys() and int(http.request.params['c']) > 0:
-                return int(http.request.params['c'])
+            if "cid" in http.request.params.keys() and int(http.request.params['cid']) > 0:
+                return int(http.request.params['cid'])
+            if "cname" in http.request.params.keys() and len(str(http.request.params['cname'])) > 0:
+                company = http.request.env['res.company'].sudo().name_search(str(http.request.params['cname']), limit=1)
+                return int(company[0][0])
         except Exception:
             pass
         # ====================================================================#

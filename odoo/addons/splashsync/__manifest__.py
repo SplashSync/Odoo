@@ -15,7 +15,7 @@
 {
     'name': 'splashsync',
     'summary': 'SplashSync Connector for Odoo',
-    'version': '0.1.0',
+    'version': '0.1.1',
     'category': 'Technical Settings',
     'website': 'https://www.splashsync.com/',
     'author': 'SplashSync',

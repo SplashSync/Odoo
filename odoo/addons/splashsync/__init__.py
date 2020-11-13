@@ -16,15 +16,14 @@ from . import controllers
 from . import models
 from . import objects
 from odoo.api import Environment, SUPERUSER_ID
-
+import logging
 
 def post_init_hook(cr, registry):
-    """Init Odoo with Splash Sync default Configuration"""
-    # ====================================================================#
-    # Setup Default Configuration
-    env = Environment(cr, SUPERUSER_ID, {})
-    env['ir.config_parameter'].sudo().set_param('splash_ws_id', "ThisIsOdooC1WsId")
-    env['ir.config_parameter'].sudo().set_param('splash_ws_key', "ThisIsYourEncryptionKeyForSplash")
-    env['ir.config_parameter'].sudo().set_param('splash_ws_expert', False)
-    env['ir.config_parameter'].sudo().set_param('splash_ws_host', "www.splashsync.com/ws/soap")
-    env['ir.config_parameter'].sudo().set_param('splash_ws_user', 2)
+    """
+    This Hook is run just after Splashsync Module Installation
+    """
+    from odoo.addons.splashsync.helpers import TestsManager
+
+    logging.info("[SPLASH] Execute post init hook")
+    TestsManager.init(Environment(cr, SUPERUSER_ID, {}))
+

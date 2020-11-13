@@ -185,7 +185,7 @@ class OdooClient(ClientInfo):
             self.address = company.street
             self.zip = company.zip
             self.town = company.city
-            self.country = company.phone
+            self.country = company.country_id.name
             self.www = company.website
             self.email = company.email
             self.phone = company.phone

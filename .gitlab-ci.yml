@@ -1,0 +1,52 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+#  @author Bernard Paquier <contact@splashsync.com>
+#
+################################################################################
+
+################################################################
+# Defined Pipeline Stages
+stages:
+  - tests
+
+################################################################
+# Functional Tests
+################################################################
+
+.core_tests:    &core_tests
+    image:      docker:stable
+    stage:      tests
+    tags:
+      - Dedicated-Docker
+    services:
+      - docker:dind
+    ################################################################################
+    # Install & Configure Environnement
+    before_script:
+      # Init Docker
+      - docker info
+      - docker network create splashsync --attachable
+      # Install Docker Compose
+      - apk add --no-cache docker-compose
+      # Build Docker Compose
+      - docker-compose up -d
+    ################################################################################
+    # Run Test Script
+    script:
+      # Run Splash Unit tests from Splash Toolkit
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.xml.dist
+      - docker-compose stop
+
+tests:py-3:
+  <<: *core_tests

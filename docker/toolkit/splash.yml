@@ -22,13 +22,13 @@ splash:
         ########################################################################
         # Odoo Connection [Main Company]
         odoo-main:
-            id:                 ThisIsOdooC1WsId
+            id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash
             name:               Odoo Main
             host:               false
             connector:          soap
             config:
-                WsIdentifier:       ThisIsOdooC1WsId
+                WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
                 WsPath:             /splash
@@ -46,7 +46,7 @@ splash:
                 WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
-                WsPath:             /splash?c=1
+                WsPath:             /splash?cid=2
                 Name:               Odoo C1
 
         ########################################################################
@@ -61,5 +61,5 @@ splash:
                 WsIdentifier:       ThisIsOdooC2WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
-                WsPath:             /splash?c=4
+                WsPath:             /splash?cname=PhpUnit2
                 Name:               Odoo C2

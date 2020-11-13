@@ -46,6 +46,8 @@ services:
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
             splashsync:     { aliases: [ latest.odoo.local ] }
+        environment:
+            - CI_MODE=enabled
 
     ################################################################################
     # Postgres Database Container

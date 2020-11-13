@@ -128,7 +128,7 @@ class ResConfigSplash(models.Model):
         config = self.get_config(self.env.user.company_id.id)
         # ====================================================================#
         # Return Company Configuration or default Values
-        return config.get_values() if config is not None else self._get_default_values(self.env.user.company_id.id)
+        return config.get_values() if config is not None else self.get_default_values(self.env.user.company_id.id)
 
     def get_values(self):
         """
@@ -177,7 +177,7 @@ class ResConfigSplash(models.Model):
         })
 
     @api.multi
-    def _get_default_values(self, company_id):
+    def get_default_values(self, company_id):
         """
         Build Default configuration for a Company
 
@@ -189,8 +189,7 @@ class ResConfigSplash(models.Model):
 
         return default
 
-    @staticmethod
-    def get_config(company_id):
+    def get_config(self, company_id):
         """
         Load Company Configuration
 
@@ -199,7 +198,7 @@ class ResConfigSplash(models.Model):
         """
         # ====================================================================#
         # Search for Company Configuration
-        config = http.request.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
+        config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
 
         return config if len(config) else None
 
