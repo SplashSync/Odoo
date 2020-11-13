@@ -94,6 +94,7 @@ class OrderAddress:
         # Shipping Address Field Requested
         if field_id.find("__shipping__") < 0:
             return
+        self._in.__delitem__(index)
         # ====================================================================#
         # Remove Pattern from Field Id
         real_field_id = field_id.replace("__shipping__", "")
@@ -104,6 +105,7 @@ class OrderAddress:
         elif len(self.object.partner_id) > 0:
             self.Address = self.object.partner_id[0]
         else:
+            self._out[field_id] = None
             return
         # ==================================================================== #
         # Non Generic Data
@@ -124,4 +126,3 @@ class OrderAddress:
         else:
             self._out[field_id] = getattr(self.Address, real_field_id)
 
-        self._in.__delitem__(index)
