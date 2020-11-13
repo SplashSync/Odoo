@@ -25,7 +25,7 @@ cache:
 
 install:
   # Load SplashPy Module
-  - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../SplashSync-Py-Core
+  - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
   - chmod 7777 -Rf ../Py-Core
   # Build Docker Compose
   - docker network create splashsync --attachable
