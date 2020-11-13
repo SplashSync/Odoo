@@ -34,16 +34,16 @@ stages:
     ################################################################################
     # Install & Configure Environment
     before_script:
+      # Init Docker
+      - docker info
+      # Install Git & Docker Compose
+      - apk add --no-cache docker-compose
       # Load SplashPy Module
       - apt install git -y
       - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
       - chmod 7777 -Rf ../Py-Core
-      # Init Docker
-      - docker info
-      - docker network create splashsync --attachable
-      # Install Docker Compose
-      - apk add --no-cache docker-compose
       # Build Docker Compose
+      - docker network create splashsync --attachable
       - docker-compose up -d
     ################################################################################
     # Run Test Script
