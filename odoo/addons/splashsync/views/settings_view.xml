@@ -18,7 +18,7 @@
 <odoo>
     <record id="splash_settings_view" model="ir.ui.view">
         <field name="name">Splash Configuration</field>
-        <field name="model">res.config.settings</field>
+        <field name="model">res.config.splash</field>
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
@@ -28,17 +28,17 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_id"/>
+                                <label for="ws_id"/>
                                 <div class="content-group">
-                                    <field name="splash_ws_id" class="o_light_label"/>
+                                    <field name="ws_id" class="o_light_label"/>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_key"/>
+                                <label for="ws_key"/>
                                 <div class="content-group">
-                                    <field name="splash_ws_key" class="o_light_label"/>
+                                    <field name="ws_key" class="o_light_label"/>
                                 </div>
                             </div>
                         </div>
@@ -47,21 +47,21 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_ws_expert"/>
+                                <field name="ws_expert"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_expert"/>
+                                <label for="ws_expert"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_host"/>
-                                <field name="splash_ws_host" class="o_light_label"/>
+                                <label for="ws_host"/>
+                                <field name="ws_host" class="o_light_label"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_user"/>
+                                <label for="ws_user"/>
                                 <div class="content-group">
-                                    <field name="splash_ws_user" class="o_light_label"/>
+                                    <field name="ws_user" class="o_light_label"/>
                                 </div>
                             </div>
                         </div>
@@ -70,10 +70,10 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_ws_no_commits" class="o_light_label"/>
+                                <field name="ws_no_commits" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_ws_no_commits"/>
+                                <label for="ws_no_commits"/>
                                 <div class="text-muted">
                                     Check this to Disable Change Commits to Splash Server.
                                 </div>
@@ -87,10 +87,10 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_product_simplified_prices" class="o_light_label"/>
+                                <field name="product_simplified_prices" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_product_simplified_prices"/>
+                                <label for="product_simplified_prices"/>
                                 <div class="text-muted">
                                     Enable Simplified Mode to Store Product Extra Price at Product Level. Once enabled, Attributes <i>extra_price</i> has no effect.
                                 </div>
@@ -104,10 +104,10 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_product_advanced_taxes" class="o_light_label"/>
+                                <field name="product_advanced_taxes" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_product_advanced_taxes"/>
+                                <label for="product_advanced_taxes"/>
                                 <div class="text-muted">
                                     Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sell and purchase taxes.
                                 </div>
@@ -119,10 +119,10 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_product_advanced_variants" class="o_light_label"/>
+                                <field name="product_advanced_variants" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_product_advanced_variants"/>
+                                <label for="product_advanced_variants"/>
                                 <div class="text-muted">
                                     Enable to store Products Features on <i>features_value_ids</i> instead of Template <i>attribute_line_ids</i>.
                                 </div>
@@ -141,10 +141,10 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="splash_sales_advanced_taxes" class="o_light_label"/>
+                                <field name="sales_advanced_taxes" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="splash_sales_advanced_taxes"/>
+                                <label for="sales_advanced_taxes"/>
                                 <div class="text-muted">
                                     Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sales lines taxes.
                                 </div>
@@ -163,7 +163,7 @@
 
     <record id="splash_settings_action" model="ir.actions.act_window">
         <field name="name">Splash Configuration</field>
-        <field name="res_model">res.config.settings</field>
+        <field name="res_model">res.config.splash</field>
         <field name="view_id" ref="splash_settings_view"/>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

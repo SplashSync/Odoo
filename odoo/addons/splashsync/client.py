@@ -102,7 +102,7 @@ class OdooClient(ClientInfo):
             return OdooClient.__splash_client
         # ====================================================================#
         # Init Odoo User & Company
-        SettingsManager.ensure_company()
+        # SettingsManager.ensure_company()
         # ====================================================================#
         # Build Splash Client with Common Options
         OdooClient.__splash_client = SplashClient(
@@ -178,17 +178,17 @@ class OdooClient(ClientInfo):
         try:
             # ====================================================================#
             # Load Odoo Company Object
-            company = http.request.env['res.company']._get_main_company().read([])
+            company = SettingsManager.get_company()
             # ====================================================================#
             # Company Information
-            self.company = company[0]["name"]
-            self.address = company[0]["street"]
-            self.zip = company[0]["zip"]
-            self.town = company[0]["city"]
-            self.country = company[0]["phone"]
-            self.www = company[0]["website"]
-            self.email = company[0]["email"]
-            self.phone = company[0]["phone"]
+            self.company = company.name
+            self.address = company.street
+            self.zip = company.zip
+            self.town = company.city
+            self.country = company.phone
+            self.www = company.website
+            self.email = company.email
+            self.phone = company.phone
         except:
             self.company = "Unable to fetch Main Company"
 

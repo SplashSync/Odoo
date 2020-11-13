@@ -31,6 +31,7 @@
     'data': [
        'views/settings_view.xml',
        'views/product_view.xml',
+       'security/ir.model.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
 }

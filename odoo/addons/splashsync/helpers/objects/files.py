@@ -14,8 +14,7 @@
 
 from odoo import http
 from splashpy.helpers import FilesHelper, ImagesHelper
-from odoo.addons.splashsync.models.configuration import ResConfigSettings
-from splashpy.core.framework import Framework
+from odoo.addons.splashsync.models.configuration import ResConfigSplash
 
 
 class OddoFilesHelper:
@@ -53,7 +52,7 @@ class OddoFilesHelper:
     @staticmethod
     def get_image_url(domain, object_id, field_id):
         """Get Public Image Preview Url"""
-        url = ResConfigSettings.get_base_url()
+        url = ResConfigSplash.get_base_url()
         url += "/web/image?model=" + domain
         url += "&id=" + str(object_id) + "&field=" + str(field_id)
 

@@ -60,7 +60,6 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         """Get Object Model Class"""
         if self.model is None:
             self.model = http.request.env[self.getDomain()]
-            # self.model = http.request.env[self.getDomain()].sudo()
 
         return self.model
 

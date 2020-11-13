@@ -15,8 +15,7 @@
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import PricesHelper
-from odoo.addons.splashsync.models.configuration import ResConfigSettings
-from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper, AttributesHelper
+from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 
 
 class ProductsPrices:
