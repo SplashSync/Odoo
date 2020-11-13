@@ -139,7 +139,7 @@ class TestsManager():
         config.ws_id = ws_id
         config.ws_key = ws_key
         config.ws_expert = True
-        config.ws_host = "http://odoo-toolkit/ws/soap"
+        config.ws_host = "http://toolkit/ws/soap"
         config.ws_no_commits = False
         # ====================================================================#
         # Save Company Parameters
