@@ -52,6 +52,7 @@ stages:
       - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
       - docker-compose logs --tail="2000" odoo
       # Run Splash Unit tests from Splash Toolkit
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.xml.dist
       - docker-compose stop
     ################################################################################
