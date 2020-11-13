@@ -163,7 +163,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         """
         Update Current Odoo Object
         :param needed: bool
-        :return: Thirdparty Object
+        :return: ThirdParty Object
         """
         self._in["name"] = True
         self.setSimple("name", self.encodefullname())

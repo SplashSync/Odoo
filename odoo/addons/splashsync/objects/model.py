@@ -80,6 +80,9 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     def load(self, object_id):
         """Load Odoo Object by Id"""
+
+        # Framework.log().dump(self._in)
+
         try:
             model = self.getModel().browse([int(object_id)])
             if len(model) != 1:
@@ -90,14 +93,14 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         return model
 
     def update(self, needed):
-        """Update Current  Odoo Object"""
-        if not needed:
-            return self.getObjectIdentifier()
-        try:
-            self.object.flush()
-        except Exception as exception:
-            return Framework.log().fromException(exception)
+        """
+        Update Current Odoo Object
+            - This function is useless on Odoo as Data is saved upon changes
+            - It's kept for compatibility & Overrides
 
+        :return:    Objects Id of False if Error
+        :rtype: int | False
+        """
         return self.getObjectIdentifier()
 
     def delete(self, object_id):

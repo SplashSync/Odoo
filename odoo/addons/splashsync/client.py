@@ -12,7 +12,6 @@
 #  file that was distributed with this source code.
 #
 
-from odoo import http
 from odoo.addons.splashsync.helpers import SettingsManager
 from splashpy import Framework
 from splashpy.models.client import ClientInfo
@@ -191,6 +190,11 @@ class OdooClient(ClientInfo):
             self.phone = company.phone
         except:
             self.company = "Unable to fetch Main Company"
+        try:
+            from odoo.addons.splashsync import __VERSION__
+            self.module_version = __VERSION__
+        except:
+            pass
 
     def load_odoo_icons(self):
         """Change Client Server Icons"""
