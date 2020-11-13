@@ -35,6 +35,7 @@ stages:
     # Install & Configure Environment
     before_script:
       # Load SplashPy Module
+      - apt install git -y
       - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
       - chmod 7777 -Rf ../Py-Core
       # Init Docker
