@@ -56,16 +56,16 @@ stages:
       # Run Splash Unit tests from Splash Toolkit
       # Products
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
-      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.products.dist
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.products.xml
       - docker-compose logs --tail="2000" odoo >> logs/odoo.products.txt
       # ThirdParty & Address
-      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.contacts.dist
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.contacts.xml
       - docker-compose logs --tail="2000" odoo >> logs/odoo.contacts.txt
       # Orders
-      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.orders.dist
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.orders.xml
       - docker-compose logs --tail="2000" odoo >> logs/odoo.orders.txt
       # Invoices
-      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.invoices.dist
+      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.invoices.xml
       - docker-compose logs --tail="2000" odoo >> logs/odoo.invoices.txt
     ################################################################################
     # Run After Script
