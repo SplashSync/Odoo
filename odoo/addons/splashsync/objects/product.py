@@ -135,6 +135,8 @@ class Product(
 
     def load(self, object_id):
         """Load Odoo Object by Id"""
+        from odoo.exceptions import MissingError
+
         try:
             # ====================================================================#
             # Order Fields Inputs
@@ -152,6 +154,8 @@ class Product(
         except Exception:
             from splashpy import Framework
             Framework.log().warn("Unable to Load Odoo Product " + str(object_id))
+            return False
+        except MissingError:
             return False
 
         # self.debug(model, template)
