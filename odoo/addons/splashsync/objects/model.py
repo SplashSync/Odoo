@@ -80,9 +80,6 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     def load(self, object_id):
         """Load Odoo Object by Id"""
-
-        # Framework.log().dump(self._in)
-
         try:
             model = self.getModel().browse([int(object_id)])
             if len(model) != 1:

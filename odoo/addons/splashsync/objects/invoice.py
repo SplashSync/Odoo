@@ -18,7 +18,7 @@ from .orders import OrderRelations, OrderAddress
 from odoo.exceptions import MissingError
 
 
-class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress):
+class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus):
 # class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus, InvoicePayments):
     # ====================================================================#
     # Splash Object Definition
@@ -91,26 +91,38 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddres
 
         return new_invoice
 
+    def update(self, needed):
+        """
+        Update Current Odoo Object
+        :param needed: bool
+        :return: ThirdParty Object
+        """
+        # ====================================================================#
+        # Post Update of Invoice Status
+        if not self.post_set_status():
+            return False
+
+        return super(Invoice, self).update(needed)
+
     def delete(self, object_id):
         """Delete Odoo Object with Id"""
         try:
-            model = self.load(object_id)
-            if model is False:
+            invoice = self.load(object_id)
+            if invoice is False:
                 return True
             # ====================================================================#
-            # Safety Check - Order Delete Allowed
-            if model.state not in ['draft', 'cancel']:
-                if Framework.isDebugMode():
-                    model.state = 'draft'
-                else:
-                    Framework.log().warn(
-                        'You cannot delete an invoice after it has been validated. You must first cancel it.'
-                    )
-                    return True
-            model.unlink()
+            # Debug Mode => Force Order Delete
+            Framework.log().dump(invoice.state, 'Delete Status')
+            if Framework.isDebugMode():
+                if invoice.state not in ['draft', 'cancel']:
+                    invoice.journal_id.update_posted = True
+                    invoice.action_invoice_cancel()
+                    invoice.action_invoice_draft()
+                invoice.move_name = False
+            invoice.unlink()
         except MissingError:
             return True
         except Exception as exception:
-            return Framework.log().fromException(exception)
+            return Framework.log().fromException(exception, False)
 
         return True

@@ -329,7 +329,7 @@ class OrderLinesHelper:
         # Prepare Minimal Order Line Data
         req_fields = {
             "invoice_id": invoice.id,
-            "account_id": invoice.account_id.id,
+            "account_id": invoice.account_id._name_search("200000 Product Sales")[0][0],
             "sequence": 10 + len(invoice.invoice_line_ids),
         }
         # ====================================================================#
