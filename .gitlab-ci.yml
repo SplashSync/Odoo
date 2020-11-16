@@ -28,7 +28,7 @@ stages:
 .core_tests:    &core_tests
     image:      docker:stable
     stage:      tests
-    retry:      3
+    retry:      2
     tags:
       - Dedicated-Docker
     services:
@@ -99,7 +99,7 @@ tests:invoices:
 pages:
     image:      registry.gitlab.com/splashsync/php-console:pages
     stage:      deploy
-    retry:      3
+    retry:      2
     tags:
       - Dedicated
     ################################################################################
