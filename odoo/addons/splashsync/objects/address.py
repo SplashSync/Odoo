@@ -118,6 +118,9 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         :return: Address Object
         """
         # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
         # Safety Check - First Name is Required
         if "first" not in self._in:
             Framework.log().error("No Legal Name provided, Unable to create Address")

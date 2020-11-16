@@ -16,6 +16,7 @@ from splashpy.componants import FieldFactory
 from odoo.addons.splashsync.helpers import M2OHelper
 from odoo.exceptions import MissingError
 
+
 class OrderAddress:
     """
     Access to Order delivery Address Fields

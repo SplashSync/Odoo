@@ -48,6 +48,9 @@ class BasicFields():
             # Filter Not Allowed Field
             if fieldId in self.get_composite_fields():
                 continue
+            # Filter Computed Fields Types
+            if "compute" in field[fieldId]:
+                continue
             # Filter on Basic Fields Types
             if field[fieldId]["type"] not in self.__BasicTypes__.keys():
                 continue
@@ -85,14 +88,14 @@ class BasicFields():
                     if iso_code != TransHelper.get_default_iso():
                         FieldFactory.association(fieldId)
                 # Selection >> Add Choices
-                if field["type"] is "selection":
+                if field["type"] == "selection":
                     for key, value in field["selection"]:
                         FieldFactory.addChoice(key, value)
                 # Force Urls generator options
-                if field["type"] is "char":
+                if field["type"] == "char":
                     FieldFactory.addOption("Url_Prefix", "http://")
                 # Force Monetary as ReadOnly
-                if field["type"] is "monetary":
+                if field["type"] == "monetary":
                     FieldFactory.isReadOnly()
 
     def getCoreFields(self, index, field_id):

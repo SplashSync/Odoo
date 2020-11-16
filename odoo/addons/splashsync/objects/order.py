@@ -70,7 +70,9 @@ class Order(OdooObject, OrderCore, OrderAddress, OrderRelations, OrderCarrier, O
         Create a New Order
         :return: Order Object
         """
-
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredFields()

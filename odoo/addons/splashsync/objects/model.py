@@ -70,6 +70,9 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
     def create(self):
         """Create a New Model Object """
         # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
@@ -79,7 +82,17 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         return self.getModel().create(reqFields)
 
     def load(self, object_id):
-        """Load Odoo Object by Id"""
+        """
+        Load Odoo Object by Id
+
+        :param object_id: str
+        :rtype: odoo.BaseModel
+        """
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
+        # Load Requested Objects
         try:
             model = self.getModel().browse([int(object_id)])
             if len(model) != 1:
@@ -116,6 +129,11 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     def getObjectIdentifier(self):
         return self.object.id
+
+    def order_inputs(self):
+        """Ensure Inputs are Correctly Ordered"""
+        from collections import OrderedDict
+        self._in = OrderedDict(sorted(self._in.items()))
 
     # ====================================================================#
     # OBJECT DEFINITION

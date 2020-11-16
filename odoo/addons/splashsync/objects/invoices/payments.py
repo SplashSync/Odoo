@@ -18,6 +18,7 @@ from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper, ObjectsHelper
 
+
 class InvoicePayments:
     """
     Access to Invoice Payments Fields
@@ -127,14 +128,17 @@ class InvoicePayments:
         if not isinstance(field_data, dict):
             field_data = {}
         # ==================================================================== #
-        # Walk on Received Payments...
+        # Init Payments fro Writing
         index = 0
+        original_payment_ids = self.object.payment_ids.sorted(key=lambda r: r.id)
         updated_payment_ids = []
+        # ==================================================================== #
+        # Walk on Received Payments...
         for payment_data in OrderedDict(sorted(field_data.items())).values():
             # ==================================================================== #
             # Load or Create Order Line
             try:
-                payment = self.object.payment_ids.sorted(key=lambda r: r.id)[index]
+                payment = original_payment_ids[index]
             except:
                 payment = None
             # ==================================================================== #

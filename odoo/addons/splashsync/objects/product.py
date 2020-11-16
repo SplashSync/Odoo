@@ -89,11 +89,6 @@ class Product(
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
         }
 
-    def order_inputs(self):
-        """Ensure Inputs are Correctly Ordered"""
-        from collections import OrderedDict
-        self._in = OrderedDict(sorted(self._in.items()))
-
     # ====================================================================#
     # Object CRUD
     # ====================================================================#
@@ -136,11 +131,10 @@ class Product(
     def load(self, object_id):
         """Load Odoo Object by Id"""
         from odoo.exceptions import MissingError
-
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
         try:
-            # ====================================================================#
-            # Order Fields Inputs
-            self.order_inputs()
             # ====================================================================#
             # Load Product Variant
             model = self.getModel().browse([int(object_id)])

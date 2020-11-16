@@ -18,8 +18,7 @@ from .orders import OrderRelations, OrderAddress
 from odoo.exceptions import MissingError
 
 
-class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus):
-# class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus, InvoicePayments):
+class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus, InvoicePayments):
     # ====================================================================#
     # Splash Object Definition
     name = "Invoice"
@@ -29,6 +28,11 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddres
     @staticmethod
     def getDomain():
         return 'account.invoice'
+
+    @staticmethod
+    def objectsListFiltered():
+        """Filter on Search Query"""
+        return [('type', '=', "out_invoice")]
 
     @staticmethod
     def get_listed_fields():
@@ -73,13 +77,14 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddres
         Create a New Order
         :return: Order Object
         """
-
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredFields()
         if req_fields is False:
             return False
-
         # ====================================================================#
         # Create a New Simple Order
         new_invoice = self.getModel().create(req_fields)
@@ -112,7 +117,6 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddres
                 return True
             # ====================================================================#
             # Debug Mode => Force Order Delete
-            Framework.log().dump(invoice.state, 'Delete Status')
             if Framework.isDebugMode():
                 if invoice.state not in ['draft', 'cancel']:
                     invoice.journal_id.update_posted = True

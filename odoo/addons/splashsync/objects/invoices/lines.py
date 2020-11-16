@@ -18,6 +18,7 @@ from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper, ObjectsHelper
 
+
 class InvoiceLines:
     """
     Access to Invoice Lines Fields
@@ -117,29 +118,6 @@ class InvoiceLines:
         self._out["lines"] = OrderedDict(sorted(self._out["lines"].items()))
         self._in.__delitem__(index)
 
-        # Framework.log().dump(field_id, "ID")
-
-        if field_id != 'product_id@lines':
-            return
-
-        # self.object._compute_residual()
-
-        # for line in self.object._get_aml_for_amount_residual():
-        #     # Framework.log().dump(line.type)
-        #     Framework.log().dump(line.id, "Line")
-        #     Framework.log().dump(line.amount_residual, "Line")
-
-        # Framework.log().dump(len(self.object._get_aml_for_amount_residual()))
-        Framework.log().dump(self.object.type, "Inv. Id")
-        Framework.log().dump(self.object.type, "Inv. Type")
-        Framework.log().dump(self.object.residual, "Inv. Residual")
-
-        for line in self.object._get_aml_for_amount_residual():
-            # Framework.log().dump(line.type)
-            Framework.log().dump(line.id, "Line")
-            Framework.log().dump(line.amount_residual, "Line")
-
-
     def setLinesFields(self, field_id, field_data):
         """
         Set Invoice Lines List
@@ -192,6 +170,3 @@ class InvoiceLines:
         for invoice_line in self.object.invoice_line_ids:
             if invoice_line.id not in updated_invoice_line_ids:
                 self.object.invoice_line_ids = [(3, invoice_line.id, 0)]
-
-        self.object.recompute()
-        self.object.refresh()

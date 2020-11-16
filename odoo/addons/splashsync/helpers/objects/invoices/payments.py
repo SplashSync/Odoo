@@ -32,7 +32,8 @@ class InvoicePaymentsHelper:
     ]
 
     __sales_types_filter = [
-        ('type', 'in', ["sale", "cash", "bank", "general"])
+        ('type', 'in', ["sale", "cash", "bank", "general"]),
+        ('default_credit_account_id', '<>', None),
     ]
 
     __payment_method_id = None
@@ -91,13 +92,15 @@ class InvoicePaymentsHelper:
             if payment is not None:
                 if not InvoicePaymentsHelper.remove(invoice, payment):
                     return None
-                else:
-                    Framework.log().warn("Payments Deleted")
+                # DEBUG
+                # else:
+                #     Framework.log().warn("Payments Deleted >> "+payment.name)
             # ====================================================================#
             # Add Payment Item
             payment = InvoicePaymentsHelper.add(invoice, payment_data)
-            if payment is not None:
-                Framework.log().warn("Payments Created")
+            # DEBUG
+            # if payment is not None:
+            #     Framework.log().warn("Payments Created >> "+payment_data["name"])
         except Exception as ex:
             # ====================================================================#
             # Update Failed => Line may be protected
@@ -178,22 +181,16 @@ class InvoicePaymentsHelper:
         # Create Payment
         try:
             # ==================================================================== #
-            # Unit Tests - Ensure Invoice is Open
-            if Framework.isDebugMode() and invoice.state != 'open':
-                invoice.state = 'open'
-
-            Framework.log().dump(invoice.id)
-            Framework.log().dump(invoice.state, 'State Before')
-            Framework.log().dump(payment_data)
-
+            # Unit Tests - Ensure Invoice is Open (Default draft)
+            if Framework.isDebugMode() and invoice.state == 'draft':
+                invoice.action_invoice_open()
+                invoice.refresh()
             # ====================================================================#
             # Create Raw Payment
             payment = http.request.env["account.payment"].create(req_fields)
             # ====================================================================#
             # Add Payment to Invoice
-            Framework.log().dump(invoice.state, 'State Middle 1')
             invoice.payment_ids = [(4, payment.id, 0)]
-            Framework.log().dump(invoice.state, 'State Middle 2')
             # ====================================================================#
             # Validate Payment
             payment.post()
@@ -202,10 +199,8 @@ class InvoicePaymentsHelper:
         except Exception as exception:
             Framework.log().error("Unable to create Payment, please check inputs.")
             Framework.log().fromException(exception, False)
+
             return None
-
-        Framework.log().dump(invoice.state, 'State After')
-
 
     @staticmethod
     def validate(payment_data):
@@ -269,14 +264,14 @@ class InvoicePaymentsHelper:
         """
         try:
             # ==================================================================== #
-            # Unit Tests - Ensure Invoice is Open
-            if Framework.isDebugMode() and invoice.state != 'open':
-                invoice.state = 'open'
+            # Unit Tests - Ensure Invoice is Open (Default draft)
+            if Framework.isDebugMode() and invoice.state == 'draft':
+                invoice.action_invoice_open()
+                invoice.refresh()
             # ====================================================================#
             # Unit Tests => Force Journal to Allow Update Posted
-            # if Framework.isDebugMode():
-            payment.journal_id.update_posted = True
-
+            if Framework.isDebugMode():
+                payment.journal_id.update_posted = True
             # ====================================================================#
             # Cancel Payment
             if payment.state == "posted":
@@ -330,8 +325,6 @@ class InvoicePaymentsHelper:
         if field_id == "amount":
             return float(getattr(payment, field_id))
 
-
-
     @staticmethod
     def __detect_journal_id(journal_code):
         """
@@ -355,7 +348,7 @@ class InvoicePaymentsHelper:
             return None
 
     @staticmethod
-    def __detect_payment_type(mode ='inbound'):
+    def __detect_payment_type(mode='inbound'):
         """
         Search for Manual Payment Method Id
 
@@ -373,49 +366,3 @@ class InvoicePaymentsHelper:
         except:
             Framework.log().error("Unable to detect manual payments method")
             return None
-
-    # @staticmethod
-    # def __set_raw_value(payment, field_id, field_data):
-    #     """
-    #     Set simple value of Payment
-    #
-    #     :param payment: account.payment
-    #     :param field_id: str
-    #     :param field_data: mixed
-    #     """
-    #     from odoo.addons.splashsync.helpers import M2OHelper
-    #
-    #     # ==================================================================== #
-    #     # [CORE] Order Line Fields
-    #     # ==================================================================== #
-    #
-    #     # ==================================================================== #
-    #     # Generic Fields
-    #     if field_id in InvoicePaymentsHelper.__generic_fields:
-    #         setattr(payment, field_id, field_data)
-    #     # ==================================================================== #
-    #     # Payment Method
-    #     if field_id == "journal_code":
-    #         M2OHelper.set_name(payment, "journal_id", field_data, "code", "account.journal")
-    #     # ==================================================================== #
-    #     # Payment Date
-    #     if field_id == "payment_date" and isinstance(field_data, str):
-    #         try:
-    #             payment.payment_date = datetime.strptime(field_data, const.__SPL_T_DATECAST__).date()
-    #         except Exception:
-    #             pass
-    #     # ==================================================================== #
-    #     # Payment Amount
-    #     if field_id == "amount":
-    #         payment.amount = float(field_data)
-    #
-    #     # Framework.log().dump(payment.state)
-    #     # if payment.state is 'draft':
-    #
-    #     # try:
-    #     #
-    #     # except Exception as exception:
-    #     #     Framework.log().fromException(exception, False)
-    #
-    #     return True
-
