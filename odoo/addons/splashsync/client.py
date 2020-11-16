@@ -132,12 +132,14 @@ class OdooClient(ClientInfo):
 
         :return: bool
         """
+        # ====================================================================#
         # Try to detect User Name
         try:
             from odoo.http import request
             user_name = request.env.user.name
         except Exception:
             user_name = "Unknown User"
+        # ====================================================================#
         # Send Commit Notification
         try:
             # ====================================================================#

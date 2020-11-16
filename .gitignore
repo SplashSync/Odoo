@@ -133,3 +133,4 @@ dmypy.json
 /template/
 /plugins/
 /sources/
+/docker/local/odoo.conf

@@ -19,35 +19,35 @@ splash:
 
     connections:
 
-#        ########################################################################
-#        # Odoo Connection [Main Company]
-#        odoo-main:
-#            id:                 ThisIsOdooC0WsId
-#            key:                ThisIsYourEncryptionKeyForSplash
-#            name:               Odoo Main
-#            host:               false
-#            connector:          soap
-#            config:
-#                WsIdentifier:       ThisIsOdooC0WsId
-#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-#                WsHost:             http://odoo:8069
-#                WsPath:             /splash
-#                Name:               Odoo Main
-
         ########################################################################
         # Odoo Connection [Main Company]
-        odoo-local:
-            id:                 ThisIsOdooL0WsId
+        odoo-main:
+            id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo Local
+            name:               Odoo Main
             host:               false
             connector:          soap
             config:
-                WsIdentifier:       ThisIsOdooL0WsId
+                WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://192.168.1.35:8069
+                WsHost:             http://odoo:8069
                 WsPath:             /splash
-                Name:               Odoo Local
+                Name:               Odoo Main
+
+#        ########################################################################
+#        # Odoo Connection [Main Company]
+#        odoo-local:
+#            id:                 ThisIsOdooL0WsId
+#            key:                ThisIsYourEncryptionKeyForSplash
+#            name:               Odoo Local
+#            host:               false
+#            connector:          soap
+#            config:
+#                WsIdentifier:       ThisIsOdooL0WsId
+#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+#                WsHost:             http://192.168.1.35:8069
+#                WsPath:             /splash
+#                Name:               Odoo Local
 
 #        ########################################################################
 #        # Odoo Connection [Company 1]
