@@ -30,6 +30,18 @@ parameters:
     yml-enable:             false
 
 #############################################
+# Git Hooks Test Suites Configs
+#############################################
+grumphp:
+    testsuites:
+        # Specify the test-suite for the git:commit-msg command:
+        git_commit_msg:
+            tasks: []
+        # Specify the test-suite for the git:pre-commit command:
+        git_pre_commit:
+            tasks: []
+
+#############################################
 # Import Generic + Splash Console Configs
 imports:
     - { resource: "./vendor/splash/console/src/Resources/grumphp/*.yml" }
