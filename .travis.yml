@@ -25,14 +25,11 @@ cache:
 
 install:
   # Load SplashPy Module
-  - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../SplashSync-Py-Core
-  - chmod 7777 -Rf ../SplashSync-Py-Core
-  # Configure For testing
-  - mv ./travis/__init__.py ./odoo/addons/splashsync/__init__.py
-  - mv ./travis/docker-compose.yml docker-compose.yml
+  - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
+  - chmod 7777 -Rf ../Py-Core
   # Build Docker Compose
   - docker network create splashsync --attachable
-  - docker-compose up -d
+  - docker-compose up
   # Wait Until Odoo Container Started
   - docker-compose exec toolkit php bin/console
   - docker-compose exec toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'

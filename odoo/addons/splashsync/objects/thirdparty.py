@@ -105,6 +105,9 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         :return: ThirdParty Object
         """
         # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
         # Safety Check - Legal Name is Required
         if "legal" not in self._in:
             Framework.log().error("No Legal Name provided, Unable to create ThirdParty")
@@ -163,7 +166,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         """
         Update Current Odoo Object
         :param needed: bool
-        :return: Thirdparty Object
+        :return: ThirdParty Object
         """
         self._in["name"] = True
         self.setSimple("name", self.encodefullname())

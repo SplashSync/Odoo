@@ -12,18 +12,8 @@
 #  file that was distributed with this source code.
 #
 
-from . import controllers
-from . import models
-from . import objects
-from odoo.api import Environment, SUPERUSER_ID
-import logging
-
-def post_init_hook(cr, registry):
-    """
-    This Hook is run just after Splashsync Module Installation
-    """
-    from odoo.addons.splashsync.helpers import TestsManager
-
-    logging.info("[SPLASH] Execute post init hook")
-    TestsManager.init(Environment(cr, SUPERUSER_ID, {}))
+from .core import InvoiceCore
+from .lines import InvoiceLines
+from .status import InvoiceStatus
+from .payments import InvoicePayments
 

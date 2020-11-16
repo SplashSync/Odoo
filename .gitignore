@@ -132,3 +132,5 @@ dmypy.json
 /docker/arm/
 /template/
 /plugins/
+/sources/
+/docker/local/odoo.conf

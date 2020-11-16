@@ -60,7 +60,6 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         """Get Object Model Class"""
         if self.model is None:
             self.model = http.request.env[self.getDomain()]
-            # self.model = http.request.env[self.getDomain()].sudo()
 
         return self.model
 
@@ -71,6 +70,9 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
     def create(self):
         """Create a New Model Object """
         # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
@@ -80,22 +82,35 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         return self.getModel().create(reqFields)
 
     def load(self, object_id):
-        """Load Odoo Object by Id"""
-        model = self.getModel().browse([int(object_id)])
-        if len(model) != 1:
+        """
+        Load Odoo Object by Id
+
+        :param object_id: str
+        :rtype: odoo.BaseModel
+        """
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
+        # ====================================================================#
+        # Load Requested Objects
+        try:
+            model = self.getModel().browse([int(object_id)])
+            if len(model) != 1:
+                return False
+        except MissingError:
             return False
 
         return model
 
     def update(self, needed):
-        """Update Current  Odoo Object"""
-        if not needed:
-            return self.getObjectIdentifier()
-        try:
-            self.object.flush()
-        except Exception as exception:
-            return Framework.log().fromException(exception)
+        """
+        Update Current Odoo Object
+            - This function is useless on Odoo as Data is saved upon changes
+            - It's kept for compatibility & Overrides
 
+        :return:    Objects Id of False if Error
+        :rtype: int | False
+        """
         return self.getObjectIdentifier()
 
     def delete(self, object_id):
@@ -114,6 +129,11 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
 
     def getObjectIdentifier(self):
         return self.object.id
+
+    def order_inputs(self):
+        """Ensure Inputs are Correctly Ordered"""
+        from collections import OrderedDict
+        self._in = OrderedDict(sorted(self._in.items()))
 
     # ====================================================================#
     # OBJECT DEFINITION

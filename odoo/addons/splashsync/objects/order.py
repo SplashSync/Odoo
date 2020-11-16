@@ -70,7 +70,9 @@ class Order(OdooObject, OrderCore, OrderAddress, OrderRelations, OrderCarrier, O
         Create a New Order
         :return: Order Object
         """
-
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredFields()
@@ -82,7 +84,7 @@ class Order(OdooObject, OrderCore, OrderAddress, OrderRelations, OrderCarrier, O
         # ====================================================================#
         # Safety Check - Error
         if new_order is None:
-            Framework.log().error("Order is None")
+            Framework.log().error("Order creation failed")
             return False
 
         return new_order

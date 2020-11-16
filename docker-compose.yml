@@ -39,13 +39,15 @@ services:
             - ./docker/x86:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ../Py-Core:/mnt/splashpy
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,contacts,stock,website_sale_comparison,sales,purchase"
-        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
+        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,contacts,stock,website_sale_comparison,sales,purchase"
+#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
 #        entrypoint:         bash /etc/odoo/entrypoint.sh odoo
         hostname:           latest.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
             splashsync:     { aliases: [ latest.odoo.local ] }
+        environment:
+            - CI_MODE=enabled
 
     ################################################################################
     # Postgres Database Container
@@ -70,6 +72,10 @@ services:
         volumes:
             # Specify Local Configuration File
             - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
+            - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
+            - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
+            - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
+            - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
         hostname:           toolkit.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.100, aliases: [ toolkit.odoo.local ] }

@@ -14,6 +14,7 @@
 from splashpy import const
 from splashpy.componants import FieldFactory
 from odoo.addons.splashsync.helpers import M2OHelper
+from odoo.exceptions import MissingError
 
 
 class OrderAddress:
@@ -94,16 +95,22 @@ class OrderAddress:
         # Shipping Address Field Requested
         if field_id.find("__shipping__") < 0:
             return
+        self._in.__delitem__(index)
         # ====================================================================#
         # Remove Pattern from Field Id
         real_field_id = field_id.replace("__shipping__", "")
         # ====================================================================#
         # Detect Shipping Address
-        if len(self.object.partner_shipping_id) > 0:
-            self.Address = self.object.partner_shipping_id[0]
-        elif len(self.object.partner_id) > 0:
-            self.Address = self.object.partner_id[0]
-        else:
+        try:
+            if self.object.partner_shipping_id.id > 0:
+                self.Address = self.object.partner_shipping_id[0]
+            elif self.object.partner_id.id > 0:
+                self.Address = self.object.partner_id[0]
+            else:
+                self._out[field_id] = None
+                return
+        except MissingError:
+            self._out[field_id] = None
             return
         # ==================================================================== #
         # Non Generic Data
@@ -124,4 +131,3 @@ class OrderAddress:
         else:
             self._out[field_id] = getattr(self.Address, real_field_id)
 
-        self._in.__delitem__(index)

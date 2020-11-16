@@ -15,7 +15,6 @@
 from odoo import SUPERUSER_ID, exceptions, models
 from odoo.http import request
 
-
 class IrHttp(models.AbstractModel):
     """Add Custom Auth Handler for Splash Requests"""
     _inherit = 'ir.http'
@@ -40,8 +39,7 @@ class IrHttp(models.AbstractModel):
         from odoo.addons.splashsync.helpers import SettingsManager
         SettingsManager.reset()
         splash_user = SettingsManager.get_user()
-        if splash_user is None:
+        if int(splash_user) <= 0:
             raise exceptions.AccessDenied()
         request.session.uid = None
-        request.uid = splash_user
-
+        request.uid = splash_user.id

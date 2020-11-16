@@ -15,7 +15,7 @@
 {
     'name': 'splashsync',
     'summary': 'SplashSync Connector for Odoo',
-    'version': '0.1.0',
+    'version': "0.2.0",
     'category': 'Technical Settings',
     'website': 'https://www.splashsync.com/',
     'author': 'SplashSync',
@@ -31,6 +31,7 @@
     'data': [
        'views/settings_view.xml',
        'views/product_view.xml',
+       'security/ir.model.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
 }

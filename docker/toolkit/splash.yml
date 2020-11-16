@@ -14,28 +14,58 @@ splash:
     notify: ["ROLE_USER"]
 
 ################################################################################
-# List of Availables Connector Connections
+# List of Available Connector Connections
 ################################################################################
 
     connections:
 
         ########################################################################
-        # Odoo Connection [Company 1]
-        odoo-1:
-            id:                 ThisIsOdooC1WsId
+        # Odoo Connection [Main Company]
+        odoo-main:
+            id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo C1
+            name:               Odoo Main
             host:               false
             connector:          soap
             config:
-                WsIdentifier:       ThisIsOdooC1WsId
+                WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
                 WsPath:             /splash
-                Name:               Odoo C1
+                Name:               Odoo Main
 
-        ########################################################################
-        # Odoo Connection [Company 2]
+#        ########################################################################
+#        # Odoo Connection [Main Company]
+#        odoo-local:
+#            id:                 ThisIsOdooL0WsId
+#            key:                ThisIsYourEncryptionKeyForSplash
+#            name:               Odoo Local
+#            host:               false
+#            connector:          soap
+#            config:
+#                WsIdentifier:       ThisIsOdooL0WsId
+#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+#                WsHost:             http://192.168.1.35:8069
+#                WsPath:             /splash
+#                Name:               Odoo Local
+
+#        ########################################################################
+#        # Odoo Connection [Company 1]
+#        odoo-1:
+#            id:                 ThisIsOdooC1WsId
+#            key:                ThisIsYourEncryptionKeyForSplash
+#            name:               Odoo C1
+#            host:               false
+#            connector:          soap
+#            config:
+#                WsIdentifier:       ThisIsOdooC1WsId
+#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+#                WsHost:             http://odoo:8069
+#                WsPath:             /splash?cid=2
+#                Name:               Odoo C1
+
+#        ########################################################################
+#        # Odoo Connection [Company 2]
 #        odoo-2:
 #            id:                 ThisIsOdooC2WsId
 #            key:                ThisIsYourEncryptionKeyForSplash
@@ -46,5 +76,5 @@ splash:
 #                WsIdentifier:       ThisIsOdooC2WsId
 #                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
 #                WsHost:             http://odoo:8069
-#                WsPath:             /splash?c=2
+#                WsPath:             /splash?cname=PhpUnit2
 #                Name:               Odoo C2

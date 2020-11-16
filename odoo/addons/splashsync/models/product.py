@@ -82,8 +82,8 @@ class ProductProduct(models.Model):
     def __do_splash_commit(self, action):
         """
         Execute Splash Commit for this Product
-        :param action: str
 
+        :param action: str
         :return: void
         """
         # ====================================================================#

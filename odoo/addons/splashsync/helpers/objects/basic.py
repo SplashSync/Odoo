@@ -27,6 +27,7 @@ class BasicFields():
         "selection": const.__SPL_T_VARCHAR__,
         "integer": const.__SPL_T_INT__,
         "float": const.__SPL_T_DOUBLE__,
+        "monetary": const.__SPL_T_DOUBLE__,
         "date": const.__SPL_T_DATE__,
         "datetime": const.__SPL_T_DATETIME__,
     }
@@ -46,6 +47,9 @@ class BasicFields():
             field = self.getModel().fields_get([fieldId])
             # Filter Not Allowed Field
             if fieldId in self.get_composite_fields():
+                continue
+            # Filter Computed Fields Types
+            if "compute" in field[fieldId]:
                 continue
             # Filter on Basic Fields Types
             if field[fieldId]["type"] not in self.__BasicTypes__.keys():
@@ -84,13 +88,15 @@ class BasicFields():
                     if iso_code != TransHelper.get_default_iso():
                         FieldFactory.association(fieldId)
                 # Selection >> Add Choices
-                if field["type"] is "selection":
+                if field["type"] == "selection":
                     for key, value in field["selection"]:
                         FieldFactory.addChoice(key, value)
                 # Force Urls generator options
-                if field["type"] is "char":
+                if field["type"] == "char":
                     FieldFactory.addOption("Url_Prefix", "http://")
-                # FieldFactory.isReadOnly()
+                # Force Monetary as ReadOnly
+                if field["type"] == "monetary":
+                    FieldFactory.isReadOnly()
 
     def getCoreFields(self, index, field_id):
         # Load Basic Fields Definitions
@@ -104,7 +110,7 @@ class BasicFields():
             self.getSimpleStr(index, field_id)
             self.__getCoreTranslatedFields(field_id)
 
-        elif field_type in ['boolean', 'integer', 'float']:
+        elif field_type in ['boolean', 'integer', 'float', 'monetary']:
             self.getSimple(index, field_id)
 
         elif field_type in ['date']:

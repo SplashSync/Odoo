@@ -23,6 +23,7 @@ from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
 from .products.images import ProductImagesHelper
 from .products.suppliers import SupplierHelper
 from .orders.lines import OrderLinesHelper
+from .invoices.payments import InvoicePaymentsHelper
 from .relations import M2MHelper, M2OHelper
 from .taxes import TaxHelper
 from .trans import TransHelper

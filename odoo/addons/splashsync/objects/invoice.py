@@ -12,19 +12,27 @@
 #
 
 from .model import OdooObject
-from splashpy import const
+from splashpy import Framework
+from .invoices import InvoiceCore, InvoiceLines, InvoiceStatus, InvoicePayments
+from .orders import OrderRelations, OrderAddress
+from odoo.exceptions import MissingError
 
 
-class Invoice(OdooObject):
+class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus, InvoicePayments):
     # ====================================================================#
     # Splash Object Definition
     name = "Invoice"
     desc = "Odoo Invoice"
-    icon = "fa fa-usd"
+    icon = "fa fa-money"
 
     @staticmethod
     def getDomain():
         return 'account.invoice'
+
+    @staticmethod
+    def objectsListFiltered():
+        """Filter on Search Query"""
+        return [('type', '=', "out_invoice")]
 
     @staticmethod
     def get_listed_fields():
@@ -37,21 +45,27 @@ class Invoice(OdooObject):
         return ['company_id', 'currency_id', 'journal_id']
 
     @staticmethod
+    def get_composite_fields():
+        """Get List of Fields NOT To Parse Automatically """
+        return [
+            'id', 'state', 'activity_summary', 'date_invoice',
+            'message_unread', 'message_unread_counter', 'move_name'
+        ]
+
+    @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-                "name": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-                "state": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentStatus"},
+            "number": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
+            "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
 
-                "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
-                "date_due": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
-                "date_invoice": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "dateCreated"},
-                "reference": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
-                "activity_summary": {"write": False},
-                "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-                "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "date_due": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
+            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-                # "account.invoice.line[invoice_id]": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
+            "access_token": {"write": False},
+            "sequence_number_next": {"write": False},
+            "sequence_number_next_prefix": {"write": False},
         }
 
     # ====================================================================#
@@ -59,12 +73,60 @@ class Invoice(OdooObject):
     # ====================================================================#
 
     def create(self):
-        """Create a New Invoice"""
+        """
+        Create a New Order
+        :return: Order Object
+        """
+        # ====================================================================#
+        # Order Fields Inputs
+        self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
-        reqFields = self.collectRequiredCoreFields()
-        if reqFields is False:
+        req_fields = self.collectRequiredFields()
+        if req_fields is False:
             return False
         # ====================================================================#
-        # Create a New Simple Product
-        return self.getModel().create(reqFields)
+        # Create a New Simple Order
+        new_invoice = self.getModel().create(req_fields)
+        # ====================================================================#
+        # Safety Check - Error
+        if new_invoice is None:
+            Framework.log().error("Invoice creation failed")
+            return False
+
+        return new_invoice
+
+    def update(self, needed):
+        """
+        Update Current Odoo Object
+        :param needed: bool
+        :return: ThirdParty Object
+        """
+        # ====================================================================#
+        # Post Update of Invoice Status
+        if not self.post_set_status():
+            return False
+
+        return super(Invoice, self).update(needed)
+
+    def delete(self, object_id):
+        """Delete Odoo Object with Id"""
+        try:
+            invoice = self.load(object_id)
+            if invoice is False:
+                return True
+            # ====================================================================#
+            # Debug Mode => Force Order Delete
+            if Framework.isDebugMode():
+                if invoice.state not in ['draft', 'cancel']:
+                    invoice.journal_id.update_posted = True
+                    invoice.action_invoice_cancel()
+                    invoice.action_invoice_draft()
+                invoice.move_name = False
+            invoice.unlink()
+        except MissingError:
+            return True
+        except Exception as exception:
+            return Framework.log().fromException(exception, False)
+
+        return True

@@ -25,15 +25,20 @@ class Webservice(http.Controller):
          """
         return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
 
-    @http.route('/splash/debug', type='http', auth='user', website=True)
-    def debug(self, **kw):
+    @http.route('/splash/test', type='http', auth='user', website=True)
+    def test(self, **kw):
         """
          Respond to User Debug Requests
          """
         from splashpy.client import SplashClient
+
         # ====================================================================#
         # Init Splash Framework
-        OdooClient.get_server()
+        try:
+            OdooClient.get_server()
+        except Exception as exception:
+            Framework.log().fromException(exception, False)
+            return Framework.log().to_html_list(True)
         # ====================================================================#
         # Load Server Info
         wsId, wsKey, wsHost = Framework.config().identifiers()
@@ -50,5 +55,11 @@ class Webservice(http.Controller):
         raw_html += Framework.log().to_html_list(True)
         if not connect:
             Framework.log().error('Connect Test Fail: ' + str(wsHost))
+        # ====================================================================#
+        # Show Server Info
+        infos = Framework.getClientInfo().get()
+        Framework.log().info('Server Type: ' + str(infos['shortdesc']))
+        Framework.log().info('Server Url: ' + str(infos["serverurl"]))
+        Framework.log().info('Module Version: ' + str(infos["moduleversion"]))
 
         return raw_html + Framework.log().to_html_list(True)

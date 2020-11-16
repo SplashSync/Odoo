@@ -51,9 +51,9 @@ class SaleOrder(models.Model):
 
     def __do_splash_commit(self, action):
         """
-        Execute Splash Commit for this Product
-        :param action: str
+        Execute Splash Commit for this Order
 
+        :param action: str
         :return: void
         """
         # ====================================================================#

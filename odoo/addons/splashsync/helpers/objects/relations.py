@@ -227,7 +227,7 @@ class M2OHelper:
         return None
 
     @staticmethod
-    def get_name_values(domain=None, filters=[]):
+    def get_name_values(domain=None, filters=[], index="name"):
         """
         Get a Relation Possible Values Dict
         :param domain: str      Target Objects Domain
@@ -241,7 +241,7 @@ class M2OHelper:
         results = []
         values = http.request.env[domain].search(filters, limit=50)
         for value in values:
-            results += [(value.name, value.name)]
+            results += [(getattr(value, index), value.name)]
         return results
 
     @staticmethod
@@ -331,10 +331,10 @@ class M2OHelper:
     def verify_name(object_name, index, domain, filters=[]):
         """
         Validate Id
-        :param object_name: int,str   Id to Verify
-        :param index: str       Property Name
-        :param domain: str          Target Objects Domain
-        :param filters: list        Additional Search Filters
+        :param object_name: int,str     Id to Verify
+        :param index: str               Property Name
+        :param domain: str              Target Objects Domain
+        :param filters: list            Additional Search Filters
         :return: None, int
         """
         # No Domain or Filter => Skip

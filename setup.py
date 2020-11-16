@@ -25,7 +25,7 @@ setup(
        description="Splash Module for Odoo",
        #long_description=open('README.rst').read(),
        license="MIT",
-       url='https://github.com/SplashSync/odoo',
+       url='https://github.com/SplashSync/Odoo',
        # Active la prise en compte du fichier MANIFEST.in
        #include_package_data=True,
        classifiers=[

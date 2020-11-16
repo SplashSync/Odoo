@@ -14,51 +14,59 @@
 
 from odoo import api, models, fields, http
 
+class ResConfigSplash(models.Model):
+    _name = 'res.config.splash'
+    _description = 'Splash Sync Module Configuration'
+    _transient = False
+    _inherit = 'res.config'
 
-class ResConfigSettings(models.TransientModel):
-    _inherit = 'res.config.settings'
-    _check_company_auto = True
+    # Default Company Settings
+    __default__ = {
+        'ws_id': "",
+        'ws_key': "",
+        'ws_expert': False,
+        'ws_no_commits': False,
+        'ws_host': "https://www.splashsync.com/ws/soap",
+        'ws_user': None,
+        'product_simplified_prices': False,
+        'product_advanced_variants': False,
+        'product_advanced_taxes': False,
+        'sales_advanced_taxes': False,
+    }
+
+    company_id = fields.Many2one('res.company', required=True)
 
     # ====================================================================#
     # CORE Settings
     # ====================================================================#
 
-    splash_ws_id = fields.Char(
+    ws_id = fields.Char(
         required=True,
-        company_dependent=True,
         string="Server Identifier",
-        default="ThisIsSplashWsId",
         help="Your Odoo Server Identifier, generated on your account."
     )
-    splash_ws_key = fields.Char(
+    ws_key = fields.Char(
         required=True,
-        company_dependent=True,
-        string="Encryption Key",
-        default="ThisIsYourEncryptionKeyForSplash"
+        string="Encryption Key"
     )
-    splash_ws_expert = fields.Boolean(
-        company_dependent=True,
+    ws_expert = fields.Boolean(
         string="Advanced Mode",
         help="Check this to Enable Advanced Configuration"
     )
 
-    splash_ws_no_commits = fields.Boolean(
-        company_dependent=True,
+    ws_no_commits = fields.Boolean(
         string="Disable Commits",
         help="Check this to Disable Change Commits to Splash Server"
     )
 
-    splash_ws_host = fields.Char(
-        company_dependent=True,
+    ws_host = fields.Char(
         string="Splash Server",
-        default="https://www.splashsync.com/ws/soap",
         help="Url of your Splash Server (default: www.splashsync.com/ws/soap"
     )
-    splash_ws_user = fields.Many2one(
-        company_dependent=True,
+    ws_user = fields.Many2one(
         string="Webservice User",
+        required=True,
         comodel_name="res.users",
-        default="2",
         help="ID of Local User used by Splash"
     )
 
@@ -66,22 +74,16 @@ class ResConfigSettings(models.TransientModel):
     # PRODUCTS Settings
     # ====================================================================#
 
-    splash_product_simplified_prices = fields.Boolean(
-        company_dependent=True,
+    product_simplified_prices = fields.Boolean(
         string="Product Simplified Prices",
-        default=False,
         help="Enable Simplified Mode to Store Product Extra Price at Product Level."
     )
-    splash_product_advanced_taxes = fields.Boolean(
-        company_dependent=True,
+    product_advanced_taxes = fields.Boolean(
         string="Product Advanced Taxes",
-        default=False,
         help="Enable Advanced Taxes Mode."
     )
-    splash_product_advanced_variants = fields.Boolean(
-        company_dependent=True,
+    product_advanced_variants = fields.Boolean(
         string="Product Advanced Variants",
-        default=False,
         help="Enable to store Products Features on features_value_ids instead of Template attribute_line_ids."
     )
 
@@ -89,65 +91,133 @@ class ResConfigSettings(models.TransientModel):
     # SALES Settings
     # ====================================================================#
 
-    splash_sales_advanced_taxes = fields.Boolean(
-        company_dependent=True,
+    sales_advanced_taxes = fields.Boolean(
         string="Order & Invoices Advanced Taxes",
-        default=False,
         help="Enable Advanced Taxes Mode."
     )
 
-    def get_values(self):
-        res = super(ResConfigSettings, self).get_values()
+    def execute(self):
+        """
+        Called when settings are saved.
+        """
+        from odoo.addons.splashsync.helpers import SettingsManager
+
+        self.ensure_one()
+        # ====================================================================#
+        # Save Company Configuration
+        self.set_values()
+        # ====================================================================#
+        # Clean Company Configuration
+        self.clean(self.env.user.company_id.id)
+        # ====================================================================#
+        # Reset Configuration
+        SettingsManager.reset()
+
+        return self.next()
+
+    @api.multi
+    def default_get(self, fields=None):
+        """
+        Load configuration with Default Values
+
+        :param fields: None | dict
+        :return: dict
+        """
+        # ====================================================================#
         # Load Current Company Configuration
-        config = self.env['res.config.settings'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
-        # Fetch Company Values
-        res.update(
-            splash_ws_id=config.splash_ws_id,
-            splash_ws_key=config.splash_ws_key,
-            splash_ws_expert=bool(config.splash_ws_expert),
-            splash_ws_no_commits=bool(config.splash_ws_no_commits),
-            splash_ws_host=config.splash_ws_host,
-            splash_ws_user=config.splash_ws_user.id,
-            splash_product_simplified_prices=bool(config.splash_product_simplified_prices),
-            splash_product_advanced_taxes=bool(config.splash_product_advanced_taxes),
-            splash_product_advanced_variants=bool(config.splash_product_advanced_variants),
-            splash_sales_advanced_taxes=bool(config.splash_sales_advanced_taxes),
-        )
-        return res
+        config = self.get_config(self.env.user.company_id.id)
+        # ====================================================================#
+        # Return Company Configuration or default Values
+        return config.get_values() if config is not None else self.get_default_values(self.env.user.company_id.id)
+
+    def get_values(self):
+        """
+        Get Company Configuration Values
+
+        :return: dict
+        """
+        return {
+            'company_id': self.company_id.id,
+            'ws_id': self.ws_id,
+            'ws_key': self.ws_key,
+            'ws_expert': self.ws_expert,
+            'ws_no_commits': self.ws_no_commits,
+            'ws_host': self.ws_host,
+            'ws_user': self.ws_user.id,
+            'product_simplified_prices': self.product_simplified_prices,
+            'product_advanced_taxes': self.product_advanced_taxes,
+            'product_advanced_variants': self.product_advanced_variants,
+            'sales_advanced_taxes': self.sales_advanced_taxes,
+        }
 
     @api.multi
     def set_values(self):
-        super(ResConfigSettings, self).set_values()
+        """
+        Save Company Configuration
+
+        :return: void
+        """
+        # ====================================================================#
         # Load Current Company Configuration
-        config = self.env['res.config.settings'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
+        config = self.env['res.config.splash'].sudo().search([('company_id', '=', self.env.user.company_id.id)], limit=1)
+        # ====================================================================#
         # Update Company Values
         config.write({
-            'splash_ws_id': self.splash_ws_id,
-            'splash_ws_key': self.splash_ws_key,
-            'splash_ws_expert': self.splash_ws_expert,
-            'splash_ws_no_commits': self.splash_ws_no_commits,
-            'splash_ws_host': self.splash_ws_host,
-            'splash_ws_user': self.splash_ws_user,
-            'splash_product_simplified_prices': self.splash_product_simplified_prices,
-            'splash_product_advanced_taxes': self.splash_product_advanced_taxes,
-            'splash_product_advanced_variants': self.splash_product_advanced_variants,
-            'splash_sales_advanced_taxes': self.splash_sales_advanced_taxes,
+            'company_id': self.env.user.company_id.id,
+            'ws_id': self.ws_id,
+            'ws_key': self.ws_key,
+            'ws_expert': self.ws_expert,
+            'ws_no_commits': self.ws_no_commits,
+            'ws_host': self.ws_host,
+            'ws_user': self.ws_user.id,
+            'product_simplified_prices': self.product_simplified_prices,
+            'product_advanced_taxes': self.product_advanced_taxes,
+            'product_advanced_variants': self.product_advanced_variants,
+            'sales_advanced_taxes': self.sales_advanced_taxes,
         })
+
+    @api.multi
+    def get_default_values(self, company_id):
+        """
+        Build Default configuration for a Company
+
+        :param company_id: int
+        :rtype: dict
+        """
+        default = ResConfigSplash.__default__
+        default['company_id'] = company_id
+
+        return default
+
+    def get_config(self, company_id):
+        """
+        Load Company Configuration
+
+        :param company_id: int
+        :rtype: None | ResConfigSplash
+        """
         # ====================================================================#
-        # Default Company => Copy Configuration to Main Parameters
-        if self.env.user.company_id.id == 1:
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_id', self.splash_ws_id)
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_key', self.splash_ws_key)
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_expert', self.splash_ws_expert)
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_no_commits', self.splash_ws_no_commits)
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_host', self.splash_ws_host)
-            self.env['ir.config_parameter'].sudo().set_param('splash_ws_user', self.splash_ws_user.id)
-            self.env['ir.config_parameter'].sudo().set_param('splash_product_simplified_prices', self.splash_product_simplified_prices)
-            self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_taxes', self.splash_product_advanced_taxes)
-            self.env['ir.config_parameter'].sudo().set_param('splash_product_advanced_variants', self.splash_product_advanced_variants)
-            self.env['ir.config_parameter'].sudo().set_param('splash_sales_advanced_taxes', self.splash_sales_advanced_taxes)
+        # Search for Company Configuration
+        config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
+
+        return config if len(config) else None
+
+    def clean(self, company_id):
+        """
+        Clean Company Configurations
+
+        :param company_id: int
+        :rtype: None | ResConfigSplash
+        """
+        # Search for Company Configuration
+        config = self.env['res.config.splash'].search([('company_id', '=', company_id)], limit=1)
+        if len(config) == 0:
+            return
+
+        for conf in self.env['res.config.splash'].search([('company_id', '=', company_id)]):
+            if conf.id != config.id:
+                conf.unlink()
 
     @staticmethod
     def get_base_url():
-        from odoo import http
         return http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
