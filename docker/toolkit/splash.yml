@@ -14,7 +14,7 @@ splash:
     notify: ["ROLE_USER"]
 
 ################################################################################
-# List of Availables Connector Connections
+# List of Available Connector Connections
 ################################################################################
 
     connections:
@@ -63,7 +63,7 @@ splash:
 #                WsHost:             http://odoo:8069
 #                WsPath:             /splash?cid=2
 #                Name:               Odoo C1
-#
+
 #        ########################################################################
 #        # Odoo Connection [Company 2]
 #        odoo-2:
