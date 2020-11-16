@@ -57,6 +57,11 @@ stages:
       # Run Splash Unit tests from Splash Toolkit
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
       - docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
+      # Use Splash Toolkit to build Splash Manifest
+      - mkdir manifest
+      - docker-compose exec -T toolkit php bin/console splash:server:manifest
+      - docker-compose exec -T toolkit cat splash.json >> manifest/splash.json
+      - docker-compose exec -T toolkit cat splash.yml >> manifest/splash.yml
     ################################################################################
     # Run After Script
     after_script:
@@ -65,6 +70,7 @@ stages:
     artifacts:
       paths:
         - logs
+        - manifest
 
 tests:products:
   <<: *core_tests
@@ -94,34 +100,9 @@ pages:
     stage:    deploy
     tags:
       - Dedicated
-    services:
-      - docker:dind
-    ################################################################################
-    # Install & Configure Environment
-    before_script:
-      # Init Docker
-      - docker info
-      # Install Git & Docker Compose
-      - apk add --no-cache git docker-compose
-      # Load SplashPy Module
-      - rm -Rf ../Py-Core
-      - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
-      - chmod 7777 -Rf ../Py-Core
-      # Build Docker Compose
-      - mkdir logs
-      - docker network create splashsync --attachable
-      - docker-compose up -d
     ################################################################################
     # Run Test Script
     script:
-      # Wait Until Odoo Container Started
-      - docker-compose exec -T toolkit php bin/console
-      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
-      - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
-      # Use Splash Toolkit to build Splash Manifest
-      - docker-compose exec -T toolkit php bin/console splash:server:manifest
-      - docker-compose exec -T toolkit cat splash.json >> splash.json
-      - docker-compose exec -T toolkit cat splash.yml >> splash.yml
       # Run Composer to Build Dependencies
       - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
       # Build Documentation
