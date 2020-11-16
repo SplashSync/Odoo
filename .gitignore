@@ -134,3 +134,8 @@ dmypy.json
 /plugins/
 /sources/
 /docker/local/odoo.conf
+/.gh-pages/
+/vendor/
+/reboot.sh
+/public/
+/composer.lock

@@ -19,6 +19,7 @@
 # Defined Pipeline Stages
 stages:
   - tests
+  - deploy
 
 ################################################################
 # Functional Tests
@@ -54,17 +55,6 @@ stages:
       - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
       - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
       # Run Splash Unit tests from Splash Toolkit
-#      # Products
-#      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.xml.dist vendor/splash/phpcore/Tests/WsSpecials/S00ProductTest.php
-#      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.products.xml
-#      - docker-compose logs --tail="2000" odoo >> logs/odoo.products.txt
-#      # ThirdParty & Address
-#      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.contacts.xml
-#      - docker-compose logs --tail="2000" odoo >> logs/odoo.contacts.txt
-#      # Orders
-#      - docker-compose exec -T toolkit php vendor/bin/phpunit -c phpunit.orders.xml
-#      - docker-compose logs --tail="2000" odoo >> logs/odoo.orders.txt
-#      # Invoices
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
       - docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
     ################################################################################
@@ -95,3 +85,47 @@ tests:invoices:
   <<: *core_tests
   variables:
     PHPUNIT_CONFIG:   phpunit.invoices.xml
+
+#################################################################
+## Build Documentation
+#################################################################
+pages:
+    image:    registry.gitlab.com/splashsync/php-console:pages
+    stage:    deploy
+    tags:
+      - Dedicated
+    services:
+      - docker:dind
+    ################################################################################
+    # Install & Configure Environment
+    before_script:
+      # Init Docker
+      - docker info
+      # Install Git & Docker Compose
+      - apk add --no-cache git docker-compose
+      # Load SplashPy Module
+      - rm -Rf ../Py-Core
+      - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
+      - chmod 7777 -Rf ../Py-Core
+      # Build Docker Compose
+      - mkdir logs
+      - docker network create splashsync --attachable
+      - docker-compose up -d
+    ################################################################################
+    # Run Test Script
+    script:
+      # Wait Until Odoo Container Started
+      - docker-compose exec -T toolkit php bin/console
+      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
+      - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
+      # Use Splash Toolkit to build Splash Manifest
+      - docker-compose exec -T toolkit php bin/console splash:server:manifest
+      - docker-compose exec -T toolkit cat splash.json >> splash.json
+      - docker-compose exec -T toolkit cat splash.yml >> splash.yml
+      # Run Composer to Build Dependencies
+      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+      # Build Documentation
+      - php vendor/bin/grumphp run --tasks=build-docs
+    artifacts:
+        paths:
+            - public

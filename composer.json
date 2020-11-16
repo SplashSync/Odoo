@@ -1,0 +1,30 @@
+{
+    "name":                 "splash/odoo",
+    "description":          "Php Tools for Splash Odoo Connector",
+
+    "type":                 "package",    
+    "minimum-stability":    "dev",
+    "prefer-stable":        true,
+    "license":              "MIT",
+
+    "authors": [
+        {
+            "name":"Splash Sync",
+            "email":"contact@splashsync.com"
+        },
+        {
+            "name": "Bernard Paquier",
+            "email": "eshop.bpaquier@gmail.com"
+        }
+    ],
+    
+    "require": {
+    },
+    
+    "require-dev": {
+        "php":                                      "~7.2",
+        "badpixxel/php-sdk":                        "dev-main",
+        "splash/phpcore":                           "dev-master",
+        "splash/console":                           "dev-master"
+    }
+}
