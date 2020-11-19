@@ -17,31 +17,34 @@ from splashpy.componants import FieldFactory
 from odoo.addons.splashsync.helpers import M2MHelper, M2OHelper
 
 
-class OrderRelations:
+class SalesRelations:
     """
-    Access to Order Relational Fields
+    Access to Sales Relational Fields
     """
 
     def buildRelationFields(self):
         # ==================================================================== #
         # Sale Person Name
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "user_id", "Salesperson Name")
-        FieldFactory.microData("http://schema.org/Author", "name")
-        FieldFactory.addChoices(M2OHelper.get_name_values("res.users"))
-        FieldFactory.group("General")
+        if "user_id" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "user_id", "Salesperson Name")
+            FieldFactory.microData("http://schema.org/Author", "name")
+            FieldFactory.addChoices(M2OHelper.get_name_values("res.users"))
+            FieldFactory.group("General")
         # ==================================================================== #
         # Sale Person Email
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "user_email", "Salesperson Email")
-        FieldFactory.microData("http://schema.org/Author", "email")
-        FieldFactory.group("General")
-        FieldFactory.isNotTested()
+        if "user_id" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "user_email", "Salesperson Email")
+            FieldFactory.microData("http://schema.org/Author", "email")
+            FieldFactory.group("General")
+            FieldFactory.isNotTested()
         # ==================================================================== #
         # Sale Team Name
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "team_id", "Sales team Name")
-        FieldFactory.microData("http://schema.org/Author", "memberOf")
-        FieldFactory.addChoices(M2OHelper.get_name_values("crm.team"))
-        FieldFactory.group("General")
-        FieldFactory.isNotTested()
+        if "team_id" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "team_id", "Sales team Name")
+            FieldFactory.microData("http://schema.org/Author", "memberOf")
+            FieldFactory.addChoices(M2OHelper.get_name_values("crm.team"))
+            FieldFactory.group("General")
+            FieldFactory.isNotTested()
 
     def getRelationFields(self, index, field_id):
         # Check if Relation Field...

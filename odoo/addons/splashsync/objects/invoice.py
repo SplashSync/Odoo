@@ -14,11 +14,11 @@
 from .model import OdooObject
 from splashpy import Framework
 from .invoices import InvoiceCore, InvoiceLines, InvoiceStatus, InvoicePayments
-from .orders import OrderRelations, OrderAddress
+from .orders import OrderAddress
 from odoo.exceptions import MissingError
 
 
-class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderRelations, OrderAddress, InvoiceStatus, InvoicePayments):
+class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus, InvoicePayments):
     # ====================================================================#
     # Splash Object Definition
     name = "Invoice"
