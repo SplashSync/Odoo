@@ -16,16 +16,17 @@
 -->
 
 <odoo>
-    <record id="splash_settings_view" model="ir.ui.view">
-        <field name="name">Splash Configuration</field>
-        <field name="model">res.config.splash</field>
+    <record id="res_config_splash_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.splashsync</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100"/>
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block" data-string="Splash Data-String" string="Splash Connector" data-key="splashsync">
+                <div class="app_settings_block" data-string="Splash" string="Splash Connector" data-key="splashsync" group="base.group_user" >
                     <h2>General Settings</h2>
 
-                    <div class="row mt16 o_settings_container">
+                    <div class="row mt16 o_settings_container" name="splashsync_base_setting_container">
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_right_pane">
                                 <label for="ws_id"/>
@@ -44,7 +45,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt16 o_settings_container">
+                    <div class="row mt16 o_settings_container"  name="splashsync_expert_setting_container">
                         <div class="col-12 col-md-6 o_setting_box">
                             <div class="o_setting_left_pane">
                                 <field name="ws_expert"/>
@@ -112,7 +113,7 @@
                                     Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sell and purchase taxes.
                                 </div>
                                 <div class="text-muted">
-                                    By default, Splash will only setup first detected Taxe Rate.
+                                    By default, Splash will only setup first detected Tax Rate.
                                 </div>
                             </div>
                         </div>
@@ -149,7 +150,7 @@
                                     Enable Advanced Taxes Mode to Add Taxes List Fields and manage multiple sales lines taxes.
                                 </div>
                                 <div class="text-muted">
-                                    By default, Splash will only use given price first detected Taxe Rate.
+                                    By default, Splash will only use given price first detected Tax Rate.
                                 </div>
                             </div>
                         </div>
@@ -162,13 +163,13 @@
     </record>
 
     <record id="splash_settings_action" model="ir.actions.act_window">
-        <field name="name">Splash Configuration</field>
-        <field name="res_model">res.config.splash</field>
-        <field name="view_id" ref="splash_settings_view"/>
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_splash_view_form"/>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
-        <field name="context">{'module' : 'splashsync'}</field>
+        <field name="context">{'module' : 'splashsync', 'bin_size': False}</field>
     </record>
 
-    <menuitem id="splash_settings_menu" name="Configuration" parent="base.menu_administration" action="splash_settings_action"/>
 </odoo>

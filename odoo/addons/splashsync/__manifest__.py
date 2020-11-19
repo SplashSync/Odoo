@@ -26,10 +26,10 @@
         'bin': [],
     },
     'depends': [
-        'base','product','sale',
+        'base', 'product','sale',
     ],
     'data': [
-       'views/settings_view.xml',
+       'views/res_config_settings_views.xml',
        'views/product_view.xml',
        'security/ir.model.access.csv',
     ],
