@@ -24,8 +24,11 @@ class ProductsImages:
     Access to product Images Fields
     """
 
-    @staticmethod
-    def buildImagesFields():
+    def buildImagesFields(self):
+        # ==================================================================== #
+        # Ensure Field is Available
+        if "product_image_ids" not in self.getModel().fields_get():
+            return
         # ==================================================================== #
         # Product Images
         FieldFactory.create(const.__SPL_T_IMG__, "image", "Image")
