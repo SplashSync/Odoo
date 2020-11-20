@@ -1,4 +1,5 @@
-from odoo import api, fields, models, _
+from odoo import fields, models, http
+
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
@@ -68,8 +69,7 @@ class ResConfigSettings(models.TransientModel):
 
         # ====================================================================#
         # Load Splash Configuration for Company
-        splash_config = self.env['res.config.splash'].default_get()
-        res.update(self.env['res.config.splash'].default_get())
+        res.update(http.request.env['res.config.splash'].default_get())
 
         return res
 
@@ -77,12 +77,16 @@ class ResConfigSettings(models.TransientModel):
         super(ResConfigSettings, self).set_values()
         # ====================================================================#
         # Load Current Company Configuration
-        splash_config = self.env['res.config.splash'].get_config(self.env.user.company_id.id)
+        splash_config = http.request.env['res.config.splash'].get_config(http.request.env.user.company_id.id)
+
+        import logging
+        logging.warning(splash_config)
+
         # ====================================================================#
         # Company Configuration NOT Found
         if splash_config is None:
-            self.env['res.config.splash'].write({
-                'company_id': self.env.user.company_id.id,
+            http.request.env['res.config.splash'].create({
+                'company_id': http.request.env.user.company_id.id,
                 'ws_id': self.ws_id,
                 'ws_key': self.ws_key,
                 'ws_expert': self.ws_expert,
@@ -97,7 +101,7 @@ class ResConfigSettings(models.TransientModel):
         else:
             splash_config.ws_id = str(self.ws_id)
             splash_config.ws_key = str(self.ws_key)
-            splash_config.ws_expert = bool(self.ws_key)
+            splash_config.ws_expert = bool(self.ws_expert)
             splash_config.ws_no_commits = bool(self.ws_no_commits)
             splash_config.ws_host = str(self.ws_host)
             splash_config.ws_user = int(self.ws_user.id)
@@ -106,3 +110,13 @@ class ResConfigSettings(models.TransientModel):
             splash_config.product_advanced_variants = bool(self.product_advanced_variants)
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
             splash_config.execute()
+
+        ResConfigSettings.show_debug()
+
+    @staticmethod
+    def show_debug():
+        import logging
+
+        logging.warning('[SPLASH] New Configuration')
+        for cfg in http.request.env['res.config.splash'].sudo().search([]):
+            logging.warning(cfg.company_id.name+" >> "+cfg.ws_key+" @ "+cfg.ws_id)

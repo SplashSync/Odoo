@@ -198,6 +198,13 @@ class OdooClient(ClientInfo):
         except:
             pass
 
+    @staticmethod
+    def reset():
+        OdooClient.__splash_server = None
+        OdooClient.__splash_client = None
+
+        pass
+
     def load_odoo_icons(self):
         """Change Client Server Icons"""
         from splashpy.componants.files import Files

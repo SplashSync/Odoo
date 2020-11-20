@@ -78,6 +78,8 @@ class SettingsManager():
         """
         Get Company Configuration for WebService Requests
         """
+        import logging
+
         # ====================================================================#
         # Detect Company Id
         company_id = SettingsManager.__detect_company_id()
@@ -95,12 +97,20 @@ class SettingsManager():
         # ====================================================================#
         # Cache Splash Configuration
         SettingsManager.__current__ = config
+        # ====================================================================#
+        # Cache Splash Configuration
+        from odoo.addons.splashsync.client import OdooClient
+        OdooClient.reset()
 
         return config
 
     @staticmethod
     def reset():
         SettingsManager.__current__ = None
+        # ====================================================================#
+        # Cache Splash Configuration
+        from odoo.addons.splashsync.client import OdooClient
+        OdooClient.reset()
 
         pass
 
