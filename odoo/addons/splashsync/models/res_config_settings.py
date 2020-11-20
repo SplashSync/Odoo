@@ -78,10 +78,6 @@ class ResConfigSettings(models.TransientModel):
         # ====================================================================#
         # Load Current Company Configuration
         splash_config = http.request.env['res.config.splash'].get_config(http.request.env.user.company_id.id)
-
-        import logging
-        logging.warning(splash_config)
-
         # ====================================================================#
         # Company Configuration NOT Found
         if splash_config is None:
