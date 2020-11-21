@@ -61,7 +61,7 @@ splash:
                 WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
-                WsPath:             /splash?cid=2
+                WsPath:             /splash?cname=PhpUnit1
                 Name:               Odoo C1
 
         ########################################################################
