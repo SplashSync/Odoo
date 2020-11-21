@@ -69,7 +69,7 @@ class ResConfigSettings(models.TransientModel):
 
         # ====================================================================#
         # Load Splash Configuration for Company
-        res.update(http.request.env['res.config.splash'].default_get())
+        res.update(self.env['res.config.splash'].default_get())
 
         return res
 
@@ -77,12 +77,12 @@ class ResConfigSettings(models.TransientModel):
         super(ResConfigSettings, self).set_values()
         # ====================================================================#
         # Load Current Company Configuration
-        splash_config = http.request.env['res.config.splash'].get_config(http.request.env.user.company_id.id)
+        splash_config = self.env['res.config.splash'].get_config(self.env.user.company_id.id)
         # ====================================================================#
         # Company Configuration NOT Found
         if splash_config is None:
             http.request.env['res.config.splash'].create({
-                'company_id': http.request.env.user.company_id.id,
+                'company_id': self.env.user.company_id.id,
                 'ws_id': self.ws_id,
                 'ws_key': self.ws_key,
                 'ws_expert': self.ws_expert,
@@ -107,12 +107,11 @@ class ResConfigSettings(models.TransientModel):
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
             splash_config.execute()
 
-        ResConfigSettings.show_debug()
+        self.show_debug()
 
-    @staticmethod
-    def show_debug():
+    def show_debug(self):
         import logging
 
         logging.warning('[SPLASH] New Configuration')
-        for cfg in http.request.env['res.config.splash'].sudo().search([]):
+        for cfg in self.env['res.config.splash'].sudo().search([]):
             logging.warning(cfg.company_id.name+" >> "+cfg.ws_key+" @ "+cfg.ws_id)

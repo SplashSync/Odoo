@@ -126,10 +126,10 @@ class ResConfigSplash(models.Model):
         """
         # ====================================================================#
         # Load Current Company Configuration
-        config = self.get_config(http.request.env.user.company_id.id)
+        config = self.get_config(self.env.user.company_id.id)
         # ====================================================================#
         # Return Company Configuration or default Values
-        return config.get_values() if config is not None else self.get_default_values(http.request.env.user.company_id.id)
+        return config.get_values() if config is not None else self.get_default_values(self.env.user.company_id.id)
 
     def get_values(self):
         """
@@ -159,12 +159,18 @@ class ResConfigSplash(models.Model):
         :return: void
         """
         # ====================================================================#
+        # Detect Current User Company ID
+        try:
+            company_id = http.request.env.user.company_id.id
+        except Exception:
+            company_id = self.env.user.company_id.id
+        # ====================================================================#
         # Load Current Company Configuration
-        config = http.request.env['res.config.splash'].sudo().search([('company_id', '=', http.request.env.user.company_id.id)], limit=1)
+        config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
         # ====================================================================#
         # Update Company Values
         config.write({
-            'company_id': http.request.env.user.company_id.id,
+            'company_id': company_id,
             'ws_id': self.ws_id,
             'ws_key': self.ws_key,
             'ws_expert': self.ws_expert,
@@ -199,7 +205,7 @@ class ResConfigSplash(models.Model):
         """
         # ====================================================================#
         # Search for Company Configuration
-        config = http.request.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
+        config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
 
         return config if len(config) else None
 
@@ -211,11 +217,11 @@ class ResConfigSplash(models.Model):
         :rtype: None | ResConfigSplash
         """
         # Search for Company Configuration
-        config = http.request.env['res.config.splash'].search([('company_id', '=', company_id)], limit=1)
+        config = self.env['res.config.splash'].search([('company_id', '=', company_id)], limit=1)
         if len(config) == 0:
             return
 
-        for conf in http.request.env['res.config.splash'].search([('company_id', '=', company_id)]):
+        for conf in self.env['res.config.splash'].search([('company_id', '=', company_id)]):
             if conf.id != config.id:
                 conf.unlink()
 
