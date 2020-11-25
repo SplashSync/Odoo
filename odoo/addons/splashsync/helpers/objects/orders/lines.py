@@ -385,7 +385,7 @@ class OrderLinesHelper:
         # ====================================================================#
         # Load Account Id from Configuration
         try:
-            account_id = SettingsManager.get_sales_account_id
+            account_id = SettingsManager.get_sales_account_id()
             # ====================================================================#
             # FallBack to Demo Account Id
             if account_id is None or int(account_id) <= 0:
