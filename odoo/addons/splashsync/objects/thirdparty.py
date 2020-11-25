@@ -125,6 +125,9 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         # Safety Check
         if req_fields.__len__() < 1:
             return False
+        # ==================================================================== #
+        # Pre-Setup Default Team Id
+        req_fields = self.setup_default_team(req_fields)
         # ====================================================================#
         # Create a New Simple ThirdParty
         new_thirdparty = self.getModel().create(req_fields)

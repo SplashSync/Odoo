@@ -22,7 +22,7 @@ class SalesRelations:
     Access to Sales Relational Fields
     """
 
-    def buildRelationFields(self):
+    def buildSalesRelationFields(self):
         # ==================================================================== #
         # Sale Person Name
         if "user_id" in self.getModel().fields_get():
@@ -46,9 +46,9 @@ class SalesRelations:
             FieldFactory.group("General")
             FieldFactory.isNotTested()
 
-    def getRelationFields(self, index, field_id):
+    def getSalesRelationFields(self, index, field_id):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isSalesRelationFields(field_id):
             return
         # ==================================================================== #
         # Sale Person Name
@@ -66,9 +66,9 @@ class SalesRelations:
             self._out[field_id] = M2OHelper.get_name(self.object, "team_id")
             self._in.__delitem__(index)
 
-    def setRelationFields(self, field_id, field_data):
+    def setSalesRelationFields(self, field_id, field_data):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isSalesRelationFields(field_id):
             return
         # ==================================================================== #
         # Sale Person Name
@@ -87,11 +87,28 @@ class SalesRelations:
             self._in.__delitem__(field_id)
 
     @staticmethod
-    def isRelationFields(field_id):
+    def isSalesRelationFields(field_id):
         if field_id in [
             "user_id", "user_email", "team_id"
         ]:
             return True
         return False
 
+    def setup_default_team(self, reqFields):
+        """
+        Pre-Setup Default Team Id
 
+        :param reqFields: dict
+        :return: dict
+        """
+        # ==================================================================== #
+        # Safety Check - Sale Team Field Exists
+        if "team_id" not in self.getModel().fields_get():
+            return reqFields
+        # ==================================================================== #
+        # Safety Check - Default Sale Team Selected
+        from odoo.addons.splashsync.helpers import SettingsManager
+        team_id = SettingsManager.get_sales_default_team_id()
+        if team_id is not None and int(team_id) > 0:
+            reqFields['team_id'] = team_id
+        return reqFields

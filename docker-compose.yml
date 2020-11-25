@@ -40,9 +40,9 @@ services:
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ./scripts:/scripts:ro
             - ../Py-Core:/mnt/splashpy
-        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,product,contacts,stock,website_sale_comparison,sales,purchase"
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync"
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo
+        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,contacts,product,website_sale_comparison,sale,purchase,stock" --log-handler :WARNING
+#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync" --log-handler :WARNING
+#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo --log-handler :WARNING
         hostname:           latest.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }

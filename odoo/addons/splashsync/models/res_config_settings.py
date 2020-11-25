@@ -59,6 +59,19 @@ class ResConfigSettings(models.TransientModel):
     # SALES Settings
     # ====================================================================#
 
+    sales_default_team_id = fields.Many2one(
+        'crm.team',
+        string="Default Sales Team",
+        help="Default Sales Team for New Contacts, Orders & Invoices"
+    )
+
+    sales_account_id = fields.Many2one(
+        'account.account',
+        string="Account for New Invoices Line",
+        domain=[("user_type_id", "=ilike", "income")],
+        help="Select the Account type to use when Splash will create new Invoices lines. I.e: 200000 Product Sales"
+    )
+
     sales_advanced_taxes = fields.Boolean(
         string="Order & Invoices Advanced Taxes",
         help="Enable Advanced Taxes Mode."
@@ -92,6 +105,8 @@ class ResConfigSettings(models.TransientModel):
                 'product_simplified_prices': self.product_simplified_prices,
                 'product_advanced_taxes': self.product_advanced_taxes,
                 'product_advanced_variants': self.product_advanced_variants,
+                'sales_default_team_id': self.sales_default_team_id.id,
+                'sales_account_id': self.sales_account_id.id,
                 'sales_advanced_taxes': self.sales_advanced_taxes,
             })
         else:
@@ -104,6 +119,8 @@ class ResConfigSettings(models.TransientModel):
             splash_config.product_simplified_prices = bool(self.product_simplified_prices)
             splash_config.product_advanced_taxes = bool(self.product_advanced_taxes)
             splash_config.product_advanced_variants = bool(self.product_advanced_variants)
+            splash_config.sales_default_team_id = int(self.sales_default_team_id.id)
+            splash_config.sales_account_id = int(self.sales_account_id.id)
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
             splash_config.execute()
 

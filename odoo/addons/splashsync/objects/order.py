@@ -79,6 +79,9 @@ class Order(OdooObject, OrderCore, OrderAddress, OrderCarrier, OrderDelivery, Or
         req_fields = self.collectRequiredFields()
         if req_fields is False:
             return False
+        # ==================================================================== #
+        # Pre-Setup Default Team Id
+        req_fields = self.setup_default_team(req_fields)
         # ====================================================================#
         # Create a New Simple Order
         new_order = self.getModel().create(req_fields)

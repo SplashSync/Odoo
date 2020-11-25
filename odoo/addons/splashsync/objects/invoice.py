@@ -85,6 +85,9 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         req_fields = self.collectRequiredFields()
         if req_fields is False:
             return False
+        # ==================================================================== #
+        # Pre-Setup Default Team Id
+        req_fields = self.setup_default_team(req_fields)
         # ====================================================================#
         # Create a New Simple Order
         new_invoice = self.getModel().create(req_fields)

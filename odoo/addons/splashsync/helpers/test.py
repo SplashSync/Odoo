@@ -142,6 +142,7 @@ class TestsManager():
         config.ws_expert = True
         config.ws_host = "http://toolkit/ws/soap"
         config.ws_no_commits = False
+        config.sales_default_team_id = env['crm.team']._name_search("Europe")[0][0]
         # ====================================================================#
         # Save Company Parameters
         config.write(config.get_values())

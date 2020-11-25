@@ -22,7 +22,7 @@ class ProductsRelations:
     Access to product Relationnal Fields
     """
 
-    def buildRelationFields(self):
+    def buildProductsRelationsFields(self):
         # ==================================================================== #
         # Product Main category
         FieldFactory.create(const.__SPL_T_VARCHAR__, "categ_id", "Categorie Id")
@@ -82,9 +82,9 @@ class ProductsRelations:
             FieldFactory.addChoices(M2OHelper.get_name_values("product.brand"))
             FieldFactory.isNotTested()
 
-    def getRelationFields(self, index, field_id):
+    def getProductsRelationsFields(self, index, field_id):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isProductRelationFields(field_id):
             return
         # ==================================================================== #
         # Categorie
@@ -137,11 +137,9 @@ class ProductsRelations:
             self._out[field_id] = M2OHelper.get_name(self.object, "product_brand_id")
             self._in.__delitem__(index)
 
-
-
-    def setRelationFields(self, field_id, field_data):
+    def setProductsRelationsFields(self, field_id, field_data):
         # Check if Relation Field...
-        if not self.isRelationFields(field_id):
+        if not self.isProductRelationFields(field_id):
             return
         # ==================================================================== #
         # Categorie
@@ -195,7 +193,7 @@ class ProductsRelations:
             self._in.__delitem__(field_id)
 
     @staticmethod
-    def isRelationFields(field_id):
+    def isProductRelationFields(field_id):
         if field_id in [
             "categ_id", "categ",
             "route_ids", "routes",

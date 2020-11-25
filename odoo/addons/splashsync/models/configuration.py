@@ -32,6 +32,8 @@ class ResConfigSplash(models.Model):
         'product_simplified_prices': False,
         'product_advanced_variants': False,
         'product_advanced_taxes': False,
+        'sales_default_team_id': None,
+        'sales_account_id': None,
         'sales_advanced_taxes': False,
     }
 
@@ -92,6 +94,17 @@ class ResConfigSplash(models.Model):
     # SALES Settings
     # ====================================================================#
 
+    sales_default_team_id = fields.Many2one(
+        'crm.team',
+        string="Default Sales Team"
+    )
+
+    sales_account_id = fields.Many2one(
+        'account.account',
+        domain=[("user_type_id", "=ilike", "income")],
+        string="Account for New Invoices Line"
+    )
+
     sales_advanced_taxes = fields.Boolean(
         string="Order & Invoices Advanced Taxes",
         help="Enable Advanced Taxes Mode."
@@ -148,6 +161,8 @@ class ResConfigSplash(models.Model):
             'product_simplified_prices': self.product_simplified_prices,
             'product_advanced_taxes': self.product_advanced_taxes,
             'product_advanced_variants': self.product_advanced_variants,
+            'sales_default_team_id': self.sales_default_team_id.id,
+            'sales_account_id': self.sales_account_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
         }
 
@@ -180,6 +195,8 @@ class ResConfigSplash(models.Model):
             'product_simplified_prices': self.product_simplified_prices,
             'product_advanced_taxes': self.product_advanced_taxes,
             'product_advanced_variants': self.product_advanced_variants,
+            'sales_default_team_id': self.sales_default_team_id.id,
+            'sales_account_id': self.sales_account_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
         })
 

@@ -142,6 +142,30 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sales_default_team_id"/>
+                                <field name="sales_default_team_id" class="o_light_label"/>
+                                <div class="text-muted">
+                                    Default Sales Team for New Contacts, Orders and Invoices
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sales_account_id"/>
+                                <field name="sales_account_id" class="o_light_label"/>
+                                <div class="text-muted">
+                                    Select the Account type to use when Splash will create new Invoices lines. I.e: 200000 Product Sales
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
                                 <field name="sales_advanced_taxes" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">

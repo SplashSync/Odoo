@@ -74,6 +74,17 @@ class SettingsManager():
         return bool(SettingsManager.get_configuration()["sales_advanced_taxes"])
 
     @staticmethod
+    def get_sales_account_id():
+        return SettingsManager.get_configuration().sales_account_id.id
+
+    @staticmethod
+    def get_sales_default_team_id():
+        try:
+            return SettingsManager.get_configuration().sales_default_team_id.id
+        except Exception:
+            return None
+
+    @staticmethod
     def get_configuration():
         """
         Get Company Configuration for WebService Requests

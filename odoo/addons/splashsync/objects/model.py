@@ -74,12 +74,15 @@ class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicField
         self.order_inputs()
         # ====================================================================#
         # Init List of required Fields
-        reqFields = self.collectRequiredCoreFields()
-        if reqFields is False:
+        req_fields = self.collectRequiredCoreFields()
+        if req_fields is False:
             return False
+        # ==================================================================== #
+        # Pre-Setup Default Team Id
+        req_fields = self.setup_default_team(req_fields)
         # ====================================================================#
         # Create new Model with Minimal Data
-        return self.getModel().create(reqFields)
+        return self.getModel().create(req_fields)
 
     def load(self, object_id):
         """

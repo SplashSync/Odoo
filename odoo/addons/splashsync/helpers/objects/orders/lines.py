@@ -322,14 +322,25 @@ class OrderLinesHelper:
     def add_invoice_line(invoice, line_data):
         """
         Add a New Line to an Invoice
+
         :param invoice: account.invoice
+        :param line_data: dict
         :return: account.invoice.line
         """
+        # ====================================================================#
+        # Load Account Id from Configuration
+        account_id = OrderLinesHelper.detect_sales_account_id(invoice)
+        # ====================================================================#
+        # Safety Check
+        if account_id is None or int(account_id) <= 0:
+            Framework.log().error("Unable to detect Account Id, Add Invoice Line skipped.")
+            Framework.log().error("Please check your configuration.")
+            return None
         # ====================================================================#
         # Prepare Minimal Order Line Data
         req_fields = {
             "invoice_id": invoice.id,
-            "account_id": invoice.account_id._name_search("200000 Product Sales")[0][0],
+            "account_id": account_id,
             "sequence": 10 + len(invoice.invoice_line_ids),
         }
         # ====================================================================#
@@ -362,3 +373,23 @@ class OrderLinesHelper:
             Framework.log().dump(req_fields, "New Invoice Line")
             return None
 
+    @staticmethod
+    def detect_sales_account_id(invoice):
+        """
+        Detect Account id for NEW Invoices Lines
+
+        :param invoice: account.invoice
+        :return: account.invoice.line
+        """
+        from odoo.addons.splashsync.helpers import SettingsManager
+        # ====================================================================#
+        # Load Account Id from Configuration
+        try:
+            account_id = SettingsManager.get_sales_account_id
+            # ====================================================================#
+            # FallBack to Demo Account Id
+            if account_id is None or int(account_id) <= 0:
+                account_id = invoice.account_id._name_search("200000 Product Sales")[0][0]
+            return account_id
+        except:
+            return None
