@@ -19,7 +19,7 @@ from odoo.addons.splashsync.helpers import M2MHelper, M2OHelper
 
 class ProductsRelations:
     """
-    Access to product Relationnal Fields
+    Access to product Relational Fields
     """
 
     def buildProductsRelationsFields(self):
@@ -81,6 +81,18 @@ class ProductsRelations:
             FieldFactory.microData("http://schema.org/Product", "brand")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.brand"))
             FieldFactory.isNotTested()
+        # ==================================================================== #
+        # [MY LED] Product Tags
+        if "tag_ids" in self.getModel().fields_get():
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "tag_id", "Tag Id")
+            FieldFactory.microData("http://schema.org/Product", "tagId")
+            FieldFactory.addChoices(M2OHelper.get_name_values("product.tag"))
+            FieldFactory.isWriteOnly()
+            FieldFactory.isNotTested()
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "tag_id", "Tag Ids")
+            FieldFactory.microData("http://schema.org/Product", "tagIds")
+            FieldFactory.addChoices(M2OHelper.get_name_values("product.tag"))
+            FieldFactory.isNotTested()
 
     def getProductsRelationsFields(self, index, field_id):
         # Check if Relation Field...
@@ -136,6 +148,12 @@ class ProductsRelations:
         if field_id == "product_brand":
             self._out[field_id] = M2OHelper.get_name(self.object, "product_brand_id")
             self._in.__delitem__(index)
+        # ==================================================================== #
+        # [MY LED] Product Tags
+        if field_id == "tag_ids":
+            self._out[field_id] = M2MHelper.get_name(self.object, "tag_ids")
+            self._in.__delitem__(index)
+
 
     def setProductsRelationsFields(self, field_id, field_data):
         # Check if Relation Field...
@@ -191,6 +209,14 @@ class ProductsRelations:
         if field_id == "product_brand":
             M2OHelper.set_name(self.object, "product_brand_id", field_data, domain="product.brand")
             self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # [MY LED] Product Tags
+        if field_id == "tag_id":
+            M2MHelper.set_names(self.object, "tag_ids", '["'+[field_data]+'"]', domain="product.tag")
+            self._in.__delitem__(field_id)
+        if field_id == "tag_ids":
+            M2MHelper.set_names(self.object, "tag_ids", field_data, domain="product.tag")
+            self._in.__delitem__(field_id)
 
     @staticmethod
     def isProductRelationFields(field_id):
@@ -201,6 +227,7 @@ class ProductsRelations:
             "alternative_products", "accessory_products",
             "company_ids", "company_names",
             "product_brand_id", "product_brand",
+            "tag_id", "tag_ids",
         ]:
             return True
         return False
