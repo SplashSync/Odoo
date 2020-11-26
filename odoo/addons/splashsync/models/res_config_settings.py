@@ -68,7 +68,6 @@ class ResConfigSettings(models.TransientModel):
     sales_account_id = fields.Many2one(
         'account.account',
         string="Account for New Invoices Line",
-        domain=[("user_type_id", "=ilike", "income")],
         help="Select the Account type to use when Splash will create new Invoices lines. I.e: 200000 Product Sales"
     )
 
