@@ -202,6 +202,8 @@ class ProductImagesHelper:
             return False
         if property_name not in image_item.keys():
             return False
+        if image_item[property_name] is None:
+            return False
         if bool(int(image_item[property_name])):
             return True
 
