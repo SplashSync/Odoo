@@ -125,7 +125,7 @@ class InvoicePaymentsHelper:
         # Parse results
         for method in methods:
             results += [(
-                method.code,
+                method.name,
                 "[%s] %s (%s)" % (method.code, method.name, method.type)
             )]
         return results
@@ -237,7 +237,7 @@ class InvoicePaymentsHelper:
             return False
         # ==================================================================== #
         # Compare Payment Method
-        if payment.journal_id.code != data["journal_code"]:
+        if payment.journal_id.name != data["journal_code"]:
             return False
         # ==================================================================== #
         # Compare Payment Date
@@ -310,7 +310,7 @@ class InvoicePaymentsHelper:
         # ==================================================================== #
         # Payment Method
         if field_id == "journal_code":
-            return M2OHelper.get_name(payment, "journal_id", "code")
+            return M2OHelper.get_name(payment, "journal_id", "name")
         if field_id == "journal_type":
             return M2OHelper.get_name(payment, "journal_id", "type")
         if field_id == "journal_name":
@@ -340,7 +340,7 @@ class InvoicePaymentsHelper:
         try:
             journal_id = M2OHelper.verify_name(
                 journal_code,
-                "code",
+                "name",
                 "account.journal",
                 InvoicePaymentsHelper.__sales_types_filter
             )
