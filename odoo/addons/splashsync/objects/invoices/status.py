@@ -156,6 +156,32 @@ class InvoiceStatus:
 
         return False
 
+    def pre_validate_status_if_possible(self):
+        """
+        Pre Validate Invoice if Possible
+        I.e: When we want to Add Payment to a New Invoice (Already Validated)
+        :rtype: bool
+        """
+        # ====================================================================#
+        # Check if Invoice is Draft
+        if self.object.state not in self.object.state in ['draft']:
+            return True
+        # ====================================================================#
+        # Check if New State received but NOT parsed
+        if "state" in self._in and isinstance(self._in['state'], str):
+            self.__new_state = self.__odoo_state(self._in['state'])
+        # ====================================================================#
+        # Check New State is Valid
+        if not isinstance(self.__new_state, str):
+            return False
+        if self.__new_state not in ['open', 'in_payment', 'paid']:
+            return False
+        # ====================================================================#
+        # Update State DRAFT => OPEN
+        self._set_status('open')
+
+        return True
+
     def _is_editable(self, state=None):
         """
         Check if Order Status is Editable

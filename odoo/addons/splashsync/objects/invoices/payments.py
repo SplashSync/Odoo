@@ -136,13 +136,16 @@ class InvoicePayments:
         # Walk on Received Payments...
         for payment_data in OrderedDict(sorted(field_data.items())).values():
             # ==================================================================== #
-            # Load or Create Order Line
+            # Load or Create Invoice Payment Line
             try:
                 payment = original_payment_ids[index]
             except:
                 payment = None
             # ==================================================================== #
-            # Update Order Line Values
+            # Validate Invoice if Draft & Requested by Splash
+            self.pre_validate_status_if_possible()
+            # ==================================================================== #
+            # Update Invoice Payment Line Values
             payment_id = InvoicePaymentsHelper.set_values(self.object, payment, payment_data)
             if payment_id is None:
                 return
