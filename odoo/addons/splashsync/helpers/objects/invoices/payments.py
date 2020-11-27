@@ -233,8 +233,9 @@ class InvoicePaymentsHelper:
 
         # ==================================================================== #
         # Compare Payment Number
-        if payment.name != data["name"]:
-            return False
+        if isinstance(data["name"], str) and len(data["name"]) > 1:
+            if payment.name != data["name"]:
+                return False
         # ==================================================================== #
         # Compare Payment Method
         if payment.journal_id.name != data["journal_code"]:
