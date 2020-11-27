@@ -148,12 +148,14 @@ class InvoicePaymentsHelper:
         # Detect Payment Method
         journal_id = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
         if journal_id is None:
+            Framework.log().error("Unable to detect Journal Id (Payment Method)")
             return None
         # ====================================================================#
         # Detect Payment Method Id
         payment_type = "inbound" if float(payment_data["amount"]) > 0 else 'outbound'
         payment_method_id = InvoicePaymentsHelper.__detect_payment_type(payment_type)
         if payment_method_id is None:
+            Framework.log().error("Unable to detect manual payments method")
             return None
         # ====================================================================#
         # Detect Payment Date
@@ -344,7 +346,6 @@ class InvoicePaymentsHelper:
             )
             return journal_id if isinstance(journal_id, int) and journal_id > 0 else None
         except:
-            Framework.log().error("Unable to detect Journal Id (Payment Method)")
             return None
 
     @staticmethod
@@ -364,5 +365,4 @@ class InvoicePaymentsHelper:
             )
             return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
         except:
-            Framework.log().error("Unable to detect manual payments method")
             return None
