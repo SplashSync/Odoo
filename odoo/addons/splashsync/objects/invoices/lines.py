@@ -129,7 +129,7 @@ class InvoiceLines:
         from odoo.addons.splashsync.helpers import OrderLinesHelper
 
         # ==================================================================== #
-        # Safety Check - field_id is an Order lines List
+        # Safety Check - field_id is an Invoice lines List
         if field_id != "lines":
             return
         self._in.__delitem__(field_id)
@@ -138,15 +138,15 @@ class InvoiceLines:
         if not isinstance(field_data, dict):
             return
         # ==================================================================== #
-        # Walk on Received Order Lines...
+        # Walk on Received Invoice Lines...
         index = 0
         updated_invoice_line_ids = []
         for line_data in OrderedDict(sorted(field_data.items())).values():
             # ==================================================================== #
-            # Complete Order Line values with computed Information
+            # Complete Invoice Line values with computed Information
             line_data = OrderLinesHelper.complete_values(line_data)
             # ==================================================================== #
-            # Load or Create Order Line
+            # Load or Create Invoice Line
             try:
                 invoice_line = self.object.invoice_line_ids[index]
             except:
@@ -154,19 +154,22 @@ class InvoiceLines:
                 if invoice_line is None:
                     return
             # ==================================================================== #
-            # Store Updated Order Line Id
+            # Store Updated Invoice Line Id
             updated_invoice_line_ids.append(invoice_line.id)
             index += 1
             # ==================================================================== #
-            # Check if Comment Order Line
+            # Check if Comment Invoice Line
             if OrderLinesHelper.is_comment(invoice_line):
                 continue
             # ==================================================================== #
-            # Update Order Line Values
+            # Update Invoice Line Values
             if not OrderLinesHelper.set_values(invoice_line, line_data):
                 return
         # ==================================================================== #
-        # Delete Remaining Order Lines...
+        # Delete Remaining Invoice Lines...
         for invoice_line in self.object.invoice_line_ids:
             if invoice_line.id not in updated_invoice_line_ids:
                 self.object.invoice_line_ids = [(3, invoice_line.id, 0)]
+        # ==================================================================== #
+        # Recompute Invoice Taxes
+        self.object.compute_taxes()
