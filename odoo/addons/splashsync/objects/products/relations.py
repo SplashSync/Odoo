@@ -212,7 +212,12 @@ class ProductsRelations:
         # ==================================================================== #
         # [MY LED] Product Tags
         if field_id == "tag_id":
-            M2MHelper.set_names(self.object, "tag_ids", '["'+field_data+'"]', domain="product.tag")
+            M2MHelper.set_names(
+                self.object,
+                "tag_ids",
+                '["'+field_data+'"]' if isinstance(field_data, str) else None,
+                domain="product.tag"
+            )
             self._in.__delitem__(field_id)
         if field_id == "tag_ids":
             M2MHelper.set_names(self.object, "tag_ids", field_data, domain="product.tag")

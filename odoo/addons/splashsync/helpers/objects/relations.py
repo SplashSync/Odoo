@@ -70,7 +70,7 @@ class M2MHelper:
         :param data: None, str  Json Data to Write
         :param index: str       Property Name
         :param domain: str      Target Objects Domain
-        :param filters: list    Additionnal Search Filters
+        :param filters: list    Additional Search Filters
         :return: void
         """
         # ==================================================================== #
