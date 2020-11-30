@@ -41,11 +41,11 @@ class SaleOrder(models.Model):
         return res
 
     def unlink(self):
-        res = super(SaleOrder, self).unlink()
-
         # ====================================================================#
         # Execute Splash Commit
         self.__do_splash_commit(const.__SPL_A_DELETE__)
+
+        res = super(SaleOrder, self).unlink()
 
         return res
 

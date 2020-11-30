@@ -41,11 +41,11 @@ class Partner(models.Model):
         return res
 
     def unlink(self):
-        res = super(Partner, self).unlink()
-
         # ====================================================================#
         # Execute Splash Commit
         self.__do_splash_commit(const.__SPL_A_DELETE__)
+
+        res = super(Partner, self).unlink()
 
         return res
 
