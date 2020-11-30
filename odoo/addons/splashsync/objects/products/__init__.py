@@ -19,4 +19,4 @@ from .prices import ProductsPrices
 from .images import ProductsImages
 from .relations import ProductsRelations
 from .supplier import ProductsSupplier
-
+from .inventory import ProductsInventory

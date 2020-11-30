@@ -14,7 +14,7 @@
 from . import OdooObject
 from splashpy import const
 from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
-from .products import ProductsFeatures, ProductsRelations, ProductsSupplier
+from .products import ProductsFeatures, ProductsRelations, ProductsSupplier, ProductsInventory
 
 
 class Product(
@@ -25,7 +25,8 @@ class Product(
     ProductsImages,
     ProductsFeatures,
     ProductsRelations,
-    ProductsSupplier
+    ProductsSupplier,
+    ProductsInventory
 ):
     # ====================================================================#
     # Splash Object Definition
@@ -58,7 +59,7 @@ class Product(
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
-            "service_to_purchase"
+            "service_to_purchase", "qty_available"
         ]
 
     @staticmethod
@@ -73,7 +74,6 @@ class Product(
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
-            "qty_available": {"group": ""},
             "qty_at_date": {"group": ""},
             "virtual_available": {"group": ""},
             "outgoing_qty	": {"group": ""},
