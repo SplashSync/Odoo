@@ -67,11 +67,8 @@ class ProductTemplate(models.Model):
         :return: void
         """
         # ====================================================================#
-        # Safety Check
-        if not self:
-            pass
-        # ====================================================================#
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Product
         from odoo.addons.splashsync.client import OdooClient
-        OdooClient.commit(Product(), action, self.product_variant_ids.ids)
+        for template in self:
+            OdooClient.commit(Product(), action, list(map(str, template.product_variant_ids.ids)))

@@ -57,11 +57,8 @@ class AccountInvoice(models.Model):
         :return: void
         """
         # ====================================================================#
-        # Safety Check
-        if not self:
-            pass
-        # ====================================================================#
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Invoice
         from odoo.addons.splashsync.client import OdooClient
-        OdooClient.commit(Invoice(), action, str(self.id))
+        for invoice in self:
+            OdooClient.commit(Invoice(), action, str(invoice.id))

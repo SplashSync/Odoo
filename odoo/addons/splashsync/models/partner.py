@@ -64,15 +64,16 @@ class Partner(models.Model):
         # Import Required Classes
         from odoo.addons.splashsync.helpers.objects.partners import PartnersHelper
         from odoo.addons.splashsync.client import OdooClient
-        # ====================================================================#
-        # Object is a ThirdParty
-        if PartnersHelper.is_thirdparty(self):
-            from odoo.addons.splashsync.objects import ThirdParty
-            OdooClient.commit(ThirdParty(), action, str(self.id))
-            return
-        # ====================================================================#
-        # Object is an Address
-        if PartnersHelper.is_address(self):
-            from odoo.addons.splashsync.objects import Address
-            OdooClient.commit(Address(), action, str(self.id))
-            return
+        for partner in self:
+            # ====================================================================#
+            # Object is a ThirdParty
+            if PartnersHelper.is_thirdparty(partner):
+                from odoo.addons.splashsync.objects import ThirdParty
+                OdooClient.commit(ThirdParty(), action, str(partner.id))
+                return
+            # ====================================================================#
+            # Object is an Address
+            if PartnersHelper.is_address(partner):
+                from odoo.addons.splashsync.objects import Address
+                OdooClient.commit(Address(), action, str(partner.id))
+                return

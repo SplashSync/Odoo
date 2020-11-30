@@ -139,14 +139,14 @@ class OdooClient(ClientInfo):
             user_name = request.env.user.name
         except Exception:
             user_name = "Unknown User"
-        # ====================================================================#
+        # ==================================================================== #
         # Send Commit Notification
         try:
-            # ====================================================================#
+            # ==================================================================== #
             # Check if Commits Are Allowed
             if SettingsManager.is_no_commits():
                 return True
-            # ====================================================================#
+            # ==================================================================== #
             # Execute Commits with Client
             return OdooClient.get_client().commit(
                 str(splash_object.name),

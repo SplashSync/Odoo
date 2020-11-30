@@ -57,12 +57,9 @@ class SaleOrder(models.Model):
         :return: void
         """
         # ====================================================================#
-        # Safety Check
-        if not self:
-            pass
-        # ====================================================================#
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Order
         from odoo.addons.splashsync.client import OdooClient
-        OdooClient.commit(Order(), action, str(self.id))
+        for order in self:
+            OdooClient.commit(Order(), action, str(order.id))
 

@@ -87,12 +87,9 @@ class ProductProduct(models.Model):
         :return: void
         """
         # ====================================================================#
-        # Safety Check
-        if not self:
-            pass
-        # ====================================================================#
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Product
         from odoo.addons.splashsync.client import OdooClient
-        OdooClient.commit(Product(), action, str(self.id))
+        for product in self:
+            OdooClient.commit(Product(), action, str(product.id))
 
