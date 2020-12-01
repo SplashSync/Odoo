@@ -104,7 +104,7 @@ class SettingsManager():
         # Load Splash Configuration For Company
         config = http.request.env['res.config.splash'].get_config(company_id)
         if config is None:
-            raise Exception("[SPLASH] Unable to find configuration")
+            raise Exception("[SPLASH] Unable to find configuration for "+str(company_id))
         # ====================================================================#
         # Cache Splash Configuration
         SettingsManager.__current__ = config
