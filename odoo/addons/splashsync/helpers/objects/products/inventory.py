@@ -13,6 +13,7 @@
 #
 
 from odoo import http
+from splashpy import Framework
 
 
 class InventoryHelper:
@@ -39,6 +40,46 @@ class InventoryHelper:
             'line_ids': [(0, 0, InventoryHelper.__get_adjustment_line(product, new_quantity))],
         })
         inventory._action_done()
+
+    @staticmethod
+    def unlink_all_inventory_adjustment(product_id):
+        """
+        Delete All Product Inventory Adjustment so that it could be Deleted
+        ONLY IN DEBUG MODE
+
+        :param product_id: str|int
+        :return: void
+        """
+        # ====================================================================#
+        # Safety Check - ONLY In Debug Mode
+        if not Framework.isDebugMode():
+            return
+        # ====================================================================#
+        # Search for All Product Inventory Adjustments
+        items = InventoryHelper.__get_inventory().search([("product_id", "=", int(product_id))])
+        # ====================================================================#
+        # FORCED DELETE of All Product Inventory Adjustments
+        for inventory in items:
+            for inventory_move in inventory.move_ids:
+                inventory_move.state = 'assigned'
+                inventory_move._action_cancel()
+                inventory_move.unlink()
+            inventory.state = 'draft'
+            inventory.action_cancel_draft()
+            inventory.unlink()
+        # ====================================================================#
+        # Search for All Product Quantities
+        items = InventoryHelper.__get_quants().sudo().search([("product_id", "=", int(product_id))])
+        # ====================================================================#
+        # FORCED DELETE of All Product Inventory Adjustments
+        for quant in items:
+            quant.unlink()
+
+
+
+    # ====================================================================#
+    # Low Level Methods
+    # ====================================================================#
 
     @staticmethod
     def __get_adjustment_line(product, new_quantity):
@@ -69,3 +110,12 @@ class InventoryHelper:
         :rtype: stock.inventory
         """
         return http.request.env['stock.inventory']
+
+    @staticmethod
+    def __get_quants():
+        """
+        Get Product Quantities Model Class
+
+        :rtype: stock.inventory
+        """
+        return http.request.env['stock.quant']

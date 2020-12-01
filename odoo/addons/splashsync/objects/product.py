@@ -153,3 +153,13 @@ class Product(
             return False
 
         return model
+
+    def delete(self, object_id):
+        """Delete Odoo Product with Id"""
+        # ====================================================================
+        # DEBUG MODE - Delete All Connected Tests Transactions
+        from odoo.addons.splashsync.helpers import InventoryHelper
+        InventoryHelper.unlink_all_inventory_adjustment(object_id)
+        # ====================================================================#
+        # Execute Normal Delete
+        return super(Product, self).delete(object_id)

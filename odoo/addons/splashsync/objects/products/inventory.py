@@ -52,7 +52,7 @@ class ProductsInventory:
             return
         # ==================================================================== #
         # Safety Check - Is Tracked Product
-        if self.object not in ['product']:
+        if self.object.type not in ['product']:
             Framework.log().warn("You can only adjust inventory of storable products.")
             return
         # ==================================================================== #
