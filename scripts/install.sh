@@ -39,5 +39,6 @@ if [ -f ~/splashsync/setup.py ]; then
 else
   echo "Clone & Install Splash Odoo Module"
   git clone https://github.com/SplashSync/odoo.git ~/splashsync --depth=1
+  rm -Rf /mnt/extra-addons/splashsync
   ln -s ~/splashsync/odoo/addons/splashsync /mnt/extra-addons
 fi

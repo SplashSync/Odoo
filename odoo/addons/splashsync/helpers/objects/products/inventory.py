@@ -56,10 +56,10 @@ class InventoryHelper:
             return
         # ====================================================================#
         # Search for All Product Inventory Adjustments
-        items = InventoryHelper.__get_inventory().search([("product_id", "=", int(product_id))])
+        results = InventoryHelper.__get_inventory().search([("product_id", "=", int(product_id))])
         # ====================================================================#
         # FORCED DELETE of All Product Inventory Adjustments
-        for inventory in items:
+        for inventory in results:
             for inventory_move in inventory.move_ids:
                 inventory_move.state = 'assigned'
                 inventory_move._action_cancel()
@@ -69,10 +69,10 @@ class InventoryHelper:
             inventory.unlink()
         # ====================================================================#
         # Search for All Product Quantities
-        items = InventoryHelper.__get_quants().sudo().search([("product_id", "=", int(product_id))])
+        results = InventoryHelper.__get_quants().sudo().search([("product_id", "=", int(product_id))])
         # ====================================================================#
         # FORCED DELETE of All Product Inventory Adjustments
-        for quant in items:
+        for quant in results:
             quant.unlink()
 
     # ====================================================================#
