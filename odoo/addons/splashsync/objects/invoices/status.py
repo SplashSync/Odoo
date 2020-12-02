@@ -164,7 +164,7 @@ class InvoiceStatus:
         """
         # ====================================================================#
         # Check if Invoice is Draft
-        if self.object.state not in self.object.state in ['draft']:
+        if self.object.state not in ['draft']:
             return True
         # ====================================================================#
         # Check if New State received but NOT parsed
