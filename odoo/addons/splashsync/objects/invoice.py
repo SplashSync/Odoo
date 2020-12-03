@@ -37,7 +37,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['display_name', 'vendor_display_name', 'date_invoice', 'number']
+        return ['display_name', 'vendor_display_name', 'date_invoice', 'name', 'number']
 
     @staticmethod
     def get_required_fields():
@@ -56,7 +56,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "number": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
+            "name": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
             "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
 
             "date_due": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
