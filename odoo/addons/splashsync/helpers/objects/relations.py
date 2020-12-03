@@ -245,14 +245,15 @@ class M2OHelper:
         return results
 
     @staticmethod
-    def set_id(inputs, field, object_id, domain=None, filters=[]):
+    def set_id(inputs, field, object_id, domain=None, filters=[], nullable=True):
         """
         Set Many 2 One Relation Records from a Id String/Int
         :param inputs: str      Object to Write
         :param field: str       Field to Write
         :param object_id: None, str, int Data to Write
         :param domain: str      Target Objects Domain
-        :param filters: list    Additionnal Search Filters
+        :param filters: list    Additional Search Filters
+        :param nullable: bool   Is Object ID Nullable
         :return: void
         """
         # ==================================================================== #
@@ -264,14 +265,14 @@ class M2OHelper:
         if M2OHelper.verify_id(object_id, domain, filters):
             # Update M2O ORM Values
             setattr(inputs, field, int(object_id))
-        else:
+        elif nullable:
             try:
                 setattr(inputs, field, False)
             except:
                 pass
 
     @staticmethod
-    def set_name(inputs, field, data, index="name", domain=None, filters=[]):
+    def set_name(inputs, field, data, index="name", domain=None, filters=[], nullable=True):
         """
         Set Many 2 One Relation Records from a Name String
         :param inputs: str      Object to Write
@@ -279,7 +280,8 @@ class M2OHelper:
         :param data: str        Name to Write
         :param index: str       Property Name
         :param domain: str      Target Objects Domain
-        :param filters: list    Additionnal Search Filters
+        :param filters: list    Additional Search Filters
+        :param nullable: bool   Is Object ID Nullable
         :return: void
         """
         # ==================================================================== #
@@ -287,7 +289,7 @@ class M2OHelper:
         verified_id = M2OHelper.verify_name(data, index, domain, filters)
         if isinstance(verified_id, int) and verified_id > 0:
             M2OHelper.set_id(inputs, field, verified_id)
-        else:
+        elif nullable:
             M2OHelper.set_id(inputs, field, False)
 
     @staticmethod

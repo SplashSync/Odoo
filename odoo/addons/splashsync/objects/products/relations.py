@@ -160,12 +160,12 @@ class ProductsRelations:
         if not self.isProductRelationFields(field_id):
             return
         # ==================================================================== #
-        # Categorie
+        # Category
         if field_id == "categ_id":
-            M2OHelper.set_id(self.object, "categ_id", field_data, domain="product.category")
+            M2OHelper.set_id(self.object, "categ_id", field_data, domain="product.category", nullable=False)
             self._in.__delitem__(field_id)
         if field_id == "categ":
-            M2OHelper.set_name(self.object, "categ_id", field_data, domain="product.category")
+            M2OHelper.set_name(self.object, "categ_id", field_data, domain="product.category", nullable=False)
             self._in.__delitem__(field_id)
         # ==================================================================== #
         # Routes
