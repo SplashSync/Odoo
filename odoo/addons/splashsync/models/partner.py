@@ -57,9 +57,10 @@ class Partner(models.Model):
     #     :rtype: void
     #     """
     #     # ====================================================================#
-    #     # Safety Check
-    #     if not self:
-    #         pass
+    #     # Check if Splash Commit is Allowed
+    #     from odoo.addons.splashsync.helpers import SettingsManager
+    #     if SettingsManager.is_no_commits():
+    #         return
     #     # ====================================================================#
     #     # Import Required Classes
     #     from odoo.addons.splashsync.helpers.objects.partners import PartnersHelper

@@ -57,6 +57,11 @@ class AccountInvoice(models.Model):
     #     :return: void
     #     """
     #     # ====================================================================#
+    #     # Check if Splash Commit is Allowed
+    #     from odoo.addons.splashsync.helpers import SettingsManager
+    #     if SettingsManager.is_no_commits():
+    #         return
+    #     # ====================================================================#
     #     # Execute Splash Commit for this Product
     #     from odoo.addons.splashsync.objects import Invoice
     #     from odoo.addons.splashsync.client import OdooClient

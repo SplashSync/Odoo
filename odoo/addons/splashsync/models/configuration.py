@@ -155,10 +155,10 @@ class ResConfigSplash(models.Model):
             'ws_id': self.ws_id,
             'ws_key': self.ws_key,
             'ws_expert': self.ws_expert,
-            'ws_no_commits': self.ws_no_commits,
+            'ws_no_commits': self.env['ir.config_parameter'].sudo().get_param('splash_ws_no_commits'),
             'ws_host': self.ws_host,
             'ws_user': self.ws_user.id,
-            'product_simplified_prices': self.product_simplified_prices,
+            'product_simplified_prices': self.env['ir.config_parameter'].sudo().get_param('splash_product_simplified_prices'),
             'product_advanced_taxes': self.product_advanced_taxes,
             'product_advanced_variants': self.product_advanced_variants,
             'sales_default_team_id': self.sales_default_team_id.id,
@@ -179,6 +179,11 @@ class ResConfigSplash(models.Model):
             company_id = http.request.env.user.company_id.id
         except Exception:
             company_id = self.env.user.company_id.id
+        # ====================================================================#
+        # Update Global Values
+        parameters = self.env['ir.config_parameter'].sudo()
+        parameters.set_param('splash_ws_no_commits', self.ws_no_commits)
+        parameters.set_param('splash_product_simplified_prices', self.product_simplified_prices)
         # ====================================================================#
         # Load Current Company Configuration
         config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)

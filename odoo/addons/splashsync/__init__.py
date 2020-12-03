@@ -18,6 +18,8 @@ from . import objects
 from odoo.api import Environment, SUPERUSER_ID
 import logging
 
+__VERSION__ = "0.2.1"
+
 def post_init_hook(cr, registry):
     """
     This Hook is run just after Splashsync Module Installation

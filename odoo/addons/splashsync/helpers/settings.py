@@ -37,7 +37,15 @@ class SettingsManager():
 
     @staticmethod
     def is_no_commits():
-        return bool(SettingsManager.get_configuration()["ws_no_commits"])
+        try:
+            return bool(http.request.env['ir.config_parameter'].sudo().get_param('splash_ws_no_commits'))
+        except Exception:
+            pass
+        try:
+            return bool(SettingsManager.get_configuration()["ws_no_commits"])
+        except Exception:
+            pass
+        return True
 
     @staticmethod
     def get_user():
@@ -59,7 +67,15 @@ class SettingsManager():
 
     @staticmethod
     def is_prd_simple_prices():
-        return bool(SettingsManager.get_configuration()["product_simplified_prices"])
+        try:
+            return bool(http.request.env['ir.config_parameter'].sudo().get_param('splash_product_simplified_prices'))
+        except Exception:
+            pass
+        try:
+            return bool(SettingsManager.get_configuration()["product_simplified_prices"])
+        except Exception:
+            pass
+        return False
 
     @staticmethod
     def is_prd_adv_variants():
