@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 
 setup(
        name='splashsync',
-       version="0.1.1",
+       version="0.2.1",
        packages=find_packages(),
        namespace_packages=['odoo.addons.splashsync'],
        install_requires=["splashpy"],
