@@ -129,7 +129,8 @@ class InvoicePaymentsHelper:
             )]
         # ====================================================================#
         # Add Default Value
-        results += [("Unknown", "[Unknown] Use default payment method")]
+        if not Framework.isDebugMode():
+            results += [("Unknown", "[Unknown] Use default payment method")]
 
         return results
 
