@@ -71,6 +71,12 @@ class ResConfigSettings(models.TransientModel):
         help="Select the Account type to use when Splash will create new Invoices lines. I.e: 200000 Product Sales"
     )
 
+    sales_journal_id = fields.Many2one(
+        'account.journal',
+        string="Default Payment Journal for Invoices",
+        help="Select the default payment method to use if given Invoice Payment Method was not identified",
+    )
+
     sales_advanced_taxes = fields.Boolean(
         string="Order & Invoices Advanced Taxes",
         help="Enable Advanced Taxes Mode."
@@ -106,6 +112,7 @@ class ResConfigSettings(models.TransientModel):
                 'product_advanced_variants': self.product_advanced_variants,
                 'sales_default_team_id': self.sales_default_team_id.id,
                 'sales_account_id': self.sales_account_id.id,
+                'sales_journal_id': self.sales_journal_id.id,
                 'sales_advanced_taxes': self.sales_advanced_taxes,
             })
         else:
@@ -120,6 +127,7 @@ class ResConfigSettings(models.TransientModel):
             splash_config.product_advanced_variants = bool(self.product_advanced_variants)
             splash_config.sales_default_team_id = int(self.sales_default_team_id.id)
             splash_config.sales_account_id = int(self.sales_account_id.id)
+            splash_config.sales_journal_id = int(self.sales_journal_id.id)
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
             splash_config.execute()
 

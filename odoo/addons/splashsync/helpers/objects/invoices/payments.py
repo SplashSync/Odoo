@@ -13,12 +13,11 @@
 #
 
 from odoo import http
-from splashpy.helpers import PricesHelper, ObjectsHelper
+
 from splashpy import Framework
 from datetime import date, datetime
 from splashpy import const
-# from odoo.addons.splashsync.helpers import M2OHelper
-from collections import OrderedDict
+
 
 class InvoicePaymentsHelper:
     """Collection of Static Functions to manage Invoices Payments content"""
@@ -128,6 +127,10 @@ class InvoicePaymentsHelper:
                 method.name,
                 "[%s] %s (%s)" % (method.code, method.name, method.type)
             )]
+        # ====================================================================#
+        # Add Default Value
+        results += [("Unknown", "[Unknown] Use default payment method")]
+
         return results
 
     # ====================================================================#
@@ -238,7 +241,7 @@ class InvoicePaymentsHelper:
                 return False
         # ==================================================================== #
         # Compare Payment Method
-        if payment.journal_id.name != data["journal_code"]:
+        if payment.journal_id.id != InvoicePaymentsHelper.__detect_journal_id(data["journal_code"]):
             return False
         # ==================================================================== #
         # Compare Payment Date
@@ -345,7 +348,13 @@ class InvoicePaymentsHelper:
                 "account.journal",
                 InvoicePaymentsHelper.__sales_types_filter
             )
-            return journal_id if isinstance(journal_id, int) and journal_id > 0 else None
+            if isinstance(journal_id, int) and journal_id > 0:
+                return journal_id
+
+            from odoo.addons.splashsync.helpers.settings import SettingsManager
+            default_id = SettingsManager.get_sales_journal_id()
+
+            return default_id if isinstance(default_id, int) and default_id > 0 else None
         except:
             return None
 
