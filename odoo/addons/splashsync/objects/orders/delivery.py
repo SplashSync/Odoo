@@ -112,7 +112,17 @@ class OrderDelivery:
                 Framework.log().warn(
                     "Delivered Qty is Higher than Ordered Qty for "+str(line.product_id.default_code)
                 )
-
+            # ==================================================================== #
+            # If Delivered Qty is Not Empty
+            if qty_delivered > 0:
+                # ==================================================================== #
+                # Order State does not Allow Delivery Qty Updates
+                if self.object.state in ["cancel", "draft", "sent"]:
+                    return Framework.log().warn("Cannot update Delivered Qty on unconfirmed Order")
+                # ==================================================================== #
+                # Automatically Lock Order
+                if self.object.state in ["sale"]:
+                    self.object.state = "done"
             # ==================================================================== #
             # Update Delivered Qty
             order_line.qty_delivered_method = 'manual'

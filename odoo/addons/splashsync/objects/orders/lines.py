@@ -56,6 +56,9 @@ class Orderlines:
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderDelivery")
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+
+        FieldFactory.isReadOnly()
+
         # ==================================================================== #
         # Qty Invoiced
         FieldFactory.create(const.__SPL_T_INT__, "qty_invoiced", "Invoiced Qty")
@@ -159,7 +162,8 @@ class Orderlines:
         self._in.__delitem__(field_id)
         # ==================================================================== #
         # Safety Check - Received List is Valid
-        if not isinstance(field_data, dict):
+        # Safety Check - Order is Locked
+        if not isinstance(field_data, dict) or self.object.state in ["done"]:
             return
         # ==================================================================== #
         # Walk on Received Order Lines...
