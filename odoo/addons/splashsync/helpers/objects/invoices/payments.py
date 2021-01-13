@@ -169,6 +169,9 @@ class InvoicePaymentsHelper:
             Framework.log().error("Unable to format payment date.")
             return None
         # ====================================================================#
+        # Adjust Payment Amount
+        payment_amount = InvoicePaymentsHelper.__adjust_payment_amount(invoice, payment_data["amount"])
+        # ====================================================================#
         # Prepare Minimal Payment Data
         req_fields = {
             "invoice_ids": [invoice.id],
@@ -177,7 +180,7 @@ class InvoicePaymentsHelper:
             "journal_id": journal_id,
             "name": payment_data["name"],
             "communication": payment_data["name"],
-            "amount": payment_data["amount"],
+            "amount": payment_amount,
             "payment_date": payment_date,
             "payment_type": payment_type,
             "payment_method_id": payment_method_id,
@@ -377,3 +380,25 @@ class InvoicePaymentsHelper:
             return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
         except:
             return None
+
+    @staticmethod
+    def __adjust_payment_amount(invoice, amount, margin=0.01):
+        """
+        Adjust Payment Amount to fix Decimals Errors
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+        :param amount:  float
+        :return: float
+        """
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = float(len(invoice.invoice_line_ids.ids) * margin)
+        # ====================================================================#
+        # Compare Payment Amount vs Invoice Residual
+        if abs(float(invoice.residual) - float(amount)) < margin:
+            # Amounts are close enough to MERGE
+            Framework.log().warn("Payment Amount changed to "+str(invoice.residual))
+            return invoice.residual
+        # Amounts are too far to MERGE
+        return amount
