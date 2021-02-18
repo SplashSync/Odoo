@@ -46,6 +46,9 @@ class ProductsInventory:
             return
         self._in.__delitem__(field_id)
         # ==================================================================== #
+        # Ensure Float Value
+        field_data = field_data if field_data is not None and float(field_data) > 0 else float(0)
+        # ==================================================================== #
         # Compare Stocks Levels
         stock_delta = float(self.object.qty_available) - float(field_data)
         if abs(stock_delta) < 0.001:
