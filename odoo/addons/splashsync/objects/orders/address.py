@@ -44,7 +44,7 @@ class OrderAddress:
         # ====================================================================#
         # Delivery Address Street 2
         FieldFactory.create(const.__SPL_T_VARCHAR__, "__shipping__street2", "Street2")
-        FieldFactory.microData("http://schema.org/PostalAddress", " postOfficeBoxNumber")
+        FieldFactory.microData("http://schema.org/PostalAddress", "postOfficeBoxNumber")
         FieldFactory.group("Address")
         FieldFactory.isReadOnly()
         # ====================================================================#
