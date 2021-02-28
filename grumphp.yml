@@ -23,7 +23,7 @@ parameters:
     # For Building Splash Module
     mod-enable:             false
     # For Building Splash Documentation
-    doc-src:                '/docs'
+    doc-src:                '/resources/docs'
     doc-target:             '/public'
     doc-contents:           ["splash-theme", "splash-faq"]
     # For Building Splash Manifest
