@@ -40,9 +40,10 @@ class ProductsRelations:
         FieldFactory.create(const.__SPL_T_VARCHAR__, "routes", "Routes")
         FieldFactory.microData("http://schema.org/Product", "routes")
         FieldFactory.isNotTested()
+        allFields = self.getModel().fields_get()
         # ==================================================================== #
         # Website category
-        if "public_categ_ids" in self.getModel().fields_get():
+        if "public_categ_ids" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "public_categ_ids", "Categorie Id")
             FieldFactory.microData("http://schema.org/Product", "publicCategoryId")
             FieldFactory.isReadOnly()
@@ -52,19 +53,19 @@ class ProductsRelations:
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Website Alternate Products
-        if "alternative_product_ids" in self.getModel().fields_get():
+        if "alternative_product_ids" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "alternative_products", "Alternate Products Names")
             FieldFactory.microData("http://schema.org/Product", "alternateModels")
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Website Accessory Products
-        if "accessory_product_ids" in self.getModel().fields_get():
+        if "accessory_product_ids" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "accessory_products", "Accessory Products Names")
             FieldFactory.microData("http://schema.org/Product", "crossellModels")
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Allowed Companies
-        if "ons_allowed_company_ids" in self.getModel().fields_get():
+        if "ons_allowed_company_ids" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "company_ids", "Companies IDs")
             FieldFactory.microData("http://schema.org/Product", "allowedCompanies")
             FieldFactory.isNotTested()
@@ -73,7 +74,7 @@ class ProductsRelations:
             FieldFactory.isNotTested()
         # ==================================================================== #
         # Product Brand
-        if "product_brand_id" in self.getModel().fields_get():
+        if "product_brand_id" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "product_brand_id", "Brand Id")
             FieldFactory.microData("http://schema.org/Product", "brandId")
             FieldFactory.isReadOnly()
@@ -83,7 +84,7 @@ class ProductsRelations:
             FieldFactory.isNotTested()
         # ==================================================================== #
         # [Point of Sale] POS Category
-        if "pos_categ_id" in self.getModel().fields_get():
+        if "pos_categ_id" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "pos_categ_id", "POS Category Id")
             FieldFactory.microData("http://schema.org/Product", "posCategoryId")
             FieldFactory.isReadOnly()
@@ -93,7 +94,7 @@ class ProductsRelations:
             FieldFactory.isNotTested()
         # ==================================================================== #
         # [MY LED] Product Tags
-        if "tag_ids" in self.getModel().fields_get():
+        if "tag_ids" in allFields:
             FieldFactory.create(const.__SPL_T_VARCHAR__, "tag_id", "Tag Id")
             FieldFactory.microData("http://schema.org/Product", "tagId")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.tag"))
