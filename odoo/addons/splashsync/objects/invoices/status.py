@@ -14,7 +14,6 @@
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
-
 class InvoiceStatus:
     """
     Access to Invoice Status Fields
@@ -136,6 +135,11 @@ class InvoiceStatus:
         # ====================================================================#
         # Compare States
         if new_state == self.object.state:
+            return True
+        # ====================================================================#
+        # Check if Status Change is Allowed
+        if not InvoiceStatus.__is_allowed_status_change(self.object.state, new_state):
+            Framework.log().warn('Invoice State Skipped')
             return True
         # ====================================================================#
         # Update State
@@ -274,3 +278,29 @@ class InvoiceStatus:
             response.append((InvoiceStatus.__known_state_trans[status], name))
 
         return response
+
+    @staticmethod
+    def __is_allowed_status_change(old_status, new_status):
+        """
+        Check if Invoice Status Change is Allowed
+        Strategy: Validation is only possible via Payments Parsing.
+
+        :param old_status:  string
+        :param new_status:  string
+
+        :return: bool
+        """
+        # ==================================================================== #
+        # Check if Feature is Enabled
+        from odoo.addons.splashsync.helpers import SettingsManager
+        if not SettingsManager.is_sales_check_payments():
+            return True
+        # ====================================================================#
+        # Check if Old/Current Status is Validated Status
+        if old_status in ['open', 'in_payment', 'paid']:
+            return True
+        # ====================================================================#
+        # Check if New Status is Validated Status
+        if new_status in ['open', 'in_payment', 'paid']:
+            return False
+        return True

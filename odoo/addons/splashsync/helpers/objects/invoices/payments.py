@@ -295,6 +295,39 @@ class InvoicePaymentsHelper:
             Framework.log().fromException(exception, False)
             return False
 
+    @staticmethod
+    def validate_payments_amounts(invoice, payments, margin=0.01):
+        """
+        Check Payment Amounts ensure Invoice Can Close
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+        :param payments:  dict
+        :param margin:  float
+
+        :return: bool
+        """
+        # ==================================================================== #
+        # Check if Feature is Enabled
+        from odoo.addons.splashsync.helpers import SettingsManager
+        if not SettingsManager.is_sales_check_payments():
+            return True
+        # ==================================================================== #
+        # Sum Received Payments...
+        payments_total = 0
+        for payment_data in payments:
+            payments_total += float(payment_data["amount"]) if InvoicePaymentsHelper.validate(payment_data) else 0
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = float(len(invoice.invoice_line_ids.ids) * margin)
+        # ====================================================================#
+        # Compare Payment Amount vs Invoice Residual
+        if abs(float(invoice.amount_total) - float(payments_total)) < margin:
+            return True
+        return Framework.log().error(
+            "Payments Validation fail: "+str(payments_total)+", expected "+str(invoice.amount_total)
+        )
+
     # ====================================================================#
     # Private Methods
     # ====================================================================#
@@ -389,6 +422,7 @@ class InvoicePaymentsHelper:
 
         :param invoice: account.invoice
         :param amount:  float
+        :param margin:  float
         :return: float
         """
         # ====================================================================#

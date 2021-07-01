@@ -35,6 +35,7 @@ class ResConfigSplash(models.Model):
         'sales_default_team_id': None,
         'sales_account_id': None,
         'sales_advanced_taxes': False,
+        'sales_check_payments_amount': False,
     }
 
     company_id = fields.Many2one('res.company', required=True)
@@ -119,6 +120,11 @@ class ResConfigSplash(models.Model):
         help="Enable Advanced Taxes Mode."
     )
 
+    sales_check_payments_amount = fields.Boolean(
+        string="Invoices Payments Amounts Check",
+        help="Validate Invoice only if Payments Amounts match Invoice Total."
+    )
+
     def execute(self):
         """
         Called when settings are saved.
@@ -174,6 +180,7 @@ class ResConfigSplash(models.Model):
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
+            'sales_check_payments_amount': self.sales_check_payments_amount,
         }
 
     @api.multi
@@ -214,6 +221,7 @@ class ResConfigSplash(models.Model):
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
+            'sales_check_payments_amount': self.sales_check_payments_amount,
         })
 
     @api.multi

@@ -82,6 +82,11 @@ class ResConfigSettings(models.TransientModel):
         help="Enable Advanced Taxes Mode."
     )
 
+    sales_check_payments_amount = fields.Boolean(
+        string="Invoices Payments Amounts Check",
+        help="Validate Invoice only if Payments Amounts match Invoice Total."
+    )
+
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
 
@@ -114,6 +119,7 @@ class ResConfigSettings(models.TransientModel):
                 'sales_account_id': self.sales_account_id.id,
                 'sales_journal_id': self.sales_journal_id.id,
                 'sales_advanced_taxes': self.sales_advanced_taxes,
+                'sales_check_payments_amount': self.sales_check_payments_amount,
             })
         else:
             splash_config.ws_id = str(self.ws_id)
@@ -129,6 +135,7 @@ class ResConfigSettings(models.TransientModel):
             splash_config.sales_account_id = int(self.sales_account_id.id)
             splash_config.sales_journal_id = int(self.sales_journal_id.id)
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
+            splash_config.sales_check_payments_amount = bool(self.sales_check_payments_amount)
             splash_config.execute()
 
         self.show_debug()
