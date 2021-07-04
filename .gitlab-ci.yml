@@ -100,13 +100,6 @@ tests-V12:invoices:
     PHPUNIT_CONFIG:   phpunit.invoices.xml
     ODOO_VERSION:     odoo:12
 
-tests-V13:contacts:
-  <<: *core_tests
-  stage:              tests_V12
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     odoo:13
-
 
 #################################################################
 ## Build Documentation
