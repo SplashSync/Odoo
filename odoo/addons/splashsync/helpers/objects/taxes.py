@@ -86,9 +86,9 @@ class TaxHelper:
         :param type_tax_use: str
         :rtype: account.tax
         """
-        # from splashpy import Framework
-        # if not Framework.isDebugMode():
-        #     return None
+        from splashpy import Framework
+        if not Framework.isDebugMode():
+            return None
         tax_data = {
             "amount": tax_rate,
             "amount_type": "percent",
