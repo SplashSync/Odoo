@@ -37,6 +37,8 @@ class InvoicePaymentsHelper:
 
     __payment_method_id = None
 
+    __payment_line_margin = 0.01
+
     @staticmethod
     def get_values(payments, field_id):
         """
@@ -73,7 +75,7 @@ class InvoicePaymentsHelper:
             return None
         # ====================================================================#
         # Check if Payment Data are Modified
-        if payment is not None and InvoicePaymentsHelper.compare(payment, payment_data):
+        if payment is not None and InvoicePaymentsHelper.compare(invoice, payment, payment_data):
             Framework.log().warn("Payments are Similar >> Update Skipped")
             return payment.id
         # ====================================================================#
@@ -227,10 +229,11 @@ class InvoicePaymentsHelper:
         return True
 
     @staticmethod
-    def compare(payment, data):
+    def compare(invoice, payment, data):
         """
         Compare a Payment with Received Data
 
+        :param invoice: account.invoice
         :param payment: account.payment
         :param data: dict
 
@@ -255,9 +258,12 @@ class InvoicePaymentsHelper:
                 return False
         except Exception:
             return False
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ==================================================================== #
         # Compare Payment Amount
-        if abs(payment.amount - float(data["amount"])) >= 0.001:
+        if abs(payment.amount - float(data["amount"])) >= margin:
             return False
 
         return True
@@ -296,14 +302,13 @@ class InvoicePaymentsHelper:
             return False
 
     @staticmethod
-    def validate_payments_amounts(invoice, payments, margin=0.01):
+    def validate_payments_amounts(invoice, payments):
         """
         Check Payment Amounts ensure Invoice Can Close
         Strategy: Allow 0.01 error per invoice line.
 
         :param invoice: account.invoice
         :param payments:  dict
-        :param margin:  float
 
         :return: bool
         """
@@ -319,7 +324,7 @@ class InvoicePaymentsHelper:
             payments_total += float(payment_data["amount"]) if InvoicePaymentsHelper.validate(payment_data) else 0
         # ====================================================================#
         # Compute Allowed Margin
-        margin = float(len(invoice.invoice_line_ids.ids) * margin)
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ====================================================================#
         # Compare Payment Amount vs Invoice Residual
         if abs(float(invoice.amount_total) - float(payments_total)) < margin:
@@ -415,19 +420,18 @@ class InvoicePaymentsHelper:
             return None
 
     @staticmethod
-    def __adjust_payment_amount(invoice, amount, margin=0.01):
+    def __adjust_payment_amount(invoice, amount):
         """
         Adjust Payment Amount to fix Decimals Errors
         Strategy: Allow 0.01 error per invoice line.
 
         :param invoice: account.invoice
         :param amount:  float
-        :param margin:  float
         :return: float
         """
         # ====================================================================#
         # Compute Allowed Margin
-        margin = float(len(invoice.invoice_line_ids.ids) * margin)
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ====================================================================#
         # Compare Payment Amount vs Invoice Residual
         if abs(float(invoice.residual) - float(amount)) < margin:
@@ -436,3 +440,17 @@ class InvoicePaymentsHelper:
             return invoice.residual
         # Amounts are too far to MERGE
         return amount
+
+    @staticmethod
+    def __get_payment_margin(invoice):
+        """
+        Compute Accepted Payment Amount Delta to fix Decimals Errors
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+
+        :return: float
+        """
+        # ====================================================================#
+        # Compute Allowed Margin
+        return float(len(invoice.invoice_line_ids.ids) * InvoicePaymentsHelper.__payment_line_margin)
