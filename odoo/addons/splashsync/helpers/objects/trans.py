@@ -15,11 +15,10 @@
 from odoo import http
 
 
-
 class TransHelper:
     """Collection of Static Functions to manage Translations"""
 
-    df_iso = "en_US"
+    df_iso = None
     df_name = "English"
 
     model = None
@@ -58,7 +57,7 @@ class TransHelper:
         """
         try:
             translations = TransHelper.getModel()._get_ids(
-                model.__class__.__name__+","+field_name,
+                model.__class__.__name__ + "," + field_name,
                 "model",
                 iso_lang,
                 [model.id]
@@ -83,7 +82,7 @@ class TransHelper:
         """
         try:
             TransHelper.getModel()._set_ids(
-                model.__class__.__name__+","+field_name,
+                model.__class__.__name__ + "," + field_name,
                 "model",
                 iso_lang,
                 [model.id],
@@ -114,7 +113,7 @@ class TransHelper:
         if TransHelper.extra_langs is None:
             TransHelper.extra_langs = {}
             for code, name in TransHelper.get_all().items():
-                if code == "en_US":
+                if code == TransHelper.get_default_iso():
                     continue
                 TransHelper.extra_langs[code] = name
         return TransHelper.extra_langs
@@ -135,14 +134,24 @@ class TransHelper:
         Get Default Language
         :return: dict
         """
-        return {TransHelper.df_iso: TransHelper.df_name}
+
+        iso_code = TransHelper.get_default_iso()
+
+        return {iso_code: iso_code}
 
     @staticmethod
     def get_default_iso():
         """
         Get Default Language Iso Code
-        :return: dict
+        :return: string
         """
+        if TransHelper.df_iso is None:
+            try:
+                import json
+                TransHelper.df_iso = json.loads(http.request.env['ir.default'].search([('display_name', '=', 'lang')]).json_value)
+            except Exception as exception:
+                TransHelper.df_iso = "en_US"
+
         return TransHelper.df_iso
 
     # ====================================================================#

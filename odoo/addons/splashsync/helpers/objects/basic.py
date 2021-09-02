@@ -80,7 +80,7 @@ class BasicFields():
                     FieldFactory.isReadOnly()
                 if 'help' in field:
                     FieldFactory.description(field["help"])
-                if iso_code == "en_US" and fieldId in self.get_listed_fields():
+                if iso_code == TransHelper.get_default_iso() and fieldId in self.get_listed_fields():
                     FieldFactory.isListed()
                 if "translate" in field and field["translate"] is True:
                     FieldFactory.description(field["string"]+" ["+lang_name+"]")
