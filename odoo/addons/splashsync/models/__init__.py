@@ -17,6 +17,7 @@ from . import configuration
 from . import partner
 from . import product
 from . import product_template
+from . import stock_move_line
 from . import order
 from . import res_config_settings
 
