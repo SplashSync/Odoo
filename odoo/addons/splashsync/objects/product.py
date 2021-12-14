@@ -16,7 +16,6 @@ from splashpy import const
 from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
 from .products import ProductsFeatures, ProductsRelations, ProductsSupplier, ProductsInventory
 
-
 class Product(
     OdooObject,
     ProductsAttributes,
@@ -52,7 +51,7 @@ class Product(
 
     @staticmethod
     def get_composite_fields():
-        """Get List of Fields NOT To Parse Automaticaly """
+        """Get List of Fields NOT To Parse Automatically """
         return [
             "id", "valuation", "cost_method", "tracking",
             "image", "image_small", "image_medium", "image_variant",
@@ -107,6 +106,11 @@ class Product(
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
             return False
+        # ====================================================================#
+        # Try Product by SKU Detection if Enabled
+        product_id = self.detect_by_sku()
+        if isinstance(product_id, int) and product_id > 0:
+            return self.load(product_id)
         # ====================================================================#
         # Create a New Variable Product
         if self.is_new_variable_product():
@@ -163,3 +167,24 @@ class Product(
         # ====================================================================#
         # Execute Normal Delete
         return super(Product, self).delete(object_id)
+
+    def detect_by_sku(self):
+        """Detect Existing Products ID by SKU"""
+        from odoo.addons.splashsync.helpers import SettingsManager
+        # ==================================================================== #
+        # Check if Product has Advanced Feature Value
+        if not SettingsManager.is_prd_sku_detection():
+            return False
+        # ==================================================================== #
+        # Search for Product with this SKU
+        model = self.getModel().name_search(self._in['name'])
+        if len(model) != 1:
+            return False
+        # ==================================================================== #
+        # Add User Notification
+        from splashpy import Framework
+        Framework.log().warn(
+            "Sku Detection Worked: "+str(self._in['name'])+" => "+str(model[0][0])
+        )
+
+        return int(model[0][0])

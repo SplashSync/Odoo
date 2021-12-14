@@ -134,6 +134,18 @@
                             </div>
                         </div>
 
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="product_sku_detection" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="product_sku_detection"/>
+                                <div class="text-muted">
+                                    Detect Products by SKU before creation.
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <h2>Sales Settings</h2>
