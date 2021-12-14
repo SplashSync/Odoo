@@ -32,6 +32,7 @@ class ResConfigSplash(models.Model):
         'product_simplified_prices': False,
         'product_advanced_variants': False,
         'product_advanced_taxes': False,
+        'product_sku_detection': False,
         'sales_default_team_id': None,
         'sales_account_id': None,
         'sales_advanced_taxes': False,
@@ -89,6 +90,10 @@ class ResConfigSplash(models.Model):
     product_advanced_variants = fields.Boolean(
         string="Product Advanced Variants",
         help="Enable to store Products Features on features_value_ids instead of Template attribute_line_ids."
+    )
+    product_sku_detection = fields.Boolean(
+        string="Product SKU Detection",
+        help="Detect Products by SKU before creation."
     )
 
     # ====================================================================#
@@ -176,6 +181,7 @@ class ResConfigSplash(models.Model):
             'product_simplified_prices': self.env['ir.config_parameter'].sudo().get_param('splash_product_simplified_prices'),
             'product_advanced_taxes': self.product_advanced_taxes,
             'product_advanced_variants': self.product_advanced_variants,
+            'product_sku_detection': self.product_sku_detection,
             'sales_default_team_id': self.sales_default_team_id.id,
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,
@@ -217,6 +223,7 @@ class ResConfigSplash(models.Model):
             'product_simplified_prices': self.product_simplified_prices,
             'product_advanced_taxes': self.product_advanced_taxes,
             'product_advanced_variants': self.product_advanced_variants,
+            'product_sku_detection': self.product_sku_detection,
             'sales_default_team_id': self.sales_default_team_id.id,
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,

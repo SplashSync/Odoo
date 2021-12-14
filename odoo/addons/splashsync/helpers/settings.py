@@ -86,6 +86,10 @@ class SettingsManager():
         return bool(SettingsManager.get_configuration()["product_advanced_taxes"])
 
     @staticmethod
+    def is_prd_sku_detection():
+        return bool(SettingsManager.get_configuration()["product_sku_detection"])
+
+    @staticmethod
     def is_sales_adv_taxes():
         return bool(SettingsManager.get_configuration()["sales_advanced_taxes"])
 

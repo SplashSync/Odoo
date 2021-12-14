@@ -54,6 +54,11 @@ class ResConfigSettings(models.TransientModel):
         string="Product Advanced Variants",
         help="Enable to store Products Features on features_value_ids instead of Template attribute_line_ids."
     )
+    product_sku_detection = fields.Boolean(
+        string="Product SKU Detection",
+        help="Detect Products by SKU before creation."
+    )
+
 
     # ====================================================================#
     # SALES Settings
@@ -115,6 +120,7 @@ class ResConfigSettings(models.TransientModel):
                 'product_simplified_prices': self.product_simplified_prices,
                 'product_advanced_taxes': self.product_advanced_taxes,
                 'product_advanced_variants': self.product_advanced_variants,
+                'product_sku_detection': self.product_sku_detection,
                 'sales_default_team_id': self.sales_default_team_id.id,
                 'sales_account_id': self.sales_account_id.id,
                 'sales_journal_id': self.sales_journal_id.id,
@@ -131,6 +137,7 @@ class ResConfigSettings(models.TransientModel):
             splash_config.product_simplified_prices = bool(self.product_simplified_prices)
             splash_config.product_advanced_taxes = bool(self.product_advanced_taxes)
             splash_config.product_advanced_variants = bool(self.product_advanced_variants)
+            splash_config.product_sku_detection = bool(self.product_sku_detection)
             splash_config.sales_default_team_id = int(self.sales_default_team_id.id)
             splash_config.sales_account_id = int(self.sales_account_id.id)
             splash_config.sales_journal_id = int(self.sales_journal_id.id)
