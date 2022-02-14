@@ -1,0 +1,190 @@
+
+splash:
+
+################################################################################
+# Configure Splash Bundle Parameters Cache
+# Cache is Enabled by Default to Store Custom Connectors Configuration
+# If disabled, configuration must be store in Static, on connections section
+################################################################################
+    cache:
+        enabled: true
+        lifetime: 10
+
+    # Allow Notifications for Generic Users
+    notify: ["ROLE_USER"]
+
+################################################################################
+# List of Available Connector Connections
+################################################################################
+
+    connections:
+
+        ########################################################################
+        # Odoo DEV
+        ########################################################################
+        # [Main Company]
+        odoo-dev-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo DEV Main
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://latest.odoo.local
+                WsPath:             /splash
+                Name:               Odoo DEV Main
+        ########################################################################
+        # [Company 1]
+        odoo-dev-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo DEV C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://latest.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo DEV C1
+        ########################################################################
+        # [Company 2]
+        odoo-dev-c2:
+            id:                 ThisIsOdooC2WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo DEV C2
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC2WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://latest.odoo.local
+                WsPath:             /splash?cname=PhpUnit2
+                Name:               Odoo DEV C2
+
+        ########################################################################
+        # Odoo V15
+        ########################################################################
+        # [Main Company]
+        odoo-v15-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V15 Main
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v15.odoo.local
+                WsPath:             /splash
+                Name:               Odoo V15 Main
+        ########################################################################
+        # [Company 1]
+        odoo-v15-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V15 C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v15.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo V15 C1
+
+        ########################################################################
+        # Odoo V14
+        ########################################################################
+        # [Main Company]
+        odoo-v14-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V13 Main
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v14.odoo.local
+                WsPath:             /splash
+                Name:               Odoo V14 Main
+        ########################################################################
+        # [Company 1]
+        odoo-v14-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V14 C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v14.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo V14 C1
+
+        ########################################################################
+        # Odoo V13
+        ########################################################################
+        # [Main Company]
+        odoo-v13-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V13 Main
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v13.odoo.local
+                WsPath:             /splash
+                Name:               Odoo V13 Main
+        ########################################################################
+        # [Company 1]
+        odoo-v13-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V13 C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v13.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo V13 C1
+
+        ########################################################################
+        # Odoo V12
+        ########################################################################
+        # [Main Company]
+        odoo-v12-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V12
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v12.odoo.local
+                WsPath:             /splash
+                Name:               Odoo V12 Main
+        ########################################################################
+        # [Company 1]
+        odoo-v12-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V12 C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v12.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo V12 C1
+
