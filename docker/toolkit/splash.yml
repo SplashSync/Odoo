@@ -20,7 +20,9 @@ splash:
     connections:
 
         ########################################################################
-        # Odoo Connection [Main Company]
+        # Odoo DEV
+        ########################################################################
+        # [Main Company]
         odoo-main:
             id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash

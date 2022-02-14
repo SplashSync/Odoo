@@ -27,6 +27,9 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
 
     @staticmethod
     def getDomain():
+        from odoo.addons.splashsync.helpers import SystemManager
+        if SystemManager.compare_version(13) >= 0:
+            return 'account.move'
         return 'account.invoice'
 
     @staticmethod
@@ -37,7 +40,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['display_name', 'vendor_display_name', 'date_invoice', 'name', 'number']
+        return ['display_name', 'invoice_date', 'name', 'ref']
+        # return ['display_name', 'vendor_display_name', 'date_invoice', 'name', 'number']
 
     @staticmethod
     def get_required_fields():

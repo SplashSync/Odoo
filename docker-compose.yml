@@ -1,7 +1,8 @@
+################################################################################
 #
 #  This file is part of SplashSync Project.
 #
-#  Copyright (C) 2015-2020 Splash Sync  <www.splashsync.com>
+#  Copyright (C) Splash Sync  <www.splashsync.com>
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -10,6 +11,7 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 #
+################################################################################
 
 ################################################################################
 # Docker Compose File
@@ -18,7 +20,14 @@
 # for Splash Modules
 #
 # 172.120.0.99        latest.odoo.local
+# 172.120.0.12        v12.odoo.local
+# 172.120.0.13        v13.odoo.local
+# 172.120.0.14        v14.odoo.local
+# 172.120.0.15        v15.odoo.local
+# 172.120.0.16        v16.odoo.local
+# 172.120.0.17        v17.odoo.local
 # 172.120.0.100       toolkit.odoo.local
+# 172.120.0.101       db.odoo.local
 #
 ################################################################################
 
@@ -27,34 +36,117 @@ version: "3.2"
 services:
 
     ################################################################################
-    # Odoo Server Container
+    # Odoo DEV Server Container
     odoo:
-        image:  odoo:12
-        container_name: odoo-latest
+        image:  odoo:13
+        container_name: latest.odoo.local
         depends_on:
             - db
-        ports:
-            - "8069:8069"
         volumes:
-            - ./docker/x86:/etc/odoo:ro
+            - ./docker/odoo:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ./scripts:/scripts:ro
             - ../Py-Core:/mnt/splashpy
-        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync,contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale" --log-handler :WARNING
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo -i "splashsync" --log-handler :WARNING
-#        entrypoint:         bash /etc/odoo/entrypoint.sh odoo --log-handler :WARNING
+        entrypoint:         bash /etc/odoo/entrypoint.sh
         hostname:           latest.odoo.local
         networks:
             odoo:           { ipv4_address: 172.120.0.99, aliases: [ latest.odoo.local ] }
             splashsync:     { aliases: [ latest.odoo.local ] }
+        env_file:
+            - docker/odoo/odoo.env
         environment:
-            - CI_MODE=enabled
+            - ODOO_DATABASE=OdooLatest
+            - ODOO_INTERFACE=172.120.0.99
+
+    ################################################################################
+    # Odoo V12 Server Container
+    odoo-12:
+        image:  odoo:12
+        container_name: v12.odoo.local
+        depends_on:
+            - db
+        volumes:
+            - ./docker/odoo:/etc/odoo:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        hostname:           v12.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.12, aliases: [ v12.odoo.local ] }
+            splashsync:     { aliases: [ v12.odoo.local ] }
+        env_file:
+            - docker/odoo/odoo.env
+        environment:
+            - ODOO_DATABASE=OdooV12
+            - ODOO_INTERFACE=172.120.0.12
+
+    ################################################################################
+    # Odoo V13 Server Container
+    odoo-13:
+        image:  odoo:13
+        container_name: v13.odoo.local
+        depends_on:
+            - db
+        volumes:
+            - ./docker/odoo:/etc/odoo:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        hostname:           v13.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.13, aliases: [ v13.odoo.local ] }
+            splashsync:     { aliases: [ v13.odoo.local ] }
+        env_file:
+            - docker/odoo/odoo.env
+        environment:
+            - ODOO_DATABASE=OdooV13
+            - ODOO_INTERFACE=172.120.0.13
+#
+    ################################################################################
+    # Odoo V14 Server Container
+    odoo-14:
+        image:  odoo:14
+        container_name: v14.odoo.local
+        depends_on:
+            - db
+        volumes:
+            - ./docker/odoo:/etc/odoo:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        hostname:           v14.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.14, aliases: [ v14.odoo.local ] }
+            splashsync:     { aliases: [ v14.odoo.local ] }
+        env_file:
+            - docker/odoo/odoo.env
+        environment:
+            - ODOO_DATABASE=OdooV14
+            - ODOO_INTERFACE=172.120.0.14
+
+    ################################################################################
+    # Odoo V15 Server Container
+    odoo-15:
+        image:  odoo:15
+        container_name: v15.odoo.local
+        depends_on:
+            - db
+        volumes:
+            - ./docker/odoo:/etc/odoo:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        hostname:           v15.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.15, aliases: [ v15.odoo.local ] }
+            splashsync:     { aliases: [ v15.odoo.local ] }
+        env_file:
+            - docker/odoo/odoo.env
+        environment:
+            - ODOO_DATABASE=OdooV15
+            - ODOO_INTERFACE=172.120.0.15
 
     ################################################################################
     # Postgres Database Container
     db:
         image: postgres:10
-        container_name: odoo-db
+        container_name: db.odoo.local
         logging: { driver: "none" }
         environment:
             - POSTGRES_DB=postgres
@@ -68,11 +160,12 @@ services:
     # Splash Toolkit Container
     toolkit:
         image: 'splashsync/toolkit'
-        container_name: odoo-toolkit
+        container_name: toolkit.odoo.local
         logging: { driver: "none" }
         volumes:
             # Specify Local Configuration File
-            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
+#            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
+            - './docker/toolkit/splash-dev.yml:/app/config/packages/splash.yml:ro'
             - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
             - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
             - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'

@@ -1,8 +1,10 @@
 from odoo import fields, models, http
+# from odoo.addons.splashsync.helpers import CompanyAware
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
+    _check_company_auto = True
 
     # ====================================================================#
     # CORE Settings
@@ -99,18 +101,47 @@ class ResConfigSettings(models.TransientModel):
         # Load Splash Configuration for Company
         res.update(self.env['res.config.splash'].default_get())
 
+        # import logging
+        # from odoo.addons.splashsync.helpers import SettingsManager
+        # from odoo.addons.splashsync.helpers import SystemManager
+        # from odoo.addons.splashsync.helpers import CompanyManager
+
+
+        # logging.warning('[SPLASH] Get Configuration')
+        # logging.warning(SettingsManager.detect_company_id())
+        # logging.warning(res)
+        # logging.warning(self.env.company.id)
+        # logging.warning(http.request.env.company.id)
+
+        # from odoo.release import version_info
+        #
+        # logging.warning(SystemManager.major_version())
+        # logging.warning(SystemManager.compare_version(13))
+        # logging.warning(self.env.company.id)
+        # logging.warning(self.env.company.name)
+        # logging.warning(self.env)
+        # logging.warning(CompanyManager.get_id(self))
+        # logging.warning(CompanyManager.get_name(self))
+        # logging.warning(SystemManager.compare_version(14))
+        # logging.warning(version_info)
+        # logging.warning(http.request.env.company.id)
+
         return res
 
     def set_values(self):
         super(ResConfigSettings, self).set_values()
         # ====================================================================#
+        # Detect Current User Company ID
+        from odoo.addons.splashsync.helpers import CompanyManager
+        company_id = CompanyManager.get_id(self)
+        # ====================================================================#
         # Load Current Company Configuration
-        splash_config = self.env['res.config.splash'].get_config(self.env.user.company_id.id)
+        splash_config = self.env['res.config.splash'].get_config(company_id)
         # ====================================================================#
         # Company Configuration NOT Found
         if splash_config is None:
             http.request.env['res.config.splash'].create({
-                'company_id': self.env.user.company_id.id,
+                'company_id': company_id,
                 'ws_id': self.ws_id,
                 'ws_key': self.ws_key,
                 'ws_expert': self.ws_expert,

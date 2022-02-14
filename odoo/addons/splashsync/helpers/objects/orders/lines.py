@@ -149,10 +149,18 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Line Unit Price (HT)
         if field_id == "price_unit":
+
+            if OrderLinesHelper.is_order_line(line):
+                tax_ids = line.tax_id
+            elif OrderLinesHelper.is_move_line(line):
+                tax_ids = line.tax_ids
+            else:
+                tax_ids = line.invoice_line_tax_ids
+
             return PricesHelper.encode(
                 float(line.price_unit),
                 TaxHelper.get_tax_rate(
-                    line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids,
+                    tax_ids,
                     'sale'
                 ),
                 None,
@@ -163,7 +171,13 @@ class OrderLinesHelper:
         # Sales Taxes
         if field_id == "tax_name":
             try:
-                tax_ids = line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids
+                if OrderLinesHelper.is_order_line(line):
+                    tax_ids = line.tax_id
+                elif OrderLinesHelper.is_move_line(line):
+                    tax_ids = line.tax_ids
+                else:
+                    tax_ids = line.invoice_line_tax_ids
+
                 return tax_ids[0].name
             except:
                 return None
@@ -255,14 +269,25 @@ class OrderLinesHelper:
         return line.display_type is not False
 
     @staticmethod
-    def is_order_line(order_line):
+    def is_order_line(line):
         """
         Check if Line is Order Line (or Invoice Line)
 
-        :param order_line: sale.order.line|account.invoice.line
+        :param line: sale.order.line|account.move.line|account.invoice.line
         :return: bool
         """
-        return getattr(order_line, "_name") == "sale.order.line"
+        return getattr(line, "_name") in ["sale.order.line"]
+
+    @staticmethod
+    def is_move_line(line):
+        """
+        Check if Line is Account Move Line (Invoice Line)
+
+        :param line: sale.order.line|account.move.line|account.invoice.line
+        :return: bool
+        """
+        return getattr(line, "_name") in ["account.move.line"]
+
 
     # ====================================================================#
     # Order Specific Methods

@@ -57,12 +57,12 @@ class TestsManager():
         logging.info("[SPLASH][CI] Languages Setup Done")
 
     @staticmethod
-    def setup_company(env, name):
+    def setup_company(env, name: str):
         """
         Setup Odoo Companies for Testing
 
         :param env:     odoo.Environment
-        :param name:    str
+        :param name: str
         :return: void
         """
         # from odoo.addons.splashsync.helpers import CurrencyHelper
@@ -71,7 +71,10 @@ class TestsManager():
 
         # ====================================================================#
         # Check if Company Name Exists
-        companies = env['res.company'].sudo().search([('name', '=', name)])
+        if name == "YourCompany":
+            companies = env['res.company'].sudo()._get_main_company()
+        else:
+            companies = env['res.company'].sudo().search([('name', '=', name)])
         # ====================================================================#
         # Setup a New Company
         if len(companies) == 0:
@@ -142,7 +145,16 @@ class TestsManager():
         config.ws_expert = True
         config.ws_host = "http://toolkit/ws/soap"
         config.ws_no_commits = False
-        config.sales_default_team_id = env['crm.team']._name_search("Europe")[0][0]
+        # ====================================================================#
+        # Detect Default Sales Team
+        europe_team = env['crm.team'].name_search("Europe", None, "=", 1)
+        sales_team = env['crm.team'].name_search("Sales", None, "=", 1)
+        if len(europe_team) > 0:
+            config.sales_default_team_id = europe_team[0][0]
+        elif len(sales_team) > 0:
+            config.sales_default_team_id = sales_team[0][0]
+        else:
+            raise Exception("[SPLASH] Unable to Detect Default Sale Team")
         # ====================================================================#
         # Save Company Parameters
         config.write(config.get_values())

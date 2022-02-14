@@ -20,6 +20,7 @@ class ResConfigSplash(models.Model):
     _description = 'Splash Sync Module Configuration'
     _transient = False
     _inherit = 'res.config'
+    _check_company_auto = True
 
     # Default Company Settings
     __default__ = {
@@ -108,6 +109,7 @@ class ResConfigSplash(models.Model):
     sales_account_id = fields.Many2one(
         'account.account',
         domain=[("user_type_id", "=ilike", "income")],
+        required=False,
         string="Account for New Invoices Line"
     )
 
@@ -134,7 +136,7 @@ class ResConfigSplash(models.Model):
         """
         Called when settings are saved.
         """
-        from odoo.addons.splashsync.helpers import SettingsManager
+        from odoo.addons.splashsync.helpers import SettingsManager, CompanyManager
 
         self.ensure_one()
         # ====================================================================#
@@ -142,27 +144,30 @@ class ResConfigSplash(models.Model):
         self.set_values()
         # ====================================================================#
         # Clean Company Configuration
-        self.clean(self.env.user.company_id.id)
+        self.clean(CompanyManager.get_id(self))
         # ====================================================================#
         # Reset Configuration
         SettingsManager.reset()
 
         return self.next()
 
-    @api.multi
     def default_get(self, fields=None):
         """
         Load configuration with Default Values
 
-        :param fields: None | dict
-        :return: dict
+        :param:     fields: None | dict
+        :return:    dict
         """
         # ====================================================================#
+        # Detect Current User Company ID
+        from odoo.addons.splashsync.helpers import CompanyManager
+        company_id = CompanyManager.get_id(self)
+        # ====================================================================#
         # Load Current Company Configuration
-        config = self.get_config(self.env.user.company_id.id)
+        config = self.get_config(company_id)
         # ====================================================================#
         # Return Company Configuration or default Values
-        return config.get_values() if config is not None else self.get_default_values(self.env.user.company_id.id)
+        return config.get_values() if config is not None else self.get_default_values(company_id)
 
     def get_values(self):
         """
@@ -189,7 +194,6 @@ class ResConfigSplash(models.Model):
             'sales_check_payments_amount': self.sales_check_payments_amount,
         }
 
-    @api.multi
     def set_values(self):
         """
         Save Company Configuration
@@ -198,10 +202,8 @@ class ResConfigSplash(models.Model):
         """
         # ====================================================================#
         # Detect Current User Company ID
-        try:
-            company_id = http.request.env.user.company_id.id
-        except Exception:
-            company_id = self.env.user.company_id.id
+        from odoo.addons.splashsync.helpers import CompanyManager
+        company_id = CompanyManager.get_id(self)
         # ====================================================================#
         # Update Global Values
         parameters = self.env['ir.config_parameter'].sudo()
@@ -231,12 +233,11 @@ class ResConfigSplash(models.Model):
             'sales_check_payments_amount': self.sales_check_payments_amount,
         })
 
-    @api.multi
     def get_default_values(self, company_id):
         """
         Build Default configuration for a Company
 
-        :param company_id: int
+        :param: company_id: int
         :rtype: dict
         """
         default = ResConfigSplash.__default__.copy()
@@ -248,7 +249,7 @@ class ResConfigSplash(models.Model):
         """
         Load Company Configuration
 
-        :param company_id: int
+        :param: company_id: int
         :rtype: None | ResConfigSplash
         """
         # ====================================================================#
@@ -261,7 +262,7 @@ class ResConfigSplash(models.Model):
         """
         Clean Company Configurations
 
-        :param company_id: int
+        :param: company_id: int
         :rtype: None | ResConfigSplash
         """
         # Search for Company Configuration
