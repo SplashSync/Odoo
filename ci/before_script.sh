@@ -39,5 +39,4 @@ mkdir logs
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
-docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 docker-compose up -d
