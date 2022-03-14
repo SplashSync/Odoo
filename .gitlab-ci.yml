@@ -35,8 +35,8 @@ stages:
     when:       manual
     tags:
       - Dedicated-Docker
-#    services:
-#      - docker:dind
+    services:
+      - docker:dind
     script:
       - sh ci/update_images.sh
 

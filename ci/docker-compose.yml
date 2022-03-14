@@ -32,7 +32,7 @@ services:
     ################################################################################
     # Odoo Server Container
     odoo:
-        image:  odoo:${ODOO_VERSION}
+        image:  registry.gitlab.com/splashsync/odoo:${ODOO_VERSION}
         container_name: latest.odoo.local
         depends_on:
             - db
@@ -51,7 +51,7 @@ services:
     ################################################################################
     # Postgres Database Container
     db:
-        image: postgres:10
+        image: registry.gitlab.com/splashsync/odoo:db
         container_name: db.odoo.local
         logging: { driver: "none" }
         environment:

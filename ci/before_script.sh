@@ -40,4 +40,4 @@ docker images ls
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
-#docker-compose up -d
+docker-compose up -d
