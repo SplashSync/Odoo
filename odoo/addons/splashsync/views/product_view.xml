@@ -26,7 +26,6 @@
                 <label for="variant_price_extra"/>
                 <field name="variant_price_extra" widget='monetary'
                        string="Variant Extra Price"
-                       groups="splashsync.product.product.view.form.easy"
                        options="{'currency_field': 'currency_id', 'field_digits': True}"
                        attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"
                 />

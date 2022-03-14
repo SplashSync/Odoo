@@ -43,7 +43,7 @@ services:
         entrypoint:         bash /etc/odoo/entrypoint.sh
         hostname:           latest.odoo.local
         environment:
-            - ODOO_DATABASE=OdooLatest
+            - ODOO_DATABASE=OdooCI
             - ODOO_MODULES=contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale
 #            - ODOO_MODULES=splashsync,contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale
             - CI_MODE=enabled
