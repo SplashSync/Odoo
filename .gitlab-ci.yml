@@ -32,27 +32,33 @@ stages:
 .docker:    &docker
     image:      docker:stable
     stage:      Docker
-    retry:      2
+#    retry:      2
     tags:
       - Dedicated-Docker
     services:
       - docker:dind
+    variables:
+      IMAGE_TAG: "$CI_REGISTRY_IMAGE:odoo-$ODOO_VERSION"
     before_script:
-      - sh ci/before_script.sh
+      - docker info
     script:
-      - sh ci/start_odoo.sh
-      - docker save $ODOO_VERSION | gzip > app.tar.gz
-      - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file app.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/odoo/app.tar.gz"'
-#      - sh ci/test_odoo.sh
-    after_script:
-      - sh ci/after_script.sh
+      - echo "[$CI_JOB_NAME] Build & Upload Docker Image"
+      ################################################################
+      # Connect Docker to GitLab
+      - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+      ################################################################
+      # Build & Upload Splash All Docker Images
+      - docker build -t $IMAGE_TAG ci
+      - docker push $IMAGE_TAG
+
+
 
 V12:Docker:
   <<: *docker
   stage:              Docker
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     odoo:12
+    ODOO_VERSION:     12
 
 ################################################################
 # Init & Functional Tests
