@@ -17,25 +17,26 @@
 ################################################################
 # Force Failure if ONE line Fails
 set -e
-
 ################################################################
 # import Layout Functions
-. app/scripts/functions.sh
-
-
+. scripts/functions.sh
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
 docker info
-#      # Install Git & Docker Compose
-#      - apk add --no-cache git docker-compose
-#      # Load SplashPy Module
-#      - rm -Rf ../Py-Core
-#      - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
-#      - chmod 7777 -Rf ../Py-Core
-#      # Configure Docker Compose
-#      - sed -i 's|odoo:12|${ODOO_VERSION}|g' docker-compose.yml
-#      # Build Docker Compose
-#      - mkdir logs
-#      - docker network create splashsync --attachable
-#      - docker-compose up -d
+apk add --no-cache git docker-compose
+################################################################
+# Load SplashPy Module
+title "BEFORE --> Install Splash Py Module"
+rm -Rf ../Py-Core
+git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
+chmod 7777 -Rf ../Py-Core
+################################################################
+# Configure Docker Compose
+title "BEFORE --> Configure Docker Compose"
+sed -i 's|odoo:12|${ODOO_VERSION}|g' ci/docker-compose.yml
+mkdir logs
+################################################################
+# Build Docker Compose
+title "BEFORE --> Start Docker Compose"
+- docker-compose up -d
