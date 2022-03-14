@@ -35,7 +35,7 @@ do
   http_code=$(docker-compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
   cpt=$(( cpt+1 ));
   subtitle "$cpt => $http_code: Wait for Odoo...";
-  docker-compose logs --tail="10" odoo
+  docker-compose logs --tail="50" odoo
   sleep 10;
   if [ $cpt == '6' ];
   then

@@ -60,10 +60,8 @@ check_odoo_config "dev" "reload"
 if [ -z "$FAST_BOOT" ]; then
   echo "[ODOO BOOT] Normal Mode"
   check_odoo_config "init" "$ODOO_MODULES"
-#  check_odoo_config "update" "all"
 else
   echo "[ODOO BOOT] FAST Mode"
-#  check_odoo_config "update" "splashsync"
 fi
 
 echo "[ODOO BOOT] Database Args" "${DB_ARGS[@]}"
