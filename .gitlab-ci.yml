@@ -65,8 +65,8 @@ V15:Docker:
     when:       manual
 #    retry:      2
     tags:
-#      - Dedicated-Docker
-      - Dedicated-Ovh
+      - Dedicated-Docker
+#      - Dedicated-Ovh
     services:
       - docker:dind
     before_script:
