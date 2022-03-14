@@ -54,8 +54,9 @@ stages:
     ################################################################################
     # Run Test Script
     script:
+      - sh ci/start_odoo.sh
       # Wait Until Odoo Container Started
-      - docker-compose exec -T toolkit php bin/console
+#      - docker-compose exec -T toolkit php bin/console
 #      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
 #      - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
 #      # Run Splash Unit tests from Splash Toolkit
@@ -69,8 +70,7 @@ stages:
     ################################################################################
     # Run After Script
     after_script:
-      - docker-compose stop
-      - docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
+      - sh ci/after_script.sh
 
 tests-V12:docker:
   <<: *docker
