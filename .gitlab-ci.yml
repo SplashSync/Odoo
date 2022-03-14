@@ -54,7 +54,7 @@ stages:
     ################################################################################
     # Run Test Script
     script:
-      - bash ci/start_odoo.sh
+      - sh ci/start_odoo.sh
       # Wait Until Odoo Container Started
 #      - docker-compose exec -T toolkit php bin/console
 #      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'

@@ -16,7 +16,7 @@
 
 ################################################################
 # Force Failure if ONE line Fails
-set -e
+#set -e
 ################################################################
 # import Layout Functions
 . scripts/functions.sh
