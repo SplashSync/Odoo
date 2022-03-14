@@ -38,12 +38,14 @@ stages:
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
+      - sh ci/test_odoo.sh
     after_script:
       - sh ci/after_script.sh
 
 V12:docker:
   <<: *docker
   variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
 
 V13:docker:
