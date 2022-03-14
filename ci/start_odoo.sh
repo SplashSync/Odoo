@@ -33,14 +33,14 @@ while [ $http_code != "200" ];
 do
   http_code=$(docker-compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
   cpt=$(( cpt+1 ));
-  subtitle "$cpt => $http_code: Wait for Odoo...";
+  echo "$cpt => $http_code: Wait for Odoo...";
   docker-compose logs --tail="100" odoo
-  sleep 1;
+  sleep 10;
   if [ $cpt == '6' ];
   then
-      subtitle "Odoo takes too long to start...";
+      echo "Odoo takes too long to start...";
       exit 1;
   fi
 done
-subtitle "TEST --> Odoo Started !"
+echo "TEST --> Odoo Started !"
 docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
