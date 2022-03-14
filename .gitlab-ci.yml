@@ -42,14 +42,14 @@ stages:
     before_script:
       - docker info
     script:
-      - echo "[$IMAGE_TAG] Build & Upload Docker Image"
+      - echo "[$CI_REGISTRY_IMAGE:$ODOO_VERSION] Build & Upload Docker Image"
       ################################################################
       # Connect Docker to GitLab
       - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
       ################################################################
       # Build & Upload Splash All Docker Images
-      - docker build -t $IMAGE_TAG ci
-      - docker push $IMAGE_TAG
+      - docker build -t $CI_REGISTRY_IMAGE:$ODOO_VERSION ci
+      - docker push $CI_REGISTRY_IMAGE:$ODOO_VERSION
 
 
 
