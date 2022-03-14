@@ -33,7 +33,6 @@ services:
     # Odoo Server Container
     odoo:
         image:  registry.gitlab.com/splashsync/odoo:${ODOO_VERSION}
-        container_name: latest.odoo.local
         depends_on:
             - db
         volumes:
@@ -41,7 +40,6 @@ services:
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
             - ./scripts:/scripts:ro
         entrypoint:         bash /etc/odoo/entrypoint.sh
-        hostname:           latest.odoo.local
         environment:
             - ODOO_DATABASE=OdooCI
 #            - ODOO_MODULES=contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale
@@ -53,19 +51,16 @@ services:
     # Postgres Database Container
     db:
         image: registry.gitlab.com/splashsync/odoo:db
-        container_name: db.odoo.local
         logging: { driver: "none" }
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo
             - POSTGRES_USER=odoo
-        hostname:           db.odoo.local
 
     ################################################################################
     # Splash Toolkit Container
     toolkit:
         image: 'splashsync/toolkit'
-        container_name: toolkit.odoo.local
         logging: { driver: "none" }
         volumes:
             # Specify Local Configuration File
@@ -74,5 +69,4 @@ services:
             - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
             - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
             - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
-        hostname:           toolkit.odoo.local
 
