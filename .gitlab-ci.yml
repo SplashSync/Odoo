@@ -51,7 +51,7 @@ stages:
 #      - docker push $CI_REGISTRY_IMAGE:$ODOO_VERSION
       ################################################################
       # Build & Upload Postgres Docker Image
-      - docker pull postgres:10 -name postgres
+      - docker pull postgres:10
       - docker image tag postgres -t $CI_REGISTRY_IMAGE:db
       - docker push $CI_REGISTRY_IMAGE:db
 
