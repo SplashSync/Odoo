@@ -39,4 +39,4 @@ mkdir logs
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
-- docker-compose up -d
+docker-compose -f ci/docker-compose.yml up -d
