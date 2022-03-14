@@ -35,8 +35,8 @@ stages:
     when:       manual
     tags:
       - Dedicated-Docker
-    services:
-      - docker:dind
+#    services:
+#      - docker:dind
     script:
       - sh ci/update_images.sh
 
@@ -67,8 +67,8 @@ V15:Docker:
     tags:
       - Dedicated-Docker
 #      - Dedicated-Ovh
-    services:
-      - docker:dind
+#    services:
+#      - docker:dind
     before_script:
       - sh ci/before_script.sh
     script:
