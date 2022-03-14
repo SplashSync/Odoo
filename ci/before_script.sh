@@ -35,9 +35,10 @@ chmod 7777 -Rf ../Py-Core
 # Configure Docker Compose
 title "BEFORE --> Configure Docker Compose"
 sed -i 's|odoo:12|${ODOO_VERSION}|g' ci/docker-compose.yml
-cat ci/docker-compose.yml
+cp -Rf ci/docker-compose.yml docker-compose.yml
+cat docker-compose.yml
 mkdir logs
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
-docker-compose -f ci/docker-compose.yml up -d
+docker-compose up -d
