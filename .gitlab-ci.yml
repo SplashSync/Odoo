@@ -48,7 +48,7 @@ stages:
       - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
       ################################################################
       # Build & Upload Splash All Docker Images
-      - sed -i "s|_ODOO_VERSION_|${ODOO_VERSION}|g" ci/docker-compose.yml
+      - sed -i "s|_ODOO_VERSION_|${ODOO_VERSION}|g" ci/Dockerfile
       - docker build -t $CI_REGISTRY_IMAGE:$ODOO_VERSION ci
       - docker push $CI_REGISTRY_IMAGE:$ODOO_VERSION
 
