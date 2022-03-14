@@ -79,6 +79,7 @@ tests-V12:docker:
   variables:
 #    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
+    ODOO_LOG_LEVEL: ":INFO"
 
 ################################################################
 # Functional Tests
