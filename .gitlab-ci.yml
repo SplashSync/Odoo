@@ -32,13 +32,11 @@ stages:
 .docker:    &docker
     image:      docker:stable
     stage:      Docker
-#    retry:      2
+#    when:       manual
     tags:
       - Dedicated-Docker
     services:
       - docker:dind
-    variables:
-      IMAGE_TAG: "$CI_REGISTRY_IMAGE:$ODOO_VERSION"
     before_script:
       - docker info
     script:
@@ -60,9 +58,8 @@ stages:
 V12:Docker:
   <<: *docker
   stage:              Docker
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     12
+  variables:          { ODOO_VERSION:     12 }
+
 
 ################################################################
 # Init & Functional Tests
