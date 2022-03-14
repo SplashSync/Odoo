@@ -24,7 +24,10 @@ set -e
 # Stop Container & Show Logs
 title "AFTER --> Stop Docker"
 docker-compose stop
-title "AFTER --> Show Odoo Logs"
-docker-compose logs --tail="50" odoo
+
 title "AFTER --> Archive Odoo Logs"
 docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
+if [ $exit_code -ne 0 ];
+  title "AFTER --> Show Odoo Logs"
+  docker-compose logs --tail="500" odoo
+fi;
