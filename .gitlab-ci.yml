@@ -51,6 +51,15 @@ V13:docker:
   variables:
     ODOO_VERSION:     odoo:13
 
+V14:docker:
+  <<: *docker
+  variables:
+    ODOO_VERSION:     odoo:14
+
+V15:docker:
+  <<: *docker
+  variables:
+    ODOO_VERSION:     odoo:15
 
 ################################################################
 # Functional Tests
