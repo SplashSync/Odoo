@@ -88,26 +88,26 @@ V12:Contacts:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     12
 
-#V13:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.contacts.xml
-#    ODOO_VERSION:     odoo:13
-#
-#V14:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.contacts.xml
-#    ODOO_VERSION:     odoo:14
-#
-#V15:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.contacts.xml
-#    ODOO_VERSION:     odoo:15
+V13:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     13
+
+V14:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     14
+
+V15:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     15
 
 ################################################################
 # Products - Functional Tests
