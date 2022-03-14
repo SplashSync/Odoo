@@ -20,18 +20,6 @@ set -e
 ################################################################
 # import Layout Functions
 . scripts/functions.sh
-
-title "BEFORE --> Loops tests"
-cpt=0;
-while [ "$cpt" != "10" ]
-do
-  subtitle "Step $cpt";
-  cpt=$(( cpt+1 ));
-  sleep 1;
-
-done
-title "BEFORE --> Loops tests Done"
-
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"

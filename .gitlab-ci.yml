@@ -34,8 +34,7 @@ stages:
       - Dedicated-Docker
     services:
       - docker:dind
-    variables:
-      ODOO_LOG_LEVEL: ":INFO"
+
     ################################################################################
     # Install & Configure Environment
     before_script:
@@ -79,7 +78,7 @@ tests-V12:docker:
   variables:
 #    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
-    ODOO_LOG_LEVEL:   :INFO
+
 
 ################################################################
 # Functional Tests
