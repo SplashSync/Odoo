@@ -20,10 +20,10 @@
 stages:
   - Docker
   - Contacts
-#  - Products
-#  - Orders
-#  - Invoices
-#  - Deploy
+  - Products
+  - Orders
+  - Invoices
+  - Deploy
 
 ################################################################
 # Init Docker Images
@@ -63,7 +63,7 @@ V15:Docker:
 .functional:    &functional
     image:      docker:stable
     when:       manual
-#    retry:      2
+    retry:      1
     tags:
       - Dedicated-Docker
     services:
@@ -83,143 +83,111 @@ V15:Docker:
 V12:Contacts:
   <<: *functional
   stage:              Contacts
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     12
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 
 V13:Contacts:
   <<: *functional
   stage:              Contacts
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     13
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 
 V14:Contacts:
   <<: *functional
   stage:              Contacts
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     14
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 
 V15:Contacts:
   <<: *functional
   stage:              Contacts
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     15
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 
 ################################################################
 # Products - Functional Tests
 ################################################################
 
-#V12:Products:
-#  <<: *functional
-#  stage:              Products
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.products.xml
-#    ODOO_VERSION:     odoo:12
+V12:Products:
+  <<: *functional
+  stage:              Products
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
 
-#V13:Products:
-#  <<: *docker
-#  stage:              Products
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.products.xml
-#    ODOO_VERSION:     odoo:13
-#
-#V14:Products:
-#  <<: *docker
-#  stage:              Products
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.products.xml
-#    ODOO_VERSION:     odoo:14
-#
-#V15:Products:
-#  <<: *docker
-#  stage:              Products
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.products.xml
-#    ODOO_VERSION:     odoo:15
+V13:Products:
+  <<: *docker
+  stage:              Products
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
+
+V14:Products:
+  <<: *docker
+  stage:              Products
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
+
+V15:Products:
+  <<: *docker
+  stage:              Products
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
 
 ################################################################
 # Orders - Functional Tests
 ################################################################
 
-#V12:Orders:
-#  <<: *functional
-#  stage:              Orders
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.orders.xml
-#    ODOO_VERSION:     odoo:12
+V12:Orders:
+  <<: *functional
+  stage:              Orders
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
 
-#V13:Orders:
-#  <<: *functional
-#  stage:              Orders
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.orders.xml
-#    ODOO_VERSION:     odoo:13
-#
-#V14:Orders:
-#  <<: *functional
-#  stage:              Orders
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.orders.xml
-#    ODOO_VERSION:     odoo:14
-#
-#V15:Orders:
-#  <<: *functional
-#  stage:              Orders
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.orders.xml
-#    ODOO_VERSION:     odoo:15
+V13:Orders:
+  <<: *functional
+  stage:              Orders
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
+
+V14:Orders:
+  <<: *functional
+  stage:              Orders
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.orders.xml }
+
+V15:Orders:
+  <<: *functional
+  stage:              Orders
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
 
 ################################################################
 # Invoices - Functional Tests
 ################################################################
 
-#V12:Invoices:
-#  <<: *functional
-#  stage:              Invoices
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.invoices.xml
-#    ODOO_VERSION:     odoo:12
-#
-#V13:Invoices:
-#  <<: *functional
-#  stage:              Invoices
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.invoices.xml
-#    ODOO_VERSION:     odoo:13
-#
-#V14:Invoices:
-#  <<: *functional
-#  stage:              Invoices
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.invoices.xml
-#    ODOO_VERSION:     odoo:14
-#
-#V15:Invoices:
-#  <<: *functional
-#  stage:              Invoices
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.invoices.xml
-#    ODOO_VERSION:     odoo:15
+V12:Invoices:
+  <<: *functional
+  stage:              Invoices
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+
+V13:Invoices:
+  <<: *functional
+  stage:              Invoices
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+
+V14:Invoices:
+  <<: *functional
+  stage:              Invoices
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+
+V15:Invoices:
+  <<: *functional
+  stage:              Invoices
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
 
 ################################################################
 # Build Documentation
 ################################################################
-#pages:
-#    image:      registry.gitlab.com/splashsync/php-console:pages
-#    stage:      Deploy
-#    retry:      2
-#    tags:
-#      - Dedicated
-#    ################################################################################
-#    # Run Test Script
-#    script:
-#      # Run Composer to Build Dependencies
-#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-#      # Build Documentation
-#      - php vendor/bin/grumphp run --tasks=build-docs
-#    artifacts:
-#        paths:
-#            - public
+pages:
+    image:      registry.gitlab.com/splashsync/php-console:pages
+    stage:      Deploy
+    retry:      2
+    tags:
+      - Dedicated
+    ################################################################################
+    # Run Test Script
+    script:
+      # Run Composer to Build Dependencies
+      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+      # Build Documentation
+      - php vendor/bin/grumphp run --tasks=build-docs
+    artifacts:
+        paths:
+            - public
