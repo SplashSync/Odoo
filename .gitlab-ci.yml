@@ -62,13 +62,13 @@ V15:Docker:
 
 .functional:    &functional
     image:      docker:stable
+    when:       manual
 #    retry:      2
     tags:
 #      - Dedicated-Docker
       - Dedicated-Ovh
-    services:
-      - name: docker:dind
-        command: ["--insecure-registries", "localhost:5000"]
+#    services:
+#      - docker:dind
     before_script:
       - sh ci/before_script.sh
     script:
