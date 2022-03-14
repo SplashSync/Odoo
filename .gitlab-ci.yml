@@ -49,7 +49,7 @@ stages:
 
 V12:Docker:
   <<: *docker
-  stage:              Contacts
+  stage:              Docker
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
