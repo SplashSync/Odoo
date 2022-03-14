@@ -23,7 +23,7 @@
 ################################################################
 # Ensure Toolkit Started
 title "TEST --> Start Toolkit"
-docker-compose exec -T toolkit php bin/console
+docker-compose exec -T toolkit "php bin/console | grep Symfony"
 ################################################################
 # Wait Until Odoo Container Started
 title "TEST --> Start Odoo"
