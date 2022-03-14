@@ -23,7 +23,7 @@ set -e
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
-docker info
+#docker info
 apk add --no-cache git docker-compose
 ################################################################
 # Load SplashPy Module
