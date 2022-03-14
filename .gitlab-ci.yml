@@ -204,19 +204,19 @@ V12:Docker:
 ################################################################
 # Build Documentation
 ################################################################
-pages:
-    image:      registry.gitlab.com/splashsync/php-console:pages
-    stage:      Deploy
-    retry:      2
-    tags:
-      - Dedicated
-    ################################################################################
-    # Run Test Script
-    script:
-      # Run Composer to Build Dependencies
-      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-      # Build Documentation
-      - php vendor/bin/grumphp run --tasks=build-docs
-    artifacts:
-        paths:
-            - public
+#pages:
+#    image:      registry.gitlab.com/splashsync/php-console:pages
+#    stage:      Deploy
+#    retry:      2
+#    tags:
+#      - Dedicated
+#    ################################################################################
+#    # Run Test Script
+#    script:
+#      # Run Composer to Build Dependencies
+#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+#      # Build Documentation
+#      - php vendor/bin/grumphp run --tasks=build-docs
+#    artifacts:
+#        paths:
+#            - public
