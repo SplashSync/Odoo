@@ -64,9 +64,11 @@ V15:Docker:
     image:      docker:stable
 #    retry:      2
     tags:
-      - Dedicated-Docker
+#      - Dedicated-Docker
+      - Dedicated-Ovh
     services:
-      - docker:dind
+      - name: docker:dind
+        command: ["--insecure-registries", "localhost:5000"]
     before_script:
       - sh ci/before_script.sh
     script:
