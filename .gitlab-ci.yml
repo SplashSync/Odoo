@@ -62,7 +62,7 @@ V15:Docker:
 
 .functional:    &functional
     image:      docker:stable
-    retry:      2
+#    retry:      2
     tags:
       - Dedicated-Docker
     services:
