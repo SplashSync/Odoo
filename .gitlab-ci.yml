@@ -22,6 +22,7 @@ stages:
   - Products
   - Orders
   - Invoices
+  - Deploy
 
 ################################################################
 # Docker Init & Install Tests
@@ -175,7 +176,7 @@ V12:Orders:
 ################################################################
 pages:
     image:      registry.gitlab.com/splashsync/php-console:pages
-    stage:      deploy
+    stage:      Deploy
     retry:      2
     tags:
       - Dedicated
