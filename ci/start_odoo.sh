@@ -29,6 +29,7 @@ docker-compose exec -T toolkit php bin/console
 title "TEST --> Start Odoo"
 cpt=0;
 http_code="000";
+echo "$cpt => $http_code: Wait for Odoo...";
 while [ $http_code != "200" ];
 do
   http_code=$(docker-compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
