@@ -38,7 +38,7 @@ stages:
     services:
       - docker:dind
     variables:
-      IMAGE_TAG: "$CI_REGISTRY_IMAGE:odoo-$ODOO_VERSION"
+      IMAGE_TAG: "$CI_REGISTRY_IMAGE:$ODOO_VERSION"
     before_script:
       - docker info
     script:
