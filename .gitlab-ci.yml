@@ -30,7 +30,6 @@ stages:
 .docker:    &docker
     image:      docker:stable
     stage:      docker
-    retry:      2
     tags:
       - Dedicated-Docker
     services:
