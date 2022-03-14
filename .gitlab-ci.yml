@@ -73,6 +73,11 @@ stages:
       - docker-compose stop
       - docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
 
+tests-V12:docker:
+  <<: *docker
+  variables:
+#    PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     odoo:12
 
 ################################################################
 # Functional Tests
