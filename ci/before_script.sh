@@ -34,7 +34,7 @@ chmod 7777 -Rf ../Py-Core
 ################################################################
 # Configure Docker Compose
 title "BEFORE --> Configure Docker Compose"
-sed -i 's|odoo:latest|${ODOO_VERSION}|g' ci/docker-compose.yml
+sed -i "s|odoo:latest|${ODOO_VERSION}|g" ci/docker-compose.yml
 cp -Rf ci/docker-compose.yml docker-compose.yml
 cat docker-compose.yml
 mkdir logs
