@@ -22,8 +22,8 @@ set -e
 . scripts/functions.sh
 ################################################################
 # Wait Until Odoo Container Started
-title "TEST --> Start Toolkit"
-docker-compose exec -T toolkit php bin/console
-title "TEST --> Start Odoo"
-docker-compose exec -T toolkit bash -c 'cpt=0; while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do ((cpt+=1)); echo "$cpt : Wait for Odoo..."; sleep 10; if [$cpt -eq 6] then exit 1; fi done'
-docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
+title "TEST --> Execute Tests from Toolkit"
+echo "Execute ${PHPUNIT_CONFIG} Sequence"
+docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
+title "TEST --> Archive Odoo Tests Logs"
+docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
