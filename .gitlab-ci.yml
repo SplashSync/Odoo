@@ -34,6 +34,8 @@ stages:
       - Dedicated-Docker
     services:
       - docker:dind
+    variables:
+      ODOO_LOG_LEVEL: ":INFO"
     ################################################################################
     # Install & Configure Environment
     before_script:
