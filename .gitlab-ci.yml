@@ -52,7 +52,7 @@ stages:
       ################################################################
       # Build & Upload Postgres Docker Image
       - docker pull postgres:10
-      - docker image tag postgres $CI_REGISTRY_IMAGE:db
+      - docker image tag postgres:10 $CI_REGISTRY_IMAGE:db
       - docker push $CI_REGISTRY_IMAGE:db
 
 
