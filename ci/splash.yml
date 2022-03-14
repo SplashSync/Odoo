@@ -32,7 +32,7 @@ splash:
             config:
                 WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:8069
+                WsHost:             http://odoo:80
                 WsPath:             /splash
                 Name:               Odoo Main
 
@@ -62,7 +62,7 @@ splash:
             config:
                 WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:8069
+                WsHost:             http://odoo:80
                 WsPath:             /splash?cname=PhpUnit1
                 Name:               Odoo C1
 
@@ -77,6 +77,6 @@ splash:
             config:
                 WsIdentifier:       ThisIsOdooC2WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:8069
+                WsHost:             http://odoo:80
                 WsPath:             /splash?cname=PhpUnit2
                 Name:               Odoo C2

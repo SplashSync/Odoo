@@ -18,7 +18,7 @@
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - docker
+  - Contacts
 #  - tests_V12
 #  - tests_V13
 #  - deploy
@@ -29,7 +29,6 @@ stages:
 
 .docker:    &docker
     image:      docker:stable
-    stage:      docker
     tags:
       - Dedicated-Docker
     services:
@@ -42,25 +41,36 @@ stages:
     after_script:
       - sh ci/after_script.sh
 
+################################################################
+# Contacts - Functional Tests
+################################################################
+
 V12:docker:
   <<: *docker
+  stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
 
 V13:docker:
   <<: *docker
+  stage:              Contacts
   variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:13
 
 V14:docker:
   <<: *docker
+  stage:              Contacts
   variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:14
 
 V15:docker:
   <<: *docker
+  stage:              Contacts
   variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:15
 
 ################################################################
