@@ -18,18 +18,20 @@
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - Contacts
-  - Products
-  - Orders
-  - Invoices
-  - Deploy
+  - Docker
+#  - Contacts
+#  - Products
+#  - Orders
+#  - Invoices
+#  - Deploy
 
 ################################################################
-# Docker Init & Install Tests
+# Init Docker Images
 ################################################################
 
 .docker:    &docker
     image:      docker:stable
+    stage:      Docker
     retry:      2
     tags:
       - Dedicated-Docker
@@ -39,37 +41,65 @@ stages:
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
-      - sh ci/test_odoo.sh
+      - docker save $ODOO_VERSION | gzip > app.tar.gz
+      - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file app.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/odoo/app.tar.gz"'
+#      - sh ci/test_odoo.sh
     after_script:
       - sh ci/after_script.sh
 
-################################################################
-# Contacts - Functional Tests
-################################################################
-
-V12:Contacts:
+V12:Docker:
   <<: *docker
   stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
 
+################################################################
+# Init & Functional Tests
+################################################################
+
+#.functional:    &functional
+#    image:      docker:stable
+#    retry:      2
+#    tags:
+#      - Dedicated-Docker
+#    services:
+#      - docker:dind
+#    before_script:
+#      - sh ci/before_script.sh
+#    script:
+#      - sh ci/start_odoo.sh
+#      - sh ci/test_odoo.sh
+#    after_script:
+#      - sh ci/after_script.sh
+
+################################################################
+# Contacts - Functional Tests
+################################################################
+
+#V12:Contacts:
+#  <<: *functional
+#  stage:              Contacts
+#  variables:
+#    PHPUNIT_CONFIG:   phpunit.contacts.xml
+#    ODOO_VERSION:     odoo:12
+
 #V13:Contacts:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Contacts
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.contacts.xml
 #    ODOO_VERSION:     odoo:13
 #
 #V14:Contacts:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Contacts
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.contacts.xml
 #    ODOO_VERSION:     odoo:14
 #
 #V15:Contacts:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Contacts
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.contacts.xml
@@ -79,12 +109,12 @@ V12:Contacts:
 # Products - Functional Tests
 ################################################################
 
-V12:Products:
-  <<: *docker
-  stage:              Products
-  variables:
-    PHPUNIT_CONFIG:   phpunit.products.xml
-    ODOO_VERSION:     odoo:12
+#V12:Products:
+#  <<: *functional
+#  stage:              Products
+#  variables:
+#    PHPUNIT_CONFIG:   phpunit.products.xml
+#    ODOO_VERSION:     odoo:12
 
 #V13:Products:
 #  <<: *docker
@@ -111,29 +141,29 @@ V12:Products:
 # Orders - Functional Tests
 ################################################################
 
-V12:Orders:
-  <<: *docker
-  stage:              Orders
-  variables:
-    PHPUNIT_CONFIG:   phpunit.orders.xml
-    ODOO_VERSION:     odoo:12
+#V12:Orders:
+#  <<: *functional
+#  stage:              Orders
+#  variables:
+#    PHPUNIT_CONFIG:   phpunit.orders.xml
+#    ODOO_VERSION:     odoo:12
 
 #V13:Orders:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Orders
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.orders.xml
 #    ODOO_VERSION:     odoo:13
 #
 #V14:Orders:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Orders
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.orders.xml
 #    ODOO_VERSION:     odoo:14
 #
 #V15:Orders:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Orders
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.orders.xml
@@ -144,28 +174,28 @@ V12:Orders:
 ################################################################
 
 #V12:Invoices:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Invoices
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.invoices.xml
 #    ODOO_VERSION:     odoo:12
 #
 #V13:Invoices:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Invoices
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.invoices.xml
 #    ODOO_VERSION:     odoo:13
 #
 #V14:Invoices:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Invoices
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.invoices.xml
 #    ODOO_VERSION:     odoo:14
 #
 #V15:Invoices:
-#  <<: *docker
+#  <<: *functional
 #  stage:              Invoices
 #  variables:
 #    PHPUNIT_CONFIG:   phpunit.invoices.xml
