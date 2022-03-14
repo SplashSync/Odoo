@@ -34,11 +34,10 @@ chmod 7777 -Rf ../Py-Core
 ################################################################
 # Configure Docker Compose
 title "BEFORE --> Configure Docker Compose"
-sed -i "s|odoo:latest|${ODOO_VERSION}|g" ci/docker-compose.yml
 cp -Rf ci/docker-compose.yml docker-compose.yml
-cat docker-compose.yml
 mkdir logs
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
+docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 docker-compose up -d
