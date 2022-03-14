@@ -32,34 +32,30 @@ stages:
 .docker:    &docker
     image:      docker:stable
     stage:      Docker
-#    when:       manual
+    when:       manual
     tags:
       - Dedicated-Docker
     services:
       - docker:dind
-    before_script:
-      - docker info
     script:
-      - echo "[$CI_REGISTRY_IMAGE:$ODOO_VERSION] Build & Upload Docker Image"
-      ################################################################
-      # Connect Docker to GitLab
-      - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-      ################################################################
-      # Build & Upload Odoo Docker Image
-#      - sed -i "s|_ODOO_VERSION_|${ODOO_VERSION}|g" ci/Dockerfile
-#      - docker build -t $CI_REGISTRY_IMAGE:$ODOO_VERSION ci
-#      - docker push $CI_REGISTRY_IMAGE:$ODOO_VERSION
-      ################################################################
-      # Build & Upload Postgres Docker Image
-      - docker pull postgres:10
-      - docker image tag postgres:10 $CI_REGISTRY_IMAGE:db
-      - docker push $CI_REGISTRY_IMAGE:db
+      - sh ci/update_images.sh
 
 
 V12:Docker:
   <<: *docker
-  stage:              Docker
   variables:          { ODOO_VERSION:     12 }
+
+V13:Docker:
+  <<: *docker
+  variables:          { ODOO_VERSION:     13 }
+
+V14:Docker:
+  <<: *docker
+  variables:          { ODOO_VERSION:     14 }
+
+V15:Docker:
+  <<: *docker
+  variables:          { ODOO_VERSION:     15 }
 
 
 ################################################################
