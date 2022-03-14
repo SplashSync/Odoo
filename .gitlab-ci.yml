@@ -19,7 +19,7 @@
 # Defined Pipeline Stages
 stages:
   - Docker
-#  - Contacts
+  - Contacts
 #  - Products
 #  - Orders
 #  - Invoices
@@ -40,7 +40,6 @@ stages:
     script:
       - sh ci/update_images.sh
 
-
 V12:Docker:
   <<: *docker
   variables:          { ODOO_VERSION:     12 }
@@ -57,36 +56,35 @@ V15:Docker:
   <<: *docker
   variables:          { ODOO_VERSION:     15 }
 
-
 ################################################################
 # Init & Functional Tests
 ################################################################
 
-#.functional:    &functional
-#    image:      docker:stable
-#    retry:      2
-#    tags:
-#      - Dedicated-Docker
-#    services:
-#      - docker:dind
-#    before_script:
-#      - sh ci/before_script.sh
-#    script:
-#      - sh ci/start_odoo.sh
-#      - sh ci/test_odoo.sh
-#    after_script:
-#      - sh ci/after_script.sh
+.functional:    &functional
+    image:      docker:stable
+    retry:      2
+    tags:
+      - Dedicated-Docker
+    services:
+      - docker:dind
+    before_script:
+      - sh ci/before_script.sh
+    script:
+      - sh ci/start_odoo.sh
+      - sh ci/test_odoo.sh
+    after_script:
+      - sh ci/after_script.sh
 
 ################################################################
 # Contacts - Functional Tests
 ################################################################
 
-#V12:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:
-#    PHPUNIT_CONFIG:   phpunit.contacts.xml
-#    ODOO_VERSION:     odoo:12
+V12:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:
+    PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     12
 
 #V13:Contacts:
 #  <<: *functional
