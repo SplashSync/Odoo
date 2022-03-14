@@ -19,7 +19,7 @@
 # Defined Pipeline Stages
 stages:
   - Contacts
-#  - tests_V12
+  - Products
 #  - tests_V13
 #  - deploy
 
@@ -29,6 +29,7 @@ stages:
 
 .docker:    &docker
     image:      docker:stable
+    retry:      2
     tags:
       - Dedicated-Docker
     services:
@@ -45,32 +46,64 @@ stages:
 # Contacts - Functional Tests
 ################################################################
 
-V12:docker:
+V12:Contacts:
   <<: *docker
   stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:12
 
-V13:docker:
+V13:Contacts:
   <<: *docker
   stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:13
 
-V14:docker:
+V14:Contacts:
   <<: *docker
   stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
     ODOO_VERSION:     odoo:14
 
-V15:docker:
+V15:Contacts:
   <<: *docker
   stage:              Contacts
   variables:
     PHPUNIT_CONFIG:   phpunit.contacts.xml
+    ODOO_VERSION:     odoo:15
+
+################################################################
+# Products - Functional Tests
+################################################################
+
+V12:Products:
+  <<: *docker
+  stage:              Products
+  variables:
+    PHPUNIT_CONFIG:   phpunit.products.xml
+    ODOO_VERSION:     odoo:12
+
+V13:Products:
+  <<: *docker
+  stage:              Products
+  variables:
+    PHPUNIT_CONFIG:   phpunit.products.xml
+    ODOO_VERSION:     odoo:13
+
+V14:Products:
+  <<: *docker
+  stage:              Products
+  variables:
+    PHPUNIT_CONFIG:   phpunit.products.xml
+    ODOO_VERSION:     odoo:14
+
+V15:Products:
+  <<: *docker
+  stage:              Products
+  variables:
+    PHPUNIT_CONFIG:   phpunit.products.xml
     ODOO_VERSION:     odoo:15
 
 ################################################################
