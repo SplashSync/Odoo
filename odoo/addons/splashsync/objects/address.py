@@ -61,7 +61,8 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         """Get List of Fields NOT To Parse Automatically """
         return [
             "id", 'message_follower_ids', 'image_medium', 'image_small',
-            'company_name', 'vat', "credit_limit", "street2", "street", "zip", "city"
+            'company_name', 'vat', "credit_limit", "street2", "street", "zip", "city",
+            'country_code', 'phone_mobile_search'
         ]
 
     @staticmethod
