@@ -37,7 +37,7 @@ chmod 7777 -Rf ../Py-Core
 # Configure Docker Compose
 subtitle "BEFORE --> Configure Docker Compose"
 cp -Rf ci/docker-compose.yml docker-compose.yml
-mkdir logs
+mkdir -p logs
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"
