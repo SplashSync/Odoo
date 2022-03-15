@@ -59,7 +59,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
     @staticmethod
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
-        return ["id", 'message_follower_ids', 'image_medium', 'image_small']
+        return ["id", 'message_follower_ids', 'image_medium', 'image_small', 'country_code']
 
     @staticmethod
     def get_configuration():

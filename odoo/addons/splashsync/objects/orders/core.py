@@ -142,7 +142,7 @@ class OrderCore:
             # ====================================================================#
             # Setup Order Relations
             req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
-            object_filters = PartnersHelper.thirdparty_filter() if field_id is "partner_id" else PartnersHelper.address_filter()
+            object_filters = PartnersHelper.thirdparty_filter() if field_id == "partner_id" else PartnersHelper.address_filter()
             if not M2OHelper.verify_id(req_fields[field_id], "res.partner", object_filters):
                 return Framework.log().error("Unable to Identify Pointed Object: "+str(self._in[field_id]))
         # ====================================================================#

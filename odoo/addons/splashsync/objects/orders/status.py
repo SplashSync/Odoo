@@ -115,8 +115,8 @@ class OrderStatus:
         :rtype: bool
         """
         if state is None:
-            return self.object.state is "draft"
-        return state is "draft"
+            return self.object.state == "draft"
+        return state == "draft"
 
     def _get_splash_status(self):
         """
