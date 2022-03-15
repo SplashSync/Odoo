@@ -64,7 +64,7 @@ V15:Docker:
 .functional:    &functional
     image:      docker:stable
     when:       manual
-    retry:      1
+#    retry:      1
     tags:
       - Dedicated-Docker
 #    services:
@@ -96,7 +96,7 @@ V14:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V15:Contacts:
   <<: *functional
