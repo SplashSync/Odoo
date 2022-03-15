@@ -50,7 +50,8 @@ services:
     # Postgres Database Container
     db:
         image: registry.gitlab.com/splashsync/odoo:db
-        logging: { driver: "none" }
+        logging:        { driver: "none" }
+        command:        postgres -c 'max_connections=500'
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo
