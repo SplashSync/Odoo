@@ -71,6 +71,7 @@ V15:Docker:
     services:
       - docker:dind
     artifacts:
+        name: "$CI_JOB_NAME"
         when: always
         paths:
             - logs
