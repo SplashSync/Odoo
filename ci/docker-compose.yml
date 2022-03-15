@@ -41,7 +41,7 @@ services:
             - ./scripts:/scripts:ro
         entrypoint:         bash /etc/odoo/entrypoint.sh
         environment:
-            - ODOO_DATABASE=OdooCI
+            - ODOO_DATABASE=$CI_JOB_ID
 #            - ODOO_MODULES=contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale
             - ODOO_MODULES=splashsync,contacts,product,website_sale_comparison,sale,purchase,stock,point_of_sale
             - CI_MODE=enabled
