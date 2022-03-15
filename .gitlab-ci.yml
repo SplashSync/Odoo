@@ -35,6 +35,13 @@ stages:
     image:      docker:stable
     stage:      Docker
     when:       manual
+    cache:
+        key:
+            files:
+                - ci/docker-compose.yml
+        paths:
+            - /var/lib/docker/image
+        policy: push
     tags:
       - Dedicated-Docker
     services:
@@ -45,18 +52,18 @@ stages:
 V12:Docker:
   <<: *docker
   variables:          { ODOO_VERSION:     12 }
-
-V13:Docker:
-  <<: *docker
-  variables:          { ODOO_VERSION:     13 }
-
-V14:Docker:
-  <<: *docker
-  variables:          { ODOO_VERSION:     14 }
-
-V15:Docker:
-  <<: *docker
-  variables:          { ODOO_VERSION:     15 }
+#
+#V13:Docker:
+#  <<: *docker
+#  variables:          { ODOO_VERSION:     13 }
+#
+#V14:Docker:
+#  <<: *docker
+#  variables:          { ODOO_VERSION:     14 }
+#
+#V15:Docker:
+#  <<: *docker
+#  variables:          { ODOO_VERSION:     15 }
 
 ################################################################
 # Init & Functional Tests
@@ -75,6 +82,13 @@ V15:Docker:
         when: always
         paths:
             - logs
+    cache:
+        key:
+            files:
+                - ci/docker-compose.yml
+        paths:
+            - /var/lib/docker/image
+        policy: pull
     before_script:
       - sh ci/before_script.sh
     script:
