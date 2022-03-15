@@ -79,6 +79,12 @@ V15:Docker:
       - sh ci/test_odoo.sh
     after_script:
       - sh ci/after_script.sh
+    variables:
+      ODOO_VERSION: 12
+      PHPUNIT_CONFIG: phpunit.contacts.xml
+      DOCKER_HOST: tcp://docker:2375/
+      DOCKER_DRIVER: overlay2
+
 
 ################################################################
 # Contacts - Functional Tests
@@ -88,11 +94,11 @@ V12:Contacts:
   <<: *functional
   stage:              Contacts
 #  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  variables:
-    ODOO_VERSION:     12
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    DOCKER_HOST:      tcp://docker:2375/
-    DOCKER_DRIVER:    overlay2
+#  variables:
+#    ODOO_VERSION:     12
+#    PHPUNIT_CONFIG:   phpunit.contacts.xml
+#    DOCKER_HOST:      tcp://docker:2375/
+#    DOCKER_DRIVER:    overlay2
   when:               always
 
 V13:Contacts:
