@@ -98,12 +98,13 @@ V14:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
+  when:               always
 
 V15:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
 
 ################################################################
 # Products - Functional Tests
