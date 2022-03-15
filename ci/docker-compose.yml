@@ -62,11 +62,11 @@ services:
     toolkit:
         image: splashsync/toolkit
         logging: { driver: "none" }
-#        volumes:
+        volumes:
 #            # Specify Local Configuration File
 #            - './ci/splash.yml:/app/config/packages/splash.yml:ro'
-#            - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
-#            - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
-#            - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
-#            - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
+            - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
+            - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
+            - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
+            - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
 
