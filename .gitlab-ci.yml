@@ -67,8 +67,8 @@ V15:Docker:
 #    retry:      1
     tags:
       - Dedicated-Docker
-#    services:
-#      - docker:dind
+    services:
+      - docker:dind
     before_script:
       - sh ci/before_script.sh
     script:
