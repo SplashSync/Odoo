@@ -37,7 +37,7 @@ chmod 7777 -Rf ../Py-Core
 title "BEFORE --> Configure Docker Compose"
 cp -Rf ci/docker-compose.yml docker-compose.yml
 mkdir logs
-#docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 docker  images ls
 ################################################################
 # Build Docker Compose
