@@ -41,4 +41,5 @@ mkdir -p logs
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"
+docker image ls
 docker-compose up -d --force-recreate
