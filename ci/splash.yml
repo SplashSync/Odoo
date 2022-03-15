@@ -2,7 +2,7 @@
 splash:
 
 ################################################################################
-# Configure Splash Bundle Parameters Cache
+# Configure Splash Bundle Parameters
 # Cache is Enabled by Default to Store Custom Connectors Configuration
 # If disabled, configuration must be store in Static, on connections section
 ################################################################################
@@ -20,8 +20,6 @@ splash:
     connections:
 
         ########################################################################
-        # Odoo DEV
-        ########################################################################
         # [Main Company]
         odoo-main:
             id:                 ThisIsOdooC0WsId
@@ -35,48 +33,32 @@ splash:
                 WsHost:             http://odoo:80
                 WsPath:             /splash
                 Name:               Odoo Main
-
-#        ########################################################################
-#        # Odoo Connection [Local]
-#        odoo-local:
-#            id:                 ThisIsOdooL0WsId
+        ########################################################################
+        # Odoo Connection [Company 1]
+#        odoo-1:
+#            id:                 ThisIsOdooC1WsId
 #            key:                ThisIsYourEncryptionKeyForSplash
-#            name:               Odoo Local
+#            name:               Odoo C1
 #            host:               false
 #            connector:          soap
 #            config:
-#                WsIdentifier:       ThisIsOdooL0WsId
+#                WsIdentifier:       ThisIsOdooC1WsId
 #                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-#                WsHost:             http://192.168.1.26:8069
-#                WsPath:             /splash
-#                Name:               Odoo Local
-
-        ########################################################################
-        # Odoo Connection [Company 1]
-        odoo-1:
-            id:                 ThisIsOdooC1WsId
-            key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo C1
-            host:               false
-            connector:          soap
-            config:
-                WsIdentifier:       ThisIsOdooC1WsId
-                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:80
-                WsPath:             /splash?cname=PhpUnit1
-                Name:               Odoo C1
+#                WsHost:             http://odoo:80
+#                WsPath:             /splash?cname=PhpUnit1
+#                Name:               Odoo C1
 
         ########################################################################
         # Odoo Connection [Company 2]
-        odoo-2:
-            id:                 ThisIsOdooC2WsId
-            key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo C2
-            host:               false
-            connector:          soap
-            config:
-                WsIdentifier:       ThisIsOdooC2WsId
-                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://odoo:80
-                WsPath:             /splash?cname=PhpUnit2
-                Name:               Odoo C2
+#        odoo-2:
+#            id:                 ThisIsOdooC2WsId
+#            key:                ThisIsYourEncryptionKeyForSplash
+#            name:               Odoo C2
+#            host:               false
+#            connector:          soap
+#            config:
+#                WsIdentifier:       ThisIsOdooC2WsId
+#                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+#                WsHost:             http://odoo:80
+#                WsPath:             /splash?cname=PhpUnit2
+#                Name:               Odoo C2

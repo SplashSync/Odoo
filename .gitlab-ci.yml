@@ -65,25 +65,18 @@ V15:Docker:
 .functional:    &functional
     image:      docker/compose
     when:       manual
-#    retry:      1
+    retry:      1
     tags:
       - Dedicated-Docker
     services:
       - docker:dind
     before_script:
-      - docker version
-      - docker-compose version
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
       - sh ci/test_odoo.sh
     after_script:
       - sh ci/after_script.sh
-#    variables:
-#      ODOO_VERSION: 12
-#      PHPUNIT_CONFIG: phpunit.contacts.xml
-#      DOCKER_HOST: tcp://docker:2375/
-#      DOCKER_DRIVER: overlay2
 
 
 ################################################################
@@ -94,11 +87,6 @@ V12:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  variables:
-#    ODOO_VERSION:     12
-#    PHPUNIT_CONFIG:   phpunit.contacts.xml
-#    DOCKER_HOST:      tcp://docker:2375/
-#    DOCKER_DRIVER:    overlay2
   when:               always
 
 V13:Contacts:

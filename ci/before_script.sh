@@ -23,27 +23,22 @@ set -e
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
-#docker info
-#apk add --no-cache git docker-compose
-apk add --no-cache git docker-compose
+docker version
+docker-compose version
+docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 ################################################################
 # Load SplashPy Module
-title "BEFORE --> Install Splash Py Module"
+subtitle "BEFORE --> Install Splash Py Module"
+apk add --no-cache git
 rm -Rf ../Py-Core
 git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
 chmod 7777 -Rf ../Py-Core
 ################################################################
 # Configure Docker Compose
-title "BEFORE --> Configure Docker Compose"
+subtitle "BEFORE --> Configure Docker Compose"
 cp -Rf ci/docker-compose.yml docker-compose.yml
 mkdir logs
-docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-docker  images ls
 ################################################################
 # Build Docker Compose
-title "BEFORE --> Start Docker Compose"
-ls -l ./docker/odoo
-ls -l /builds/SplashSync/Odoo/docker/odoo
-
-#docker-compose pull
+subtitle "BEFORE --> Start Docker Compose"
 docker-compose up -d --force-recreate
