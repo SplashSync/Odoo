@@ -26,8 +26,10 @@ class SystemManager():
         """
         Get Object Model Class
         """
-        return http.request.env[domain].\
-            with_context(allowed_company_ids=[SettingsManager.get_company_id()])
+        return http.request.env[domain].with_context(
+            allowed_company_ids=[SettingsManager.get_company_id()],
+            mail_notrack=True
+        )
 
     @staticmethod
     def getModelSudo(domain):
