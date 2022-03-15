@@ -14,7 +14,8 @@
 ################################################################################
 
 variables:
-  DOCKER_DRIVER:     overlay2
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
 
 ################################################################
 # Defined Pipeline Stages
@@ -62,7 +63,7 @@ V15:Docker:
 ################################################################
 
 .functional:    &functional
-    image:      docker:stable
+    image:      docker/compose
     when:       manual
 #    retry:      1
     tags:
@@ -70,6 +71,8 @@ V15:Docker:
 #    services:
 #      - docker:dind
     before_script:
+      - docker version
+      - docker-compose version
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
