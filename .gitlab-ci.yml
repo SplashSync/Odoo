@@ -114,6 +114,7 @@ V12:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
+  when:               always
 
 V13:Products:
   <<: *docker
