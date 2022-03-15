@@ -25,6 +25,7 @@ set -e
 title "BEFORE --> Init Docker"
 #docker info
 #apk add --no-cache git docker-compose
+apk add --no-cache git docker-compose
 ################################################################
 # Load SplashPy Module
 title "BEFORE --> Install Splash Py Module"
