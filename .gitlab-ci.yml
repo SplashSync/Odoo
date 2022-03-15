@@ -88,28 +88,30 @@ V15:Docker:
 # Contacts - Functional Tests
 ################################################################
 
+# ALL TESTS PASSED
 V12:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V13:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V14:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
 
 V15:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 ################################################################
 # Products - Functional Tests
@@ -122,20 +124,21 @@ V12:Products:
   when:               always
 
 V13:Products:
-  <<: *docker
+  <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
   when:               always
 
 V14:Products:
-  <<: *docker
+  <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
 
 V15:Products:
-  <<: *docker
+  <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
+  when:               always
 
 ################################################################
 # Orders - Functional Tests
@@ -145,13 +148,13 @@ V12:Orders:
   <<: *functional
   stage:              Orders
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
-  when:               always
+#  when:               always
 
 V13:Orders:
   <<: *functional
   stage:              Orders
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
-  when:               always
+#  when:               always
 
 V14:Orders:
   <<: *functional
@@ -171,13 +174,13 @@ V12:Invoices:
   <<: *functional
   stage:              Invoices
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-  when:               always
+#  when:               always
 
 V13:Invoices:
   <<: *functional
   stage:              Invoices
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-  when:               always
+#  when:               always
 
 V14:Invoices:
   <<: *functional
