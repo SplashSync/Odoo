@@ -41,5 +41,8 @@ docker  images ls
 ################################################################
 # Build Docker Compose
 title "BEFORE --> Start Docker Compose"
+ls -l ./docker/odoo
+ls -l /builds/SplashSync/Odoo/docker/odoo
+
 docker-compose pull
 docker-compose up -d
