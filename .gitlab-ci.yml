@@ -70,6 +70,10 @@ V15:Docker:
       - Dedicated-Docker
     services:
       - docker:dind
+    artifacts:
+        when: always
+        paths:
+            - logs
     before_script:
       - sh ci/before_script.sh
     script:
