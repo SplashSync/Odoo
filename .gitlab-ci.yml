@@ -90,24 +90,25 @@ V12:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-  when:               always
+#  when:               always
 
 V13:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-  when:               always
+#  when:               always
 
-#V14:Products:
-#  <<: *functional
-#  stage:              Products
-#  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
-#
-#V15:Products:
-#  <<: *functional
-#  stage:              Products
-#  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
-##  when:               always
+V14:Products:
+  <<: *functional
+  stage:              Products
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
+#  when:               always
+
+V15:Products:
+  <<: *functional
+  stage:              Products
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
+  when:               always
 #
 #################################################################
 ## Orders - Functional Tests
