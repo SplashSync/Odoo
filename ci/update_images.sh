@@ -43,7 +43,7 @@ docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
 if [ -f "images/postgres.10.tar" ]; then
 
-  docker import images/postgres.10.tar - postgres:10
+  cat images/postgres.10.tar | docker import - postgres:10
 #  echo "[ODOO BOOT] Normal Mode"
 #  check_odoo_config "init" "$ODOO_MODULES"
 #else
