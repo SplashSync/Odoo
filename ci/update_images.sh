@@ -41,12 +41,14 @@ title "[$CI_REGISTRY_IMAGE:$ODOO_VERSION] Build & Upload Docker Images"
 subtitle "Connect Docker to GitLab"
 docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
-#if [ -f "$FAST_BOOT" ]; then
+if [ -f "images/postgres.10.tar" ]; then
+
+  docker import images/postgres.10.tar
 #  echo "[ODOO BOOT] Normal Mode"
 #  check_odoo_config "init" "$ODOO_MODULES"
 #else
 #  echo "[ODOO BOOT] FAST Mode"
-#fi
+fi
 mkdir -p "images"
 subtitle "Before Push"
 ls -l ./images
