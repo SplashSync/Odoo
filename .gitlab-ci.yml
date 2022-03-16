@@ -20,12 +20,12 @@ variables:
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - Docker
-#  - Contacts
+#  - Docker
+  - Contacts
 #  - Products
 #  - Orders
 #  - Invoices
-#  - Deploy
+  - Deploy
 
 ################################################################
 # Init Docker Images
@@ -33,10 +33,10 @@ stages:
 
 docker:
     image:      docker:stable
-    stage:      Docker
-#    when:       manual
+    stage:      Deploy
+    when:       manual
     tags:
-      - Dedicated-Ovh
+      - Dedicated-Docker
     services:
       - docker:dind
     script:
@@ -51,7 +51,7 @@ docker:
     when:       manual
     retry:      1
     tags:
-      - Dedicated-Ovh
+      - Dedicated-Docker
     services:
       - docker:dind
     artifacts:
@@ -59,12 +59,6 @@ docker:
         when: always
         paths:
             - logs
-    cache:
-        key:
-            files:
-                - ci/docker-compose.yml
-        paths:
-            - images
     before_script:
       - sh ci/before_script.sh
     script:
@@ -78,31 +72,31 @@ docker:
 # Contacts - Functional Tests
 ################################################################
 
-## ALL TESTS PASSED
-#V12:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-#
-#V13:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
+# ALL TESTS PASSED
+V12:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
 
-#V14:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-#V15:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
+V13:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
+
+V14:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
+
+V15:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
+
 #################################################################
 ## Products - Functional Tests
 #################################################################
@@ -185,19 +179,19 @@ docker:
 ################################################################
 # Build Documentation
 ################################################################
-#pages:
-#    image:      registry.gitlab.com/splashsync/php-console:pages
-#    stage:      Deploy
-#    retry:      2
-#    tags:
-#      - Dedicated
-#    ################################################################################
-#    # Run Test Script
-#    script:
-#      # Run Composer to Build Dependencies
-#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-#      # Build Documentation
-#      - php vendor/bin/grumphp run --tasks=build-docs
-#    artifacts:
-#        paths:
-#            - public
+pages:
+    image:      registry.gitlab.com/splashsync/php-console:pages
+    stage:      Deploy
+    retry:      2
+    tags:
+      - Dedicated
+    ################################################################################
+    # Run Test Script
+    script:
+      # Run Composer to Build Dependencies
+      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+      # Build Documentation
+      - php vendor/bin/grumphp run --tasks=build-docs
+    artifacts:
+        paths:
+            - public
