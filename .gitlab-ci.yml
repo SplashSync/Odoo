@@ -20,7 +20,7 @@ variables:
 ################################################################
 # Defined Pipeline Stages
 stages:
-#  - Docker
+  - Docker
   - Contacts
 #  - Products
 #  - Orders
@@ -31,7 +31,7 @@ stages:
 # Init Docker Images
 ################################################################
 
-.docker:    &docker
+docker:
     image:      docker:stable
     stage:      Docker
 #    when:       manual
@@ -41,46 +41,12 @@ stages:
                 - ci/docker-compose.yml
         paths:
             - images
-#        policy: push
-#    only:
-#        - changes:
-#            - ci/*.*
-#        - schedules
-#    artifacts:
-#        name: "$CI_COMMIT_REF_NAME"
-#        when: always
-#        expire_in: 1 day
-#        paths:
-#            - images
     tags:
-#      - Dedicated-Docker
       - Dedicated-Ovh
     services:
       - docker:dind
     script:
       - sh ci/update_images.sh
-
-#V12:Docker:
-#  <<: *docker
-#  variables:          { ODOO_VERSION: 12 }
-#
-#V12:Docker2:
-#  <<: *docker
-#  variables:          { ODOO_VERSION: 12 }
-#  needs:
-#    - V12:Docker
-
-#V13:Docker:
-#  <<: *docker
-#  variables:          { ODOO_VERSION:     13 }
-#
-#V14:Docker:
-#  <<: *docker
-#  variables:          { ODOO_VERSION:     14 }
-#
-#V15:Docker:
-#  <<: *docker
-#  variables:          { ODOO_VERSION:     15 }
 
 ################################################################
 # Init & Functional Tests
@@ -123,13 +89,13 @@ V12:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
+  when:               always
 
 V13:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
+  when:               always
 
 #V14:Contacts:
 #  <<: *functional
