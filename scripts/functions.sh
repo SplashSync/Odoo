@@ -41,6 +41,26 @@ splashscreen () {
   printf "\033[%s %-50s \033[0m \n" $bash_layout_splash "=================================================="
 }
 
+################################################################################
+# Load Docker Images from Cache or Registry
+################################################################################
+
+function import_image() {
+    name="$1"
+    md5=$(echo -n $name | md5sum | awk '{print $1}')
+    if [ -f "images/$md5.tar" ]; then
+        subtitle "Load Docker Image from Cache: $name"
+        cat "images/$md5.tar" | docker import - $name
+    else
+        subtitle "Load Docker Image from Registry: $name"
+        docker pull postgres:10
+        subtitle "Save Docker Image to Cache: $name"
+        mkdir -p "images"
+        docker save -o "images/$md5.tar" $name
+    fi
+    docker image ls
+}
+
 ################################################################
 # Composer Update (Optional)
 if [ "$1" = "--demo" ];

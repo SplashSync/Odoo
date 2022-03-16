@@ -20,8 +20,8 @@ variables:
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - Docker
-#  - Contacts
+#  - Docker
+  - Contacts
 #  - Products
 #  - Orders
 #  - Invoices
@@ -60,15 +60,15 @@ stages:
     script:
       - sh ci/update_images.sh
 
-V12:Docker:
-  <<: *docker
-  variables:          { ODOO_VERSION: 12 }
-
-V12:Docker2:
-  <<: *docker
-  variables:          { ODOO_VERSION: 12 }
-  needs:
-    - V12:Docker
+#V12:Docker:
+#  <<: *docker
+#  variables:          { ODOO_VERSION: 12 }
+#
+#V12:Docker2:
+#  <<: *docker
+#  variables:          { ODOO_VERSION: 12 }
+#  needs:
+#    - V12:Docker
 
 #V13:Docker:
 #  <<: *docker
@@ -91,7 +91,7 @@ V12:Docker2:
     when:       manual
     retry:      1
     tags:
-      - Dedicated-Docker
+      - Dedicated-Ovh
     services:
       - docker:dind
     artifacts:
@@ -104,8 +104,7 @@ V12:Docker2:
             files:
                 - ci/docker-compose.yml
         paths:
-            - /var/lib/docker/image
-        policy: pull
+            - images
     before_script:
       - sh ci/before_script.sh
     script:
@@ -119,19 +118,19 @@ V12:Docker2:
 # Contacts - Functional Tests
 ################################################################
 
-## ALL TESTS PASSED
-#V12:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-#V13:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
+# ALL TESTS PASSED
+V12:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+
+V13:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+
 #V14:Contacts:
 #  <<: *functional
 #  stage:              Contacts

@@ -32,7 +32,8 @@ services:
     ################################################################################
     # Odoo Server Container
     odoo:
-        image:  registry.gitlab.com/splashsync/odoo:${ODOO_VERSION}
+#        image:  registry.gitlab.com/splashsync/odoo:${ODOO_VERSION}
+        image:  odoo:${ODOO_VERSION}
         depends_on:
             - db
         volumes:
@@ -49,7 +50,8 @@ services:
     ################################################################################
     # Postgres Database Container
     db:
-        image: registry.gitlab.com/splashsync/odoo:db
+#        image: registry.gitlab.com/splashsync/odoo:db
+        image: postgres:10
         logging:        { driver: "none" }
         command:        postgres -c 'max_connections=500'
         environment:
