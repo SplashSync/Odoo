@@ -28,7 +28,7 @@ docker-compose stop
 subtitle "AFTER --> Archive Odoo Logs"
 docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
 
-if [ "$exit_code" != "0" ];
+if [ $CI_JOB_STATUS != 'success' ];
 then
   subtitle "AFTER --> Show Odoo Logs"
   docker-compose logs --tail="50" odoo

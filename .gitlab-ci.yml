@@ -62,25 +62,25 @@ V12:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V13:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V14:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 V15:Contacts:
   <<: *functional
   stage:              Contacts
   variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+#  when:               always
 
 #################################################################
 ## Products - Functional Tests
@@ -90,13 +90,13 @@ V12:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-#  when:               always
+  when:               always
 
 V13:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-#  when:               always
+  when:               always
 
 #V14:Products:
 #  <<: *functional
