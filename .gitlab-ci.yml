@@ -22,25 +22,10 @@ variables:
 stages:
 #  - Docker
   - Contacts
-#  - Products
+  - Products
 #  - Orders
 #  - Invoices
   - Deploy
-
-################################################################
-# Init Docker Images
-################################################################
-
-docker:
-    image:      docker:stable
-    stage:      Deploy
-    when:       manual
-    tags:
-      - Dedicated-Docker
-    services:
-      - docker:dind
-    script:
-      - sh ci/update_images.sh
 
 ################################################################
 # Init & Functional Tests
@@ -79,40 +64,40 @@ V12:Contacts:
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
   when:               always
 
-#V13:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-#
-#V14:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-#
-#V15:Contacts:
-#  <<: *functional
-#  stage:              Contacts
-#  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
+V13:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
+
+V14:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
+
+V15:Contacts:
+  <<: *functional
+  stage:              Contacts
+  variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+  when:               always
 
 #################################################################
 ## Products - Functional Tests
 #################################################################
-#
-#V12:Products:
-#  <<: *functional
-#  stage:              Products
-#  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-##  when:               always
-#
-#V13:Products:
-#  <<: *functional
-#  stage:              Products
-#  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-##  when:               always
-#
+
+V12:Products:
+  <<: *functional
+  stage:              Products
+  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
+#  when:               always
+
+V13:Products:
+  <<: *functional
+  stage:              Products
+  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
+#  when:               always
+
 #V14:Products:
 #  <<: *functional
 #  stage:              Products
