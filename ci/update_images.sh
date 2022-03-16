@@ -53,7 +53,7 @@ ls -l ./images
 docker image ls
 
 docker pull postgres:10
-docker save -o images/postgres.10.tar
+docker save -o images/postgres.10.tar postgres:10
 
 subtitle "After Push"
 ls -l ./images

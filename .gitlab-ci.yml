@@ -34,7 +34,7 @@ stages:
 .docker:    &docker
     image:      docker:stable
     stage:      Docker
-    when:       manual
+#    when:       manual
 #    cache:
 #        key:
 #            files:
