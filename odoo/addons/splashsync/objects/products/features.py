@@ -69,9 +69,9 @@ class ProductsFeatures:
         self._out[field_id] = None
         # ==================================================================== #
         # Check if Product has Attribute Value
-        for attr_value in self.object.attribute_value_ids:
+        for attr_value in self.object.attribute_line_ids:
             if attr_value.attribute_id.id == attr_id:
-                self._out[field_id] = attr_value.name
+                self._out[field_id] = attr_value.display_name
                 self.__getFeatureTranslatedFields(field_id, attr_value)
                 return
         # ==================================================================== #

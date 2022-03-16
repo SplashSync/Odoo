@@ -36,14 +36,14 @@ class AttributesHelper:
         :param product: product.product
         :return: bool
         """
-        if len(product.attribute_value_ids) > 0:
+        if len(product.attribute_line_ids) > 0:
             return True
         return False
 
     @staticmethod
     def is_wnva(attribute):
         """
-        Check if Product Attributes is 'Without No Varriant Atrribute"
+        Check if Product Attributes is 'Without No Variant Attribute'
         :param attribute: product.attribute
         :return: bool
         """
