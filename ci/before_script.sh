@@ -26,6 +26,7 @@ title "BEFORE --> Init Docker"
 docker version
 docker-compose version
 docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
 ################################################################
 # Load SplashPy Module
 subtitle "BEFORE --> Install Splash Py Module"
