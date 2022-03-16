@@ -35,23 +35,23 @@ stages:
     image:      docker:stable
     stage:      Docker
 #    when:       manual
-#    cache:
-#        key:
-#            files:
-#                - ci/docker-compose.yml
-#        paths:
-#            - /var/lib/docker/image
+    cache:
+        key:
+            files:
+                - ci/docker-compose.yml
+        paths:
+            - images
 #        policy: push
 #    only:
 #        - changes:
 #            - ci/*.*
 #        - schedules
-    artifacts:
-        name: "$CI_COMMIT_REF_NAME"
-        when: always
-        expire_in: 1 day
-        paths:
-            - images
+#    artifacts:
+#        name: "$CI_COMMIT_REF_NAME"
+#        when: always
+#        expire_in: 1 day
+#        paths:
+#            - images
     tags:
 #      - Dedicated-Docker
       - Dedicated-Ovh
