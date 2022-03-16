@@ -63,11 +63,11 @@ V12:Docker:
   <<: *docker
   variables:          { ODOO_VERSION: 12 }
 
-#V12:Docker2:
-#  <<: *docker
-#  variables:          { ODOO_VERSION: 12 }
-#  needs:
-#    - V12:Docker
+V12:Docker2:
+  <<: *docker
+  variables:          { ODOO_VERSION: 12 }
+  needs:
+    - V12:Docker
 
 #V13:Docker:
 #  <<: *docker
