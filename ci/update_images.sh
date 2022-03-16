@@ -26,11 +26,10 @@ subtitle "Connect Docker to GitLab"
 docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 ################################################################
 # Update Docker Images Cache
-subtitle "Connect Docker to GitLab"
-import_image "odoo:12"
-import_image "odoo:13"
-import_image "odoo:14"
-import_image "odoo:15"
-import_image "postgres:10"
-import_image "splashsync/toolkit"
+import_image "odoo:12" "12"
+import_image "odoo:13" "13"
+import_image "odoo:14" "14"
+import_image "odoo:15" "14"
+import_image "postgres:10" "db"
+import_image "splashsync/toolkit" "toolkit"
 docker image ls

@@ -21,7 +21,7 @@ variables:
 # Defined Pipeline Stages
 stages:
   - Docker
-  - Contacts
+#  - Contacts
 #  - Products
 #  - Orders
 #  - Invoices
@@ -35,12 +35,6 @@ docker:
     image:      docker:stable
     stage:      Docker
 #    when:       manual
-    cache:
-        key:
-            files:
-                - ci/docker-compose.yml
-        paths:
-            - images
     tags:
       - Dedicated-Ovh
     services:
@@ -84,18 +78,18 @@ docker:
 # Contacts - Functional Tests
 ################################################################
 
-# ALL TESTS PASSED
-V12:Contacts:
-  <<: *functional
-  stage:              Contacts
-  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
-
-V13:Contacts:
-  <<: *functional
-  stage:              Contacts
-  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-  when:               always
+## ALL TESTS PASSED
+#V12:Contacts:
+#  <<: *functional
+#  stage:              Contacts
+#  variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+#
+#V13:Contacts:
+#  <<: *functional
+#  stage:              Contacts
+#  variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
 
 #V14:Contacts:
 #  <<: *functional

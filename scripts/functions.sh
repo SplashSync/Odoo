@@ -42,23 +42,17 @@ splashscreen () {
 }
 
 ################################################################################
-# Load Docker Images from Cache or Registry
+# Import Docker Image to Gitlab Registry
 ################################################################################
 
 function import_image() {
     name="$1"
-    md5=$(echo -n $name | md5sum | awk '{print $1}')
-    if [ -f "images/$md5.tar" ]; then
-        subtitle "Load Docker Image from Cache: $name"
-        cat "images/$md5.tar" | docker import - $name
-    else
-        subtitle "Load Docker Image from Registry: $name"
-        docker pull $name
-        subtitle "Save Docker Image to Cache: $name"
-        mkdir -p "images"
-        docker save -o "images/$md5.tar" $name
-    fi
-    docker image ls
+    key="$2"
+
+    subtitle "Import Docker Image to Registry: $name"
+    docker pull $name
+    docker image tag $name $CI_REGISTRY_IMAGE:$key
+    docker push $CI_REGISTRY_IMAGE:$key
 }
 
 ################################################################

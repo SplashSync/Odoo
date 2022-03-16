@@ -40,11 +40,6 @@ cp -Rf ci/docker-compose.yml docker-compose.yml
 mkdir -p logs
 ################################################################
 # Build Docker Compose
-subtitle "BEFORE --> Load Docker Images"
-import_image "odoo:${ODOO_VERSION}"
-import_image "postgres:10"
-import_image "splashsync/toolkit"
-docker image ls
-
 subtitle "BEFORE --> Start Docker Compose"
 docker-compose up -d --force-recreate
+docker image ls
