@@ -24,16 +24,21 @@ set -e
 ################################################################################
 # Load Docker Images from Cache or Registry
 ################################################################################
-#DB_ARGS=()
-#function check_db_config() {
-#    param="$1"
-#    value="$2"
-#    if grep -q -E "^\s*\b${param}\b\s*=" "$ODOO_RC" ; then
-#        value=$(grep -E "^\s*\b${param}\b\s*=" "$ODOO_RC" |cut -d " " -f3|sed 's/["\n\r]//g')
-#    fi;
-#    DB_ARGS+=("--${param}")
-#    DB_ARGS+=("${value}")
-#}
+
+function import_image() {
+    name="$1"
+    md5=$(echo -n $name | md5sum | awk '{print $1}')
+    if [ -f "images/$md5.tar" ]; then
+        subtitle "Load Docker Image from Cache: $name"
+        cat "images/$md5.tar" | docker import - $name
+    else
+        subtitle "Load Docker Image from Registry: $name"
+        docker pull postgres:10
+        subtitle "Save Docker Image to Cache: $name"
+        docker save -o "images/$md5.tar" $name
+    fi
+    docker image ls
+}
 
 title "[$CI_REGISTRY_IMAGE:$ODOO_VERSION] Build & Upload Docker Images"
 ################################################################
@@ -41,25 +46,27 @@ title "[$CI_REGISTRY_IMAGE:$ODOO_VERSION] Build & Upload Docker Images"
 subtitle "Connect Docker to GitLab"
 docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
-if [ -f "images/postgres.10.tar" ]; then
+import_image "postgres:10"
 
-  cat images/postgres.10.tar | docker import - postgres:10
-#  echo "[ODOO BOOT] Normal Mode"
-#  check_odoo_config "init" "$ODOO_MODULES"
-#else
-#  echo "[ODOO BOOT] FAST Mode"
-fi
-mkdir -p "images"
-subtitle "Before Push"
-ls -l ./images
-docker image ls
-
-docker pull postgres:10
-docker save -o images/postgres.10.tar postgres:10
-
-subtitle "After Push"
-ls -l ./images
-docker image ls
+#if [ -f "images/postgres.10.tar" ]; then
+#
+#  cat images/postgres.10.tar | docker import - postgres:10
+##  echo "[ODOO BOOT] Normal Mode"
+##  check_odoo_config "init" "$ODOO_MODULES"
+##else
+##  echo "[ODOO BOOT] FAST Mode"
+#fi
+#mkdir -p "images"
+#subtitle "Before Push"
+#ls -l ./images
+#docker image ls
+#
+#docker pull postgres:10
+#docker save -o images/postgres.10.tar postgres:10
+#
+#subtitle "After Push"
+#ls -l ./images
+#docker image ls
 
 #################################################################
 ## Build & Upload Odoo Docker Image
