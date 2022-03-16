@@ -35,6 +35,7 @@ function import_image() {
         subtitle "Load Docker Image from Registry: $name"
         docker pull postgres:10
         subtitle "Save Docker Image to Cache: $name"
+        mkdir -p "images"
         docker save -o "images/$md5.tar" $name
     fi
     docker image ls
