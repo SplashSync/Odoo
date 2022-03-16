@@ -21,11 +21,11 @@ variables:
 # Defined Pipeline Stages
 stages:
   - Docker
-  - Contacts
-  - Products
-  - Orders
-  - Invoices
-  - Deploy
+#  - Contacts
+#  - Products
+#  - Orders
+#  - Invoices
+#  - Deploy
 
 ################################################################
 # Init Docker Images
@@ -35,15 +35,25 @@ stages:
     image:      docker:stable
     stage:      Docker
     when:       manual
-    cache:
-        key:
-            files:
-                - ci/docker-compose.yml
+#    cache:
+#        key:
+#            files:
+#                - ci/docker-compose.yml
+#        paths:
+#            - /var/lib/docker/image
+#        policy: push
+#    only:
+#        - changes:
+#            - ci/*.*
+#        - schedules
+    artifacts:
+        name: "$CI_COMMIT_REF_NAME"
+        when: always
         paths:
-            - /var/lib/docker/image
-        policy: push
+            - images
     tags:
-      - Dedicated-Docker
+#      - Dedicated-Docker
+      - Dedicated-Ovh
     services:
       - docker:dind
     script:
@@ -51,8 +61,14 @@ stages:
 
 V12:Docker:
   <<: *docker
-  variables:          { ODOO_VERSION:     12 }
-#
+  variables:          { ODOO_VERSION: 12 }
+
+#V12:Docker2:
+#  <<: *docker
+#  variables:          { ODOO_VERSION: 12 }
+#  needs:
+#    - V12:Docker
+
 #V13:Docker:
 #  <<: *docker
 #  variables:          { ODOO_VERSION:     13 }
@@ -135,13 +151,13 @@ V12:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-  when:               always
+#  when:               always
 
 V13:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-  when:               always
+#  when:               always
 
 V14:Products:
   <<: *functional
@@ -152,7 +168,7 @@ V15:Products:
   <<: *functional
   stage:              Products
   variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
-  when:               always
+#  when:               always
 
 ################################################################
 # Orders - Functional Tests
@@ -209,19 +225,19 @@ V15:Invoices:
 ################################################################
 # Build Documentation
 ################################################################
-pages:
-    image:      registry.gitlab.com/splashsync/php-console:pages
-    stage:      Deploy
-    retry:      2
-    tags:
-      - Dedicated
-    ################################################################################
-    # Run Test Script
-    script:
-      # Run Composer to Build Dependencies
-      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-      # Build Documentation
-      - php vendor/bin/grumphp run --tasks=build-docs
-    artifacts:
-        paths:
-            - public
+#pages:
+#    image:      registry.gitlab.com/splashsync/php-console:pages
+#    stage:      Deploy
+#    retry:      2
+#    tags:
+#      - Dedicated
+#    ################################################################################
+#    # Run Test Script
+#    script:
+#      # Run Composer to Build Dependencies
+#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+#      # Build Documentation
+#      - php vendor/bin/grumphp run --tasks=build-docs
+#    artifacts:
+#        paths:
+#            - public
