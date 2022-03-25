@@ -121,8 +121,8 @@ class InventoryHelper:
         """
         from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
-        # ODOO V15+ - Nothing to Do
-        if SystemManager.compare_version(15) >= 0:
+        # ODOO V14/V15+ - Nothing to Do
+        if SystemManager.compare_version(14) >= 0:
             # ====================================================================#
             # Search for All Product Stock Moves
             results = http.request.env['stock.move'].sudo().search([("product_id", "=", int(product_id))])
@@ -138,7 +138,7 @@ class InventoryHelper:
 
             return
         # ====================================================================#
-        # ODOO V13/V14 - Search for All Product Inventory Adjustments
+        # ODOO V13 - Search for All Product Inventory Adjustments
         elif SystemManager.compare_version(13) >= 0:
             results = InventoryHelper.__get_inventory().search([("product_ids", "in", int(product_id))])
         # ====================================================================#
