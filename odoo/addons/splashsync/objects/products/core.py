@@ -33,6 +33,8 @@ class ProductsCore:
             FieldFactory.microData("http://schema.org/Product", "description")
             FieldFactory.description("[" + lang_name + "] Description")
             FieldFactory.setMultilang(iso_code)
+            if iso_code != TransHelper.get_default_iso():
+                FieldFactory.association("description")
 
     def getProductCoreFields(self, index, field_id):
         # ==================================================================== #
