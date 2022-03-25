@@ -12,6 +12,21 @@
 #  file that was distributed with this source code.
 #
 
+#
+# Product Attributes Structure
+#
+# o - product.product.attribute_line_ids    => product.template.attribute.line
+#   o - attribute_id                        => product.attribute
+#   o - product_tmpl_id                     => product.template
+#   o - value_ids                           => product.attribute.value
+#
+# o - product.product.product_template_attribute_value_ids    => product.template.attribute.value
+#   o - attribute_id                        => product.attribute
+#   o - product_tmpl_id                     => product.template
+#   o - [V15+] ptav_product_variant_ids     => product.product
+#
+
+
 from odoo import http
 from splashpy import Framework
 
@@ -129,6 +144,64 @@ class AttributesHelper:
     def getModel():
         """Get Product Attributes Model Class"""
         return http.request.env["product.attribute"]
+
+    @staticmethod
+    def debug(product):
+        """
+        Show Product Attributes Debug
+
+        :param product: product.product
+        :return: void
+        """
+        if not Framework.isDebugMode():
+            return
+
+        # ==================================================================== #
+        # Show Details of Template Attributes
+        if len(product.product_template_attribute_value_ids.ids) > 0:
+            html = "Product ID "+str(product.id)+" of : <i style='color:red;'>"
+            html = html+str(len(product.product_template_attribute_value_ids.ids))+"</i> Templates Attributes Values"
+            html = html+"<ul>"
+            for tpl_attr_value in product.product_template_attribute_value_ids:
+                html = html+"<li>"
+                # Template Attribute Class
+                html = html+"["+tpl_attr_value._name+"]"
+                # Attribute Create Mode
+                html = html+"["+tpl_attr_value.attribute_id.create_variant+"] - "
+                # Attribute Name
+                html = html+tpl_attr_value.attribute_id.name+": "
+                # Attribute Value Name
+                html = html+"<b style='color:blue;'>"+tpl_attr_value.product_attribute_value_id.name+"</b> "
+                # ==================================================================== #
+                # Template Attribute Value Usage
+                if hasattr(tpl_attr_value, "ptav_product_variant_ids"):
+                    html = html+"<i>Used by "
+                    for ptav in tpl_attr_value.ptav_product_variant_ids:
+                        html = html+str(ptav.id)+"|"+str(ptav.default_code) + ", "
+                    html = html+"</i>"
+                html = html+"</li>"
+            html = html + "</ul>"
+            Framework.log().info(html)
+
+        # ==================================================================== #
+        # Show Number of Attributes
+        if len(product.attribute_line_ids.ids) > 0:
+            html = "Product ID "+str(product.id)+" of : <i style='color:red;'>"+str(len(product.attribute_line_ids.ids))+"</i> Attributes"
+            html = html + "<ul>"
+            for attr_line in product.attribute_line_ids:
+                html = html+"<li>"
+                # Attribute Class
+                html = html + "[" + attr_line._name + "]"
+                # Attribute Create Mode
+                html = html + "[" + attr_line.attribute_id.create_variant + "] - "
+                html = html+attr_line.display_name+": "
+                # Attribute Values
+                for attr_value in attr_line.value_ids:
+                    html = html+" "+attr_value.name+", "
+                html = html+"</li>"
+            html = html + "</ul>"
+            Framework.log().info(html)
+
 
 
 class ValuesHelper:

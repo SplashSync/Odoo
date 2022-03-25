@@ -52,6 +52,10 @@ class ProductsFeatures:
                     FieldFactory.isNotTested()
                 if iso_code != TransHelper.get_default_iso():
                     FieldFactory.association(self.encode(attribute))
+                # ==================================================================== #
+                # Add Attributes Possible Choices
+                for attr_value in attribute.value_ids:
+                    FieldFactory.addChoice(attr_value.name, attr_value.name)
 
     def getFeaturesFields(self, index, field_id):
         """
@@ -67,12 +71,13 @@ class ProductsFeatures:
             return
         self._in.__delitem__(index)
         self._out[field_id] = None
+
         # ==================================================================== #
         # Check if Product has Attribute Value
-        for attr_value in self.object.attribute_line_ids:
-            if attr_value.attribute_id.id == attr_id:
-                self._out[field_id] = attr_value.display_name
-                self.__getFeatureTranslatedFields(field_id, attr_value)
+        for attr_line in self.object.attribute_line_ids:
+            if attr_line.attribute_id.id == attr_id:
+                self._out[field_id] = attr_line.value_ids[0].name
+                self.__getFeatureTranslatedFields(field_id, attr_line.value_ids[0])
                 return
         # ==================================================================== #
         # Check if Product has Advanced Feature Value
@@ -84,11 +89,12 @@ class ProductsFeatures:
                     return
         # ==================================================================== #
         # Check if Product has Feature Value
-        for attr_value in self.template.valid_product_attribute_value_ids:
-            if attr_value.attribute_id.id == attr_id:
-                self._out[field_id] = attr_value.name
-                self.__getFeatureTranslatedFields(field_id, attr_value)
-                return
+        if hasattr(self.template, "valid_product_attribute_value_ids"):
+            for attr_value in self.template.valid_product_attribute_value_ids:
+                if attr_value.attribute_id.id == attr_id:
+                    self._out[field_id] = attr_value.name
+                    self.__getFeatureTranslatedFields(field_id, attr_value)
+                    return
         # ==================================================================== #
         # Complete Not Found Feature Translations
         self.__isEmptyFeatureTranslatedFields(field_id)

@@ -140,13 +140,13 @@ class ProductsAttributes:
         values = []
         # ====================================================================#
         # Walk on Product Attributes Values
-        for attr_value in self.object.attribute_line_ids:
+        for attr_value in self.object.product_template_attribute_value_ids:
             # Filter Attributes that are NOT Variants Attributes
             if AttributesHelper.is_wnva(attr_value.attribute_id):
                 continue
             # Collect Values
             if value_id == "value":
-                values += [attr_value.display_name]
+                values += [attr_value.name]
             elif value_id == "code":
                 values += [attr_value.attribute_id[0].name]
             elif value_id == "name":
@@ -158,7 +158,7 @@ class ProductsAttributes:
             for iso_code in TransHelper.get_extra_iso():
                 if value_id != "value_"+iso_code:
                     continue
-                values += [TransHelper.get(attr_value, 'display_name', iso_code, attr_value.display_name)]
+                values += [TransHelper.get(attr_value, 'name', iso_code, attr_value.name)]
 
         return values
 
@@ -185,7 +185,9 @@ class ProductsAttributes:
         """
         # ====================================================================#
         # Find Product Current Attributes Values
-        current_value = self.object.attribute_line_ids.filtered(lambda v: v.attribute_id.id == new_value.attribute_id.id)
+        current_value = self.object.product_template_attribute_value_ids.filtered(
+            lambda v: v.attribute_id.id == new_value.attribute_id.id
+        )
         # ====================================================================#
         # If Values are Similar => Nothing to Do => Exit
         if len(current_value) == 1 and new_value.id == current_value.id:
@@ -193,9 +195,9 @@ class ProductsAttributes:
         # ====================================================================#
         # Update Attribute Value => Remove Old Value => Add New Value
         if len(current_value):
-            self.object.attribute_line_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
+            self.object.product_template_attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
         else:
-            self.object.attribute_line_ids = [(4, new_value.id, 0)]
+            self.object.product_template_attribute_value_ids = [(4, new_value.id, 0)]
         # ====================================================================#
         # Update Template Attribute Values with Variants Values
         self._set_variants_value_ids(new_value.attribute_id)
