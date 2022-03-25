@@ -13,11 +13,13 @@
 
 from . import OdooObject
 from splashpy import const
+from .products import ProductsCore
 from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
 from .products import ProductsFeatures, ProductsRelations, ProductsSupplier, ProductsInventory
 
 class Product(
     OdooObject,
+    ProductsCore,
     ProductsAttributes,
     ProductsVariants,
     ProductsPrices,
@@ -61,7 +63,7 @@ class Product(
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
-            "service_to_purchase", "qty_available", 'priority'
+            "service_to_purchase", "qty_available", 'priority', "description"
         ]
         if SystemManager.compare_version(15) >= 0:
             composite += ["type"]
@@ -75,7 +77,6 @@ class Product(
         return {
             "default_code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
             "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
-            "description_sale": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
 
             "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},

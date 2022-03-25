@@ -12,6 +12,7 @@
 #  file that was distributed with this source code.
 #
 
+from .core import ProductsCore
 from .variants import ProductsVariants
 from .attributes import ProductsAttributes
 from .features import ProductsFeatures
