@@ -177,14 +177,17 @@ class Product(
             return False
         # ==================================================================== #
         # Search for Product with this SKU
-        model = self.getModel().name_search(self._in['name'])
-        if len(model) != 1:
+        try:
+            model = self.getModel().search([('default_code', '=', self._in['default_code'])])
+            if len(model) != 1:
+                return False
+        except Exception:
             return False
         # ==================================================================== #
         # Add User Notification
         from splashpy import Framework
         Framework.log().warn(
-            "Sku Detection Worked: "+str(self._in['name'])+" => "+str(model[0][0])
+            "Sku Detection Worked: "+str(self._in['default_code'])+" => "+str(model[0][0].id)
         )
 
-        return int(model[0][0])
+        return int(model[0][0].id)
