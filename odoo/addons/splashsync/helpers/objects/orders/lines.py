@@ -182,10 +182,13 @@ class OrderLinesHelper:
             except:
                 return None
         if field_id == "tax_names":
-            return M2MHelper.get_names(
-                line,
-                "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
-            )
+
+            if OrderLinesHelper.is_order_line(line):
+                return M2MHelper.get_names(line, "tax_id")
+            elif OrderLinesHelper.is_move_line(line):
+                return M2MHelper.get_names(line, "tax_ids")
+            else:
+                return M2MHelper.get_names(line, "invoice_line_tax_ids")
 
         # ==================================================================== #
         # [EXTRA] Order Line Fields
@@ -212,7 +215,13 @@ class OrderLinesHelper:
         """
 
         from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
-        tax_field_id = "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
+
+        if OrderLinesHelper.is_order_line(line):
+            tax_field_id = "tax_id"
+        elif OrderLinesHelper.is_move_line(line):
+            tax_field_id = "tax_ids"
+        else:
+            tax_field_id = "invoice_line_tax_ids"
 
         # ==================================================================== #
         # [CORE] Order Line Fields

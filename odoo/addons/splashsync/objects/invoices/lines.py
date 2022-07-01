@@ -172,4 +172,8 @@ class InvoiceLines:
                 self.object.invoice_line_ids = [(3, invoice_line.id, 0)]
         # ==================================================================== #
         # Recompute Invoice Taxes
-        self.object.compute_taxes()
+        if getattr(self.object, "_name") in ["account.move"]:
+            self.object._recompute_tax_lines()
+            self.object._compute_amount()
+        else:
+            self.object.compute_taxes()

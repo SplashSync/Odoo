@@ -18,7 +18,8 @@ from .orders import OrderAddress
 from odoo.exceptions import MissingError
 
 
-class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus, InvoicePayments):
+class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress):
+# class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus, InvoicePayments):
     # ====================================================================#
     # Splash Object Definition
     name = "Invoice"
@@ -34,14 +35,16 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
 
     @staticmethod
     def objectsListFiltered():
+        from odoo.addons.splashsync.helpers import SystemManager
+        if SystemManager.compare_version(14) >= 0:
+            return [('move_type', '=', "out_invoice")]
         """Filter on Search Query"""
         return [('type', '=', "out_invoice")]
 
     @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
-        return ['display_name', 'invoice_date', 'name', 'ref']
-        # return ['display_name', 'vendor_display_name', 'date_invoice', 'name', 'number']
+        return ['display_name', 'name', 'ref']
 
     @staticmethod
     def get_required_fields():
@@ -52,7 +55,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     def get_composite_fields():
         """Get List of Fields NOT To Parse Automatically """
         return [
-            'id', 'state', 'activity_summary', 'date_invoice',
+            'id', 'state', 'activity_summary',
+            # 'date_invoice', 'invoice_date',
             'message_unread', 'message_unread_counter', 'move_name'
         ]
 
@@ -66,6 +70,9 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "date_due": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+
+            "date_invoice": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True},
+            "invoice_date": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True, "write": True},
 
             "access_token": {"write": False},
             "sequence_number_next": {"write": False},
@@ -111,8 +118,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         """
         # ====================================================================#
         # Post Update of Invoice Status
-        if not self.post_set_status():
-            return False
+        # if not self.post_set_status():
+        #     return False
 
         return super(Invoice, self).update(needed)
 

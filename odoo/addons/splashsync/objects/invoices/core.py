@@ -22,9 +22,11 @@ class InvoiceCore:
     Access to Invoice Core Fields (Required)
     """
 
-    __core_fields_ids = ['partner_id', 'partner_shipping_id', 'date_invoice']
+    __core_fields_ids = ['partner_id', 'partner_shipping_id']
+    # __core_fields_ids = ['partner_id', 'partner_shipping_id', 'date_invoice', 'invoice_date']
 
     def buildInvCoreFields(self):
+        from odoo.addons.splashsync.helpers import SystemManager
         # ==================================================================== #
         # Invoice Final Customer
         FieldFactory.create(ObjectsHelper.encode("ThirdParty", const.__SPL_T_ID__), "partner_id", "Customer")
@@ -39,10 +41,13 @@ class InvoiceCore:
         FieldFactory.isRequired()
         # ==================================================================== #
         # Invoice Date
-        FieldFactory.create(const.__SPL_T_DATE__, "date_invoice", "Invoice Date")
-        FieldFactory.microData("http://schema.org/Order", "orderDate")
-        FieldFactory.group("General")
-        FieldFactory.isRequired()
+        # if SystemManager.compare_version(13) >= 0:
+        #     FieldFactory.create(const.__SPL_T_DATE__, "invoice_date", "Invoice Date")
+        # else:
+        #     FieldFactory.create(const.__SPL_T_DATE__, "date_invoice", "Invoice Date")
+        # FieldFactory.microData("http://schema.org/Order", "orderDate")
+        # FieldFactory.group("General")
+        # FieldFactory.isRequired()
 
     def getInvCoreFields(self, index, field_id):
         # ==================================================================== #
@@ -51,8 +56,8 @@ class InvoiceCore:
             return
         # ==================================================================== #
         # Read Field Data
-        if field_id in ['date_invoice']:
-            return self.getSimpleDate(index, field_id)
+        # if field_id in ['date_invoice', 'invoice_date']:
+        #     return self.getSimpleDate(index, field_id)
         if field_id == "partner_id":
             self._out[field_id] = M2OHelper.get_object(self.object, "partner_id", "ThirdParty")
         if field_id == "partner_shipping_id":
@@ -67,8 +72,8 @@ class InvoiceCore:
             return
         # ==================================================================== #
         # Write Invoice Date
-        if field_id in ['date_invoice']:
-            return self.setSimple(field_id, field_data)
+        # if field_id in ['date_invoice', 'invoice_date']:
+        #     return self.setSimple(field_id, field_data)
         # ==================================================================== #
         # Write Field Data
         M2OHelper.set_object(self.object, field_id, field_data, domain="res.partner")
@@ -113,9 +118,9 @@ class InvoiceCore:
         for field_id in InvoiceCore.__core_fields_ids:
             # ====================================================================#
             # Setup Order Date
-            if field_id in ['date_invoice']:
-                req_fields[field_id] = self._in[field_id]
-                continue
+            # if field_id in ['date_invoice']:
+            #     req_fields[field_id] = self._in[field_id]
+            #     continue
             # ====================================================================#
             # Setup Order Relations
             req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))

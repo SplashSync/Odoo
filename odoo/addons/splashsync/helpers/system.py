@@ -28,7 +28,8 @@ class SystemManager():
         """
         return http.request.env[domain].with_context(
             allowed_company_ids=[SettingsManager.get_company_id()],
-            mail_notrack=True
+            mail_notrack=True,
+            check_move_validity=False
         )
 
     @staticmethod
