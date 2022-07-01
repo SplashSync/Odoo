@@ -33,6 +33,7 @@ class ProductsCore:
             FieldFactory.microData("http://schema.org/Product", "description")
             FieldFactory.description("[" + lang_name + "] Description")
             FieldFactory.setMultilang(iso_code)
+            FieldFactory.addOption("isHtml", True)
             if iso_code != TransHelper.get_default_iso():
                 FieldFactory.association("description")
 
