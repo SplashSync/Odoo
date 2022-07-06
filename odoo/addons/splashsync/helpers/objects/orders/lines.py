@@ -372,7 +372,7 @@ class OrderLinesHelper:
         from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Load Account Id from Configuration
-        account_id = OrderLinesHelper.detect_sales_account_id(invoice)
+        account_id = OrderLinesHelper.detect_sales_account_id()
         # ====================================================================#
         # Safety Check
         if account_id is None or int(account_id) <= 0:
@@ -430,12 +430,11 @@ class OrderLinesHelper:
             return None
 
     @staticmethod
-    def detect_sales_account_id(invoice):
+    def detect_sales_account_id():
         """
         Detect Account id for NEW Invoices Lines
 
-        :param invoice: account.invoice
-        :return: account.invoice.line
+        :return: int|None
         """
         from odoo.addons.splashsync.helpers import SettingsManager
         # ====================================================================#
@@ -445,7 +444,11 @@ class OrderLinesHelper:
             # ====================================================================#
             # FallBack to Demo Account Id
             if account_id is None or int(account_id) <= 0:
-                account_id = invoice.account_id._name_search("200000 Product Sales")[0][0]
+                from odoo.addons.splashsync.helpers import SystemManager
+                accounts = SystemManager.getModel('account.account').search([
+                    ('name', '=', "Product Sales")
+                ])
+                account_id = accounts.ids[0] if len(accounts.ids) > 0 else None
             return account_id
         except:
             return None
