@@ -109,7 +109,7 @@ class Odoo13StatusHelper:
         """
         response = []
         for status, name in Odoo13StatusHelper.__known_state.items():
-            if Framework.isDebugMode() and status in ['in_payment', 'paid']:
+            if Framework.isDebugMode() and status in ['in_payment', 'paid', 'posted']:
                 continue
             response.append((Odoo13StatusHelper.__known_state_trans[status], name))
 
