@@ -27,8 +27,7 @@ class InvoiceLines:
     def buildLinesFields(self):
         """Build Invoice Lines Fields"""
 
-        from odoo.addons.splashsync.helpers import SettingsManager, TaxHelper
-
+        from odoo.addons.splashsync.helpers import SystemManager, SettingsManager, TaxHelper
         # ==================================================================== #
         # [CORE] Invoice Line Fields
         # ==================================================================== #
@@ -38,7 +37,10 @@ class InvoiceLines:
         FieldFactory.create(ObjectsHelper.encode("Product", const.__SPL_T_ID__), "product_id", "Product ID")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/Product", "productID")
-        FieldFactory.association("name@lines", "quantity@lines", "price_unit@lines")
+        if SystemManager.compare_version(13) >= 0:
+            FieldFactory.association("quantity@lines", "price_unit@lines")
+        else:
+            FieldFactory.association("name@lines", "quantity@lines", "price_unit@lines")
         # ==================================================================== #
         # Description
         FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Product Desc.")

@@ -72,7 +72,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "name": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
+            "name": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
             "ref": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
             "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
 
@@ -90,6 +90,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "tax_totals_json":                  {"write": False},
             "user_id":                          {"write": False},
             "user_email":                       {"write": False},
+            "invoice_sequence_number_next":     {"write": False},
             "sequence_number_next":             {"write": False},
             "sequence_number_next_prefix":      {"write": False},
             "posted_before":                    {"write": False},
@@ -123,11 +124,15 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
+        Framework.log().dump(self._in)
         # ====================================================================#
         # Force Move type on Versions Above V14
         from odoo.addons.splashsync.helpers import SystemManager
         if SystemManager.compare_version(14) >= 0:
             self._in['move_type'] = "out_invoice"
+            self._in['date'] = self._in['invoice_date']
+        elif SystemManager.compare_version(13) >= 0:
+            self._in['type'] = "out_invoice"
             self._in['date'] = self._in['invoice_date']
         # ====================================================================#
         # Init List of required Fields

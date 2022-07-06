@@ -146,25 +146,25 @@ V12:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
+    when:               always
 
 V13:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
+    when:               always
 
 V14:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
+    when:               always
 
 V15:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
+    when:               always
 
 ################################################################
 # Build Documentation
