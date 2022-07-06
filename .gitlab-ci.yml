@@ -158,7 +158,7 @@ V14:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-    when:               always
+#    when:               always
 
 V15:Invoices:
     <<: *functional
