@@ -138,7 +138,7 @@ class InvoiceLines:
             return
         # ==================================================================== #
         # Only if Invoice is Draft
-        if self.object.state not in ['draft']:
+        if self.object.state not in ['draft', 'canceled']:
             return
         # ==================================================================== #
         # Walk on Received Invoice Lines...
@@ -183,7 +183,7 @@ class InvoiceLines:
         from odoo.addons.splashsync.helpers import SystemManager
         # ==================================================================== #
         # Only if Invoice is Draft
-        if self.object.state not in ['draft']:
+        if self.object.state not in ['draft', 'canceled']:
             return
         # ==================================================================== #
         # Get Invoice Lines
