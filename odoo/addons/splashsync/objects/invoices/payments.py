@@ -193,5 +193,5 @@ class InvoicePayments:
         else:
             FieldFactory.association(
                 "journal_code@payments", "payment_date@payments",
-                "name@payments", "amount@payments"
+                "communication@payments", "amount@payments"
             )
