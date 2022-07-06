@@ -25,6 +25,11 @@ class OrderLinesHelper:
         'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
     ]
 
+    __float_fields = [
+        'discount',
+        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
+    ]
+
     __qty_fields = [
         'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
     ]
@@ -329,8 +334,11 @@ class OrderLinesHelper:
         # Delivery Lead Time | Line Status
         for field_id in OrderLinesHelper.__generic_fields:
             try:
-                req_fields[field_id] = line_data[field_id]
-            except:
+                if field_id in OrderLinesHelper.__float_fields:
+                    req_fields[field_id] = float(line_data[field_id])
+                else:
+                    req_fields[field_id] = line_data[field_id]
+            except Exception:
                 pass
         # ====================================================================#
         # Unit Price
@@ -361,6 +369,7 @@ class OrderLinesHelper:
         :param line_data: dict
         :return: account.invoice.line
         """
+        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Load Account Id from Configuration
         account_id = OrderLinesHelper.detect_sales_account_id(invoice)
@@ -373,10 +382,16 @@ class OrderLinesHelper:
         # ====================================================================#
         # Prepare Minimal Order Line Data
         req_fields = {
-            "invoice_id": invoice.id,
             "account_id": account_id,
             "sequence": 10 + len(invoice.invoice_line_ids),
         }
+        # ====================================================================#
+        # Link to Parent
+        if SystemManager.compare_version(13) >= 0:
+            req_fields["move_id"] = invoice.id
+        else:
+            req_fields["invoice_id"] = invoice.id
+
         # ====================================================================#
         # Link to Product
         try:
@@ -388,19 +403,26 @@ class OrderLinesHelper:
         # Qty Invoiced
         for field_id in OrderLinesHelper.__generic_fields:
             try:
-                req_fields[field_id] = line_data[field_id]
+                if field_id in OrderLinesHelper.__float_fields:
+                    req_fields[field_id] = float(line_data[field_id])
+                else:
+                    req_fields[field_id] = line_data[field_id]
             except:
                 pass
         # ====================================================================#
         # Unit Price
         try:
+            req_fields["quantity"] = float(req_fields["quantity"])
             req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
         except:
             pass
         # ====================================================================#
         # Create Order Line
         try:
-            return http.request.env["account.invoice.line"].create(req_fields)
+            if SystemManager.compare_version(13) >= 0:
+                return SystemManager.getModel("account.move.line").create(req_fields)
+            else:
+                return http.request.env["account.invoice.line"].create(req_fields)
         except Exception as exception:
             Framework.log().error("Unable to create Invoice Line, please check inputs.")
             Framework.log().fromException(exception, False)

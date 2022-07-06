@@ -27,7 +27,7 @@ class InvoicePayments:
     def buildPaymentsFields(self):
         """Build Invoice Payments Fields"""
         from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
-
+        from odoo.addons.splashsync.helpers import SystemManager
         # ==================================================================== #
         # [CORE] Invoice Payments Fields
         # ==================================================================== #
@@ -38,7 +38,7 @@ class InvoicePayments:
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/Invoice", "PaymentMethod")
         FieldFactory.addChoices(InvoicePaymentsHelper.get_payment_code_names())
-        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        InvoicePayments.__register_payment_associations()
         # ==================================================================== #
         # Payment Journal Name
         FieldFactory.create(const.__SPL_T_VARCHAR__, "journal_name", "Journal")
@@ -60,23 +60,34 @@ class InvoicePayments:
         FieldFactory.inlist("payments")
         FieldFactory.isReadOnly()
         # ==================================================================== #
+        # Payment Name
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Name")
+        FieldFactory.inlist("payments")
+        FieldFactory.isReadOnly()
+        # ==================================================================== #
         # Payment Date
-        FieldFactory.create(const.__SPL_T_DATE__, "payment_date", "Date")
+        if SystemManager.compare_version(14) >= 0:
+            FieldFactory.create(const.__SPL_T_DATE__, "date", "Date")
+        else:
+            FieldFactory.create(const.__SPL_T_DATE__, "payment_date", "Date")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "validFrom")
-        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        InvoicePayments.__register_payment_associations()
         # ==================================================================== #
         # Payment Transaction Id
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "name", "Number")
+        if SystemManager.compare_version(14) >= 0:
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Number")
+        else:
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "communication", "Number")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/Invoice", "paymentMethodId")
-        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        InvoicePayments.__register_payment_associations()
         # ==================================================================== #
         # Payment Amount
         FieldFactory.create(const.__SPL_T_DOUBLE__, "amount", "Amount")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "price")
-        FieldFactory.association("product_id@lines", "name@lines", "quantity@lines", "price_unit@lines", "journal_code@payments", "payment_date@payments", "name@payments", "amount@payments")
+        InvoicePayments.__register_payment_associations()
         if Framework.isDebugMode():
             FieldFactory.addChoice(1.0, 1)
             FieldFactory.addChoice(2.0, 2)
@@ -91,7 +102,6 @@ class InvoicePayments:
         :return: None
         """
         from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
-
         # ==================================================================== #
         # Init Payments List...
         payments_list = ListHelper.initOutput(self._out, "payments", field_id)
@@ -101,7 +111,10 @@ class InvoicePayments:
             return
         # ==================================================================== #
         # Read Payments Data
-        payment_values = InvoicePaymentsHelper.get_values(self.object.payment_ids, payments_list)
+        payment_values = InvoicePaymentsHelper.get_values(
+            InvoicePaymentsHelper.get_helper().get_payments_list(self.object),
+            payments_list
+        )
         for pos in range(len(payment_values)):
             ListHelper.insert(self._out, "payments", field_id, "pay-" + str(pos), payment_values[pos])
         # ==================================================================== #
@@ -118,9 +131,8 @@ class InvoicePayments:
         :return: None
         """
         from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
-
         # ==================================================================== #
-        # Safety Check - field_id is an Payment List
+        # Safety Check - field_id is a Payment List
         if field_id != "payments":
             return
         # ==================================================================== #
@@ -130,7 +142,7 @@ class InvoicePayments:
         # ==================================================================== #
         # Init Payments fro Writing
         index = 0
-        original_payment_ids = self.object.payment_ids.sorted(key=lambda r: r.id)
+        original_payment_ids = InvoicePaymentsHelper.get_helper().get_payments_list(self.object)
         updated_payment_ids = []
         payments = OrderedDict(sorted(field_data.items())).values()
         # ==================================================================== #
@@ -147,7 +159,7 @@ class InvoicePayments:
             # Load or Create Invoice Payment Line
             try:
                 payment = original_payment_ids[index]
-            except:
+            except Exception:
                 payment = None
             # ==================================================================== #
             # Validate Invoice if Draft & Requested by Splash
@@ -163,9 +175,23 @@ class InvoicePayments:
             index += 1
         # ==================================================================== #
         # Delete Remaining Payments...
-        for payment in self.object.payment_ids:
+        for payment in InvoicePaymentsHelper.get_helper().get_payments_list(self.object):
             if payment.id not in updated_payment_ids:
                 InvoicePaymentsHelper.remove(self.object, payment)
         # ==================================================================== #
         # Mark Field as Processed...
         self._in.__delitem__(field_id)
+
+    @staticmethod
+    def __register_payment_associations():
+        from odoo.addons.splashsync.helpers import SystemManager
+        if SystemManager.compare_version(14) >= 0:
+            FieldFactory.association(
+                "journal_code@payments", "date@payments",
+                "ref@payments", "amount@payments"
+            )
+        else:
+            FieldFactory.association(
+                "journal_code@payments", "payment_date@payments",
+                "name@payments", "amount@payments"
+            )

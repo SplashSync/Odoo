@@ -26,9 +26,11 @@ class SystemManager():
         """
         Get Object Model Class
         """
+        from splashpy import Framework
         return http.request.env[domain].with_context(
             allowed_company_ids=[SettingsManager.get_company_id()],
             mail_notrack=True,
+            force_delete=Framework.isDebugMode(),
             check_move_validity=False
         )
 
