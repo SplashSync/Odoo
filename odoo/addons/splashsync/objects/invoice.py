@@ -75,7 +75,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "name": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
             "ref": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
             "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
+            "move_type": {"required": False},
+            "extract_state": {"required": False},
 
+            "date": {"group": "General", "required": False},
             "date_due": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
@@ -124,7 +127,6 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
-        Framework.log().dump(self._in)
         # ====================================================================#
         # Force Move type on Versions Above V14
         from odoo.addons.splashsync.helpers import SystemManager
@@ -134,6 +136,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         elif SystemManager.compare_version(13) >= 0:
             self._in['type'] = "out_invoice"
             self._in['date'] = self._in['invoice_date']
+        # ==================================================================== #
+        # ODOO PRO - Pre-Setup Extract State
+        if "extract_state" in self.getModel().fields_get():
+            self._in['extract_state'] = 'no_extract_requested'
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredFields()
