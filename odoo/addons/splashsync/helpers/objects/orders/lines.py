@@ -302,7 +302,6 @@ class OrderLinesHelper:
         """
         return getattr(line, "_name") in ["account.move.line"]
 
-
     # ====================================================================#
     # Order Specific Methods
     # ====================================================================#
@@ -324,8 +323,11 @@ class OrderLinesHelper:
         # ====================================================================#
         # Link to Product
         try:
-            req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-        except:
+            if "product_id" in line_data and len(line_data["product_id"]) > 0:
+                req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
+            else:
+                req_fields["product_id"] = OrderLinesHelper.detect_empty_product_id()
+        except Exception:
             Framework.log().error("Unable to create Order Line, Product Id is Missing")
             return None
         # ==================================================================== #
@@ -344,7 +346,7 @@ class OrderLinesHelper:
         # Unit Price
         try:
             req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
-        except:
+        except Exception:
             pass
         # ====================================================================#
         # Create Order Line
@@ -451,4 +453,44 @@ class OrderLinesHelper:
                 account_id = accounts.ids[0] if len(accounts.ids) > 0 else None
             return account_id
         except:
+            return None
+
+    @staticmethod
+    def detect_empty_product_id():
+        """
+        Detect Product ID for NEW Lines without Product ID
+
+        :return: int|None
+        """
+        from odoo.addons.splashsync.helpers import SettingsManager
+        from odoo.addons.splashsync.helpers import SystemManager
+        # ====================================================================#
+        # Prepare Product
+        empty_product = {
+            "name": "Service",
+            'default_code': "SPL"
+        }
+        # ==================================================================== #
+        # Search or Create for SPL Empty Product
+        try:
+            # ====================================================================#
+            # Search for Product by SKU
+            model = SystemManager.getModel('product.product').search([('default_code', '=', empty_product['name'])])
+            if len(model) == 1:
+                return model[0][0].id
+            # ====================================================================#
+            # Ensure default type
+            if SystemManager.compare_version(15) >= 0:
+                empty_product['detailed_type'] = 'service'
+            elif "type":
+                empty_product['type'] = 'service'
+            # ====================================================================#
+            # Create Product
+            new_product = SystemManager.getModel('product.product')\
+                .with_context(create_product_product=True)\
+                .create(empty_product)
+
+            return new_product.id
+
+        except Exception:
             return None
