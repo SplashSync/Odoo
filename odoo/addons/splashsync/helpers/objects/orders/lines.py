@@ -235,7 +235,14 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Linked Product ID
         if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
-            line.product_id = int(ObjectsHelper.id(field_data))
+            try:
+                line.product_id = OrderLinesHelper.detect_product_id({
+                    "product_id": field_data
+                })
+            except Exception as exception:
+                Framework.log().error("Unable to Update Product ID.")
+                Framework.log().fromException(exception, True)
+                return None
         # ==================================================================== #
         # Description
         # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
@@ -323,12 +330,11 @@ class OrderLinesHelper:
         # ====================================================================#
         # Link to Product
         try:
-            if "product_id" in line_data and len(line_data["product_id"]) > 0:
-                req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-            else:
-                req_fields["product_id"] = OrderLinesHelper.detect_empty_product_id()
-        except Exception:
+            req_fields["product_id"] = OrderLinesHelper.detect_product_id(line_data)
+        except Exception as exception:
             Framework.log().error("Unable to create Order Line, Product Id is Missing")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Order Line")
             return None
         # ==================================================================== #
         # Description
@@ -397,9 +403,12 @@ class OrderLinesHelper:
         # ====================================================================#
         # Link to Product
         try:
-            req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-        except:
-            pass
+            req_fields["product_id"] = OrderLinesHelper.detect_product_id(line_data)
+        except Exception as exception:
+            Framework.log().error("Unable to create Invoice Line, please check inputs.")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Invoice Line")
+            return None
         # ==================================================================== #
         # Description
         # Qty Invoiced
@@ -456,7 +465,7 @@ class OrderLinesHelper:
             return None
 
     @staticmethod
-    def detect_empty_product_id():
+    def detect_product_id(line_data):
         """
         Detect Product ID for NEW Lines without Product ID
 
@@ -471,26 +480,29 @@ class OrderLinesHelper:
             'default_code': "SPL"
         }
         # ==================================================================== #
+        # Get Product ID From Line data
+        if "product_id" in line_data and isinstance(ObjectsHelper.id(line_data["product_id"]), (int, str)):
+            return int(ObjectsHelper.id(line_data["product_id"]))
+
+        # ==================================================================== #
         # Search or Create for SPL Empty Product
-        try:
-            # ====================================================================#
-            # Search for Product by SKU
-            model = SystemManager.getModel('product.product').search([('default_code', '=', empty_product['name'])])
-            if len(model) == 1:
-                return model[0][0].id
-            # ====================================================================#
-            # Ensure default type
-            if SystemManager.compare_version(15) >= 0:
-                empty_product['detailed_type'] = 'service'
-            elif "type":
-                empty_product['type'] = 'service'
-            # ====================================================================#
-            # Create Product
-            new_product = SystemManager.getModel('product.product')\
-                .with_context(create_product_product=True)\
-                .create(empty_product)
+        # ==================================================================== #
 
-            return new_product.id
+        # ====================================================================#
+        # Search for Product by SKU
+        model = SystemManager.getModel('product.product').search([('default_code', '=', empty_product['default_code'])])
+        if len(model) == 1:
+            return model[0][0].id
+        # ====================================================================#
+        # Ensure default type
+        if SystemManager.compare_version(15) >= 0:
+            empty_product['detailed_type'] = 'service'
+        elif "type":
+            empty_product['type'] = 'service'
+        # ====================================================================#
+        # Create Product
+        new_product = SystemManager.getModel('product.product')\
+            .with_context(create_product_product=True)\
+            .create(empty_product)
 
-        except Exception:
-            return None
+        return new_product.id
