@@ -50,7 +50,6 @@ stages:
       # Build Docker Compose
       - mkdir logs
       - docker network create splashsync --attachable
-      - docker-compose up
       - docker-compose up -d
     ################################################################################
     # Run Test Script
