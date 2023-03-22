@@ -107,10 +107,6 @@ class ProductsRelations:
         # ==================================================================== #
         # [MY LED] ONS Product Type
         if "ons_product_type" in allFields:
-            FieldFactory.create(const.__SPL_T_VARCHAR__, "ons_product_type_id", "ONS Product Type ID")
-            FieldFactory.microData("http://schema.org/Product", "onsProductTypeCode")
-            FieldFactory.addChoices(M2OHelper.get_name_values(domain="product.category", index="id"))
-            FieldFactory.isNotTested()
             FieldFactory.create(const.__SPL_T_VARCHAR__, "ons_product_type", "ONS Product Type")
             FieldFactory.microData("http://schema.org/Product", "onsProductTypeCodeName")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.category"))
@@ -187,9 +183,6 @@ class ProductsRelations:
             self._in.__delitem__(index)
         # ==================================================================== #
         # [MY LED] ONS Product Type
-        if field_id == "ons_product_type_id":
-            self._out[field_id] = M2OHelper.get_id(self.object, "ons_product_type")
-            self._in.__delitem__(index)
         if field_id == "ons_product_type":
             self._out[field_id] = M2OHelper.get_name(self.object, "ons_product_type")
             self._in.__delitem__(index)
@@ -271,9 +264,6 @@ class ProductsRelations:
             self._in.__delitem__(field_id)
         # ==================================================================== #
         # [MY LED] ONS Product Type
-        if field_id == "ons_product_type_id":
-            M2OHelper.set_id(self.object, "ons_product_type", field_data, domain="product.category")
-            self._in.__delitem__(field_id)
         if field_id == "ons_product_type":
             M2OHelper.set_name(self.object, "ons_product_type", field_data, domain="product.category")
             self._in.__delitem__(field_id)
@@ -289,7 +279,7 @@ class ProductsRelations:
             "company_ids", "company_names",
             "product_brand_id", "product_brand",
             "tag_id", "tag_ids",
-            "ons_product_type_id", "ons_product_type"
+            "ons_product_type"
         ]:
             return True
         return False
