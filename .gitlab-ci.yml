@@ -85,21 +85,21 @@ tests-V12:contacts:
 
 tests-V12:products:
     <<: *core_tests
-    when:               manual
+#    when:               manual
     variables:
         PHPUNIT_CONFIG:   phpunit.products.xml
         ODOO_VERSION:     odoo:12
 
 tests-V12:orders:
     <<: *core_tests
-    when:               manual
+#    when:               manual
     variables:
         PHPUNIT_CONFIG:   phpunit.orders.xml
         ODOO_VERSION:     odoo:12
 
 tests-V12:invoices:
     <<: *core_tests
-    when:               manual
+#    when:               manual
     variables:
         PHPUNIT_CONFIG:   phpunit.invoices.xml
         ODOO_VERSION:     odoo:12
