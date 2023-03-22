@@ -61,6 +61,7 @@ stages:
       # Run Splash Unit tests from Splash Toolkit
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
       - docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
+      - docker-compose logs --tail="2000" odoo
       # Use Splash Toolkit to build Splash Manifest
       - mkdir manifest
       - docker-compose exec -T toolkit php bin/console splash:server:manifest
