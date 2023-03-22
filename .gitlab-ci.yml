@@ -50,13 +50,14 @@ stages:
       # Build Docker Compose
       - mkdir logs
       - docker network create splashsync --attachable
+      - docker-compose up
       - docker-compose up -d
     ################################################################################
     # Run Test Script
     script:
       # Wait Until Odoo Container Started
       - docker-compose exec -T toolkit php bin/console
-#      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
+      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
       - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
       # Run Splash Unit tests from Splash Toolkit
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
