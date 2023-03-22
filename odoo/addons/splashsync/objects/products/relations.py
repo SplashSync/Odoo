@@ -104,6 +104,19 @@ class ProductsRelations:
             FieldFactory.microData("http://schema.org/Product", "tagIds")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.tag"))
             FieldFactory.isNotTested()
+        # ==================================================================== #
+        # [MY LED] ONS Product Type
+        if "ons_product_type" in allFields:
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "ons_product_type_id", "ONS Product Type ID")
+            FieldFactory.microData("http://schema.org/Product", "onsProductTypeCode")
+            FieldFactory.addChoices(M2OHelper.get_name_values(domain="product.category", index="id"))
+            FieldFactory.isNotTested()
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "ons_product_type", "ONS Product Type")
+            FieldFactory.microData("http://schema.org/Product", "onsProductTypeCodeName")
+            FieldFactory.addChoices(M2OHelper.get_name_values("product.category"))
+            FieldFactory.isNotTested()
+        #
+        # Framework.log().dump(allFields["x_ons_product_type"])
 
     def getProductsRelationsFields(self, index, field_id):
         # Check if Relation Field...
@@ -170,9 +183,16 @@ class ProductsRelations:
         # ==================================================================== #
         # [MY LED] Product Tags
         if field_id == "tag_ids":
-            self._out[field_id] = M2MHelper.get_name(self.object, "tag_ids")
+            self._out[field_id] = M2OHelper.get_name(self.object, "tag_ids")
             self._in.__delitem__(index)
-
+        # ==================================================================== #
+        # [MY LED] ONS Product Type
+        if field_id == "ons_product_type_id":
+            self._out[field_id] = M2OHelper.get_id(self.object, "ons_product_type")
+            self._in.__delitem__(index)
+        if field_id == "ons_product_type":
+            self._out[field_id] = M2OHelper.get_name(self.object, "ons_product_type")
+            self._in.__delitem__(index)
 
     def setProductsRelationsFields(self, field_id, field_data):
         # Check if Relation Field...
@@ -249,6 +269,14 @@ class ProductsRelations:
         if field_id == "tag_ids":
             M2MHelper.set_names(self.object, "tag_ids", field_data, domain="product.tag")
             self._in.__delitem__(field_id)
+        # ==================================================================== #
+        # [MY LED] ONS Product Type
+        if field_id == "ons_product_type_id":
+            M2OHelper.set_id(self.object, "ons_product_type", field_data, domain="product.category")
+            self._in.__delitem__(field_id)
+        if field_id == "ons_product_type":
+            M2OHelper.set_name(self.object, "ons_product_type", field_data, domain="product.category")
+            self._in.__delitem__(field_id)
 
     @staticmethod
     def isProductRelationFields(field_id):
@@ -261,6 +289,7 @@ class ProductsRelations:
             "company_ids", "company_names",
             "product_brand_id", "product_brand",
             "tag_id", "tag_ids",
+            "ons_product_type_id", "ons_product_type"
         ]:
             return True
         return False

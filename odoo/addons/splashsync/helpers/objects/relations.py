@@ -231,7 +231,7 @@ class M2OHelper:
         """
         Get a Relation Possible Values Dict
         :param domain: str      Target Objects Domain
-        :param filters: list    Additionnal Search Filters
+        :param filters: list    Additional Search Filters
         :return: dict
         """
         # No Domain or Filter => Skip
@@ -241,7 +241,7 @@ class M2OHelper:
         results = []
         values = http.request.env[domain].search(filters, limit=50)
         for value in values:
-            results += [(getattr(value, index), value.name)]
+            results += [(getattr(value, index), "["+str(getattr(value, index))+"] "+value.name)]
         return results
 
     @staticmethod
