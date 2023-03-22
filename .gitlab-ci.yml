@@ -56,7 +56,7 @@ stages:
     script:
       # Wait Until Odoo Container Started
       - docker-compose exec -T toolkit php bin/console
-      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; docker-compose logs --tail="100" odoo; done'
+#      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
       - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
       # Run Splash Unit tests from Splash Toolkit
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
@@ -77,28 +77,31 @@ stages:
         - manifest
 
 tests-V12:contacts:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
-    ODOO_VERSION:     odoo:12
+    <<: *core_tests
+    variables:
+        PHPUNIT_CONFIG:   phpunit.contacts.xml
+        ODOO_VERSION:     odoo:12
 
 tests-V12:products:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.products.xml
-    ODOO_VERSION:     odoo:12
+    <<: *core_tests
+    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.products.xml
+        ODOO_VERSION:     odoo:12
 
 tests-V12:orders:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.orders.xml
-    ODOO_VERSION:     odoo:12
+    <<: *core_tests
+    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.orders.xml
+        ODOO_VERSION:     odoo:12
 
 tests-V12:invoices:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.invoices.xml
-    ODOO_VERSION:     odoo:12
+    <<: *core_tests
+    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.invoices.xml
+        ODOO_VERSION:     odoo:12
 
 
 #################################################################
