@@ -35,7 +35,7 @@ splash:
                 Name:               Odoo Main
 
 #        ########################################################################
-#        # Odoo Connection [Main Company]
+#        # Odoo Connection [Local]
 #        odoo-local:
 #            id:                 ThisIsOdooL0WsId
 #            key:                ThisIsYourEncryptionKeyForSplash
@@ -45,7 +45,7 @@ splash:
 #            config:
 #                WsIdentifier:       ThisIsOdooL0WsId
 #                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-#                WsHost:             http://192.168.1.35:8069
+#                WsHost:             http://192.168.1.26:8069
 #                WsPath:             /splash
 #                Name:               Odoo Local
 

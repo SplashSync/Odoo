@@ -13,26 +13,18 @@
 #
 
 
-from odoo import api, models, fields
+from odoo import models
 from splashpy import const
 
 
-class AccountInvoice(models.Model):
-    """Override for Odoo Invoice to Make it Work with Splash"""
-    _inherit = 'account.invoice'
+class StockMoveLine(models.Model):
+    """
+    Override for Odoo Stock Move to Make it Work with Splash
+    """
+    _inherit = 'stock.move.line'
 
-    @api.model
     def create(self, vals):
-        res = super(AccountInvoice, self).create(vals)
-
-        # ====================================================================#
-        # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_CREATE__)
-
-        return res
-
-    def write(self, vals):
-        res = super(AccountInvoice, self).write(vals)
+        res = super(StockMoveLine, self).create(vals)
 
         # ====================================================================#
         # Execute Splash Commit
@@ -40,18 +32,18 @@ class AccountInvoice(models.Model):
 
         return res
 
-    def unlink(self):
+    def write(self, vals):
+        res = super(StockMoveLine, self).write(vals)
+
         # ====================================================================#
         # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_DELETE__)
-
-        res = super(AccountInvoice, self).unlink()
+        self.__do_splash_commit(const.__SPL_A_UPDATE__)
 
         return res
 
     def __do_splash_commit(self, action):
         """
-        Execute Splash Commit for this Invoice
+        Execute Splash Commit for this Product
 
         :param action: str
         :return: void
@@ -63,7 +55,8 @@ class AccountInvoice(models.Model):
             return
         # ====================================================================#
         # Execute Splash Commit for this Product
-        from odoo.addons.splashsync.objects import Invoice
+        from odoo.addons.splashsync.objects import Product
         from odoo.addons.splashsync.client import OdooClient
-        for invoice in self:
-            OdooClient.commit(Invoice(), action, str(invoice.id))
+        for move_line in self:
+            OdooClient.commit(Product(), action, str(move_line.product_id.id))
+

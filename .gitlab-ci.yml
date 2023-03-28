@@ -18,7 +18,8 @@
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - tests
+  - tests_V12
+  - tests_V13
   - deploy
 
 ################################################################
@@ -27,7 +28,7 @@ stages:
 
 .core_tests:    &core_tests
     image:      docker:stable
-    stage:      tests
+    stage:      tests_V12
     retry:      2
     tags:
       - Dedicated-Docker
@@ -44,6 +45,8 @@ stages:
       - rm -Rf ../Py-Core
       - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
       - chmod 7777 -Rf ../Py-Core
+      # Configure Docker Compose
+      - sed -i 's|odoo:12|${ODOO_VERSION}|g' docker-compose.yml
       # Build Docker Compose
       - mkdir logs
       - docker network create splashsync --attachable
@@ -58,6 +61,7 @@ stages:
       # Run Splash Unit tests from Splash Toolkit
       - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
       - docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
+      - docker-compose logs --tail="2000" odoo
       # Use Splash Toolkit to build Splash Manifest
       - mkdir manifest
       - docker-compose exec -T toolkit php bin/console splash:server:manifest
@@ -73,25 +77,33 @@ stages:
         - logs
         - manifest
 
-tests:products:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.products.xml
+tests-V12:contacts:
+    <<: *core_tests
+    variables:
+        PHPUNIT_CONFIG:   phpunit.contacts.xml
+        ODOO_VERSION:     odoo:12
 
-tests:contacts:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.contacts.xml
+tests-V12:products:
+    <<: *core_tests
+#    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.products.xml
+        ODOO_VERSION:     odoo:12
 
-tests:orders:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.orders.xml
+tests-V12:orders:
+    <<: *core_tests
+#    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.orders.xml
+        ODOO_VERSION:     odoo:12
 
-tests:invoices:
-  <<: *core_tests
-  variables:
-    PHPUNIT_CONFIG:   phpunit.invoices.xml
+tests-V12:invoices:
+    <<: *core_tests
+#    when:               manual
+    variables:
+        PHPUNIT_CONFIG:   phpunit.invoices.xml
+        ODOO_VERSION:     odoo:12
+
 
 #################################################################
 ## Build Documentation

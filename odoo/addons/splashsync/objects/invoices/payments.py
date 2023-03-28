@@ -132,9 +132,17 @@ class InvoicePayments:
         index = 0
         original_payment_ids = self.object.payment_ids.sorted(key=lambda r: r.id)
         updated_payment_ids = []
+        payments = OrderedDict(sorted(field_data.items())).values()
+        # ==================================================================== #
+        # Validate Received Payments...
+        if not InvoicePaymentsHelper.validate_payments_amounts(self.object, payments):
+            # ==================================================================== #
+            # Mark Field as Processed...
+            self._in.__delitem__(field_id)
+            return
         # ==================================================================== #
         # Walk on Received Payments...
-        for payment_data in OrderedDict(sorted(field_data.items())).values():
+        for payment_data in payments:
             # ==================================================================== #
             # Load or Create Invoice Payment Line
             try:

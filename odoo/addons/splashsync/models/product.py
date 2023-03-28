@@ -40,72 +40,61 @@ class ProductProduct(models.Model):
     @api.depends('variant_price_extra')
     def _compute_product_price_extra(self):
         # ====================================================================#
-        # Force Splash Simplified Prices Feature is Active
-        for product in self:
-            product.price_extra = product.variant_price_extra
-        return
+        # Check if Splash Simplified Prices Feature is Active
+        from odoo.addons.splashsync.helpers import SettingsManager
+        SettingsManager.reset()
+        if SettingsManager.is_prd_simple_prices():
+            for product in self:
+                product.price_extra = product.variant_price_extra
+            return
         # ====================================================================#
         # Redirect to Odoo Core Action
         super(ProductProduct, self)._compute_product_price_extra()
 
-    # @api.depends('variant_price_extra')
-    # def _compute_product_price_extra(self):
-    #     # ====================================================================#
-    #     # Check if Splash Simplified Prices Feature is Active
-    #     from odoo.addons.splashsync.helpers import SettingsManager
-    #     SettingsManager.reset()
-    #     if SettingsManager.is_prd_simple_prices():
-    #         for product in self:
-    #             product.price_extra = product.variant_price_extra
-    #         return
-    #     # ====================================================================#
-    #     # Redirect to Odoo Core Action
-    #     super(ProductProduct, self)._compute_product_price_extra()
-    #
-    # @api.model
-    # def create(self, vals):
-    #     res = super(ProductProduct, self).create(vals)
-    #
-    #     # ====================================================================#
-    #     # Execute Splash Commit
-    #     self.__do_splash_commit(const.__SPL_A_CREATE__)
-    #
-    #     return res
-    #
-    # def write(self, vals):
-    #     res = super(ProductProduct, self).write(vals)
-    #
-    #     # ====================================================================#
-    #     # Execute Splash Commit
-    #     self.__do_splash_commit(const.__SPL_A_UPDATE__)
-    #
-    #     return res
-    #
-    # def unlink(self):
-    #     # ====================================================================#
-    #     # Execute Splash Commit
-    #     self.__do_splash_commit(const.__SPL_A_DELETE__)
-    #
-    #     res = super(ProductProduct, self).unlink()
-    #
-    #     return res
-    #
-    # def __do_splash_commit(self, action):
-    #     """
-    #     Execute Splash Commit for this Product
-    #
-    #     :param action: str
-    #     :return: void
-    #     """
-    #     # ====================================================================#
-    #     # Check if Splash Commit is Allowed
-    #     from odoo.addons.splashsync.helpers import SettingsManager
-    #     if SettingsManager.is_no_commits():
-    #         return
-    #     # ====================================================================#
-    #     # Execute Splash Commit for this Product
-    #     from odoo.addons.splashsync.objects import Product
-    #     from odoo.addons.splashsync.client import OdooClient
-    #     for product in self:
-    #         OdooClient.commit(Product(), action, str(product.id))
+    @api.model
+    def create(self, vals):
+        res = super(ProductProduct, self).create(vals)
+
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_CREATE__)
+
+        return res
+
+    def write(self, vals):
+        res = super(ProductProduct, self).write(vals)
+
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_UPDATE__)
+
+        return res
+
+    def unlink(self):
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_DELETE__)
+
+        res = super(ProductProduct, self).unlink()
+
+        return res
+
+    def __do_splash_commit(self, action):
+        """
+        Execute Splash Commit for this Product
+
+        :param action: str
+        :return: void
+        """
+        # ====================================================================#
+        # Check if Splash Commit is Allowed
+        from odoo.addons.splashsync.helpers import SettingsManager
+        if SettingsManager.is_no_commits():
+            return
+        # ====================================================================#
+        # Execute Splash Commit for this Product
+        from odoo.addons.splashsync.objects import Product
+        from odoo.addons.splashsync.client import OdooClient
+        for product in self:
+            OdooClient.commit(Product(), action, str(product.id))
 

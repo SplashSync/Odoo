@@ -13,12 +13,11 @@
 #
 
 from odoo import http
-from splashpy.helpers import PricesHelper, ObjectsHelper
+
 from splashpy import Framework
 from datetime import date, datetime
 from splashpy import const
-# from odoo.addons.splashsync.helpers import M2OHelper
-from collections import OrderedDict
+
 
 class InvoicePaymentsHelper:
     """Collection of Static Functions to manage Invoices Payments content"""
@@ -37,6 +36,8 @@ class InvoicePaymentsHelper:
     ]
 
     __payment_method_id = None
+
+    __payment_line_margin = 0.01
 
     @staticmethod
     def get_values(payments, field_id):
@@ -74,7 +75,7 @@ class InvoicePaymentsHelper:
             return None
         # ====================================================================#
         # Check if Payment Data are Modified
-        if payment is not None and InvoicePaymentsHelper.compare(payment, payment_data):
+        if payment is not None and InvoicePaymentsHelper.compare(invoice, payment, payment_data):
             Framework.log().warn("Payments are Similar >> Update Skipped")
             return payment.id
         # ====================================================================#
@@ -128,6 +129,11 @@ class InvoicePaymentsHelper:
                 method.name,
                 "[%s] %s (%s)" % (method.code, method.name, method.type)
             )]
+        # ====================================================================#
+        # Add Default Value
+        if not Framework.isDebugMode():
+            results += [("Unknown", "[Unknown] Use default payment method")]
+
         return results
 
     # ====================================================================#
@@ -165,6 +171,9 @@ class InvoicePaymentsHelper:
             Framework.log().error("Unable to format payment date.")
             return None
         # ====================================================================#
+        # Adjust Payment Amount
+        payment_amount = InvoicePaymentsHelper.__adjust_payment_amount(invoice, payment_data["amount"])
+        # ====================================================================#
         # Prepare Minimal Payment Data
         req_fields = {
             "invoice_ids": [invoice.id],
@@ -173,7 +182,7 @@ class InvoicePaymentsHelper:
             "journal_id": journal_id,
             "name": payment_data["name"],
             "communication": payment_data["name"],
-            "amount": payment_data["amount"],
+            "amount": payment_amount,
             "payment_date": payment_date,
             "payment_type": payment_type,
             "payment_method_id": payment_method_id,
@@ -220,10 +229,11 @@ class InvoicePaymentsHelper:
         return True
 
     @staticmethod
-    def compare(payment, data):
+    def compare(invoice, payment, data):
         """
         Compare a Payment with Received Data
 
+        :param invoice: account.invoice
         :param payment: account.payment
         :param data: dict
 
@@ -238,7 +248,7 @@ class InvoicePaymentsHelper:
                 return False
         # ==================================================================== #
         # Compare Payment Method
-        if payment.journal_id.name != data["journal_code"]:
+        if payment.journal_id.id != InvoicePaymentsHelper.__detect_journal_id(data["journal_code"]):
             return False
         # ==================================================================== #
         # Compare Payment Date
@@ -248,9 +258,12 @@ class InvoicePaymentsHelper:
                 return False
         except Exception:
             return False
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ==================================================================== #
         # Compare Payment Amount
-        if abs(payment.amount - float(data["amount"])) >= 0.001:
+        if abs(payment.amount - float(data["amount"])) >= margin:
             return False
 
         return True
@@ -287,6 +300,38 @@ class InvoicePaymentsHelper:
         except Exception as exception:
             Framework.log().fromException(exception, False)
             return False
+
+    @staticmethod
+    def validate_payments_amounts(invoice, payments):
+        """
+        Check Payment Amounts ensure Invoice Can Close
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+        :param payments:  dict
+
+        :return: bool
+        """
+        # ==================================================================== #
+        # Check if Feature is Enabled
+        from odoo.addons.splashsync.helpers import SettingsManager
+        if not SettingsManager.is_sales_check_payments():
+            return True
+        # ==================================================================== #
+        # Sum Received Payments...
+        payments_total = 0
+        for payment_data in payments:
+            payments_total += float(payment_data["amount"]) if InvoicePaymentsHelper.validate(payment_data) else 0
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
+        # ====================================================================#
+        # Compare Payment Amount vs Invoice Residual
+        if abs(float(invoice.amount_total) - float(payments_total)) < margin:
+            return True
+        return Framework.log().error(
+            "Payments Validation fail: "+str(payments_total)+", expected "+str(invoice.amount_total)
+        )
 
     # ====================================================================#
     # Private Methods
@@ -345,7 +390,13 @@ class InvoicePaymentsHelper:
                 "account.journal",
                 InvoicePaymentsHelper.__sales_types_filter
             )
-            return journal_id if isinstance(journal_id, int) and journal_id > 0 else None
+            if isinstance(journal_id, int) and journal_id > 0:
+                return journal_id
+
+            from odoo.addons.splashsync.helpers.settings import SettingsManager
+            default_id = SettingsManager.get_sales_journal_id()
+
+            return default_id if isinstance(default_id, int) and default_id > 0 else None
         except:
             return None
 
@@ -367,3 +418,39 @@ class InvoicePaymentsHelper:
             return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
         except:
             return None
+
+    @staticmethod
+    def __adjust_payment_amount(invoice, amount):
+        """
+        Adjust Payment Amount to fix Decimals Errors
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+        :param amount:  float
+        :return: float
+        """
+        # ====================================================================#
+        # Compute Allowed Margin
+        margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
+        # ====================================================================#
+        # Compare Payment Amount vs Invoice Residual
+        if abs(float(invoice.residual) - float(amount)) < margin:
+            # Amounts are close enough to MERGE
+            Framework.log().warn("Payment Amount changed to "+str(invoice.residual))
+            return invoice.residual
+        # Amounts are too far to MERGE
+        return amount
+
+    @staticmethod
+    def __get_payment_margin(invoice):
+        """
+        Compute Accepted Payment Amount Delta to fix Decimals Errors
+        Strategy: Allow 0.01 error per invoice line.
+
+        :param invoice: account.invoice
+
+        :return: float
+        """
+        # ====================================================================#
+        # Compute Allowed Margin
+        return float(len(invoice.invoice_line_ids.ids) * InvoicePaymentsHelper.__payment_line_margin)

@@ -178,6 +178,18 @@
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sales_journal_id"/>
+                                <field name="sales_journal_id" class="o_light_label"/>
+                                <div class="text-muted">
+                                    Select the default payment method to use if given Invoice Payment Method was not identified
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
                                 <field name="sales_advanced_taxes" class="o_light_label"/>
                             </div>
                             <div class="o_setting_right_pane">
@@ -187,6 +199,19 @@
                                 </div>
                                 <div class="text-muted">
                                     By default, Splash will only use given price first detected Tax Rate.
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sales_check_payments_amount" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sales_check_payments_amount"/>
+                                <div class="text-muted">
+                                    On Splash remote actions, Validate Invoice only if Payments Amounts match Invoice Total.
                                 </div>
                             </div>
                         </div>

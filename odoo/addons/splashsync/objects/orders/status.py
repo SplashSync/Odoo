@@ -36,6 +36,14 @@ class OrderStatus:
         'cancel': 'OrderCanceled',
     }
 
+    __known_state_extras = {
+        'OrderOutOfStock': 'done',
+        'OrderInTransit': 'done',
+        'OrderPickupAvailable': 'done',
+        'OrderReturned': 'done',
+        'OrderProblem': 'done',
+    }
+
     def buildStatusFields(self):
         # ====================================================================#
         # Order Global State
@@ -126,7 +134,14 @@ class OrderStatus:
 
         :rtype: str|None
         """
+        # ====================================================================#
+        # Loop on Odoo Standard Order States
         for odoo_state, splash_state in OrderStatus.__known_state_trans.items():
+            if state == splash_state:
+                return odoo_state
+        # ====================================================================#
+        # Loop on Splash Extra Order States
+        for splash_state, odoo_state in OrderStatus.__known_state_extras.items():
             if state == splash_state:
                 return odoo_state
         return None
