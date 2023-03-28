@@ -23,40 +23,40 @@ class StockMoveLine(models.Model):
     """
     _inherit = 'stock.move.line'
 
-    def create(self, vals):
-        res = super(StockMoveLine, self).create(vals)
-
-        # ====================================================================#
-        # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_UPDATE__)
-
-        return res
-
-    def write(self, vals):
-        res = super(StockMoveLine, self).write(vals)
-
-        # ====================================================================#
-        # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_UPDATE__)
-
-        return res
-
-    def __do_splash_commit(self, action):
-        """
-        Execute Splash Commit for this Product
-
-        :param action: str
-        :return: void
-        """
-        # ====================================================================#
-        # Check if Splash Commit is Allowed
-        from odoo.addons.splashsync.helpers import SettingsManager
-        if SettingsManager.is_no_commits():
-            return
-        # ====================================================================#
-        # Execute Splash Commit for this Product
-        from odoo.addons.splashsync.objects import Product
-        from odoo.addons.splashsync.client import OdooClient
-        for move_line in self:
-            OdooClient.commit(Product(), action, str(move_line.product_id.id))
+    # def create(self, vals):
+    #     res = super(StockMoveLine, self).create(vals)
+    #
+    #     # ====================================================================#
+    #     # Execute Splash Commit
+    #     self.__do_splash_commit(const.__SPL_A_UPDATE__)
+    #
+    #     return res
+    #
+    # def write(self, vals):
+    #     res = super(StockMoveLine, self).write(vals)
+    #
+    #     # ====================================================================#
+    #     # Execute Splash Commit
+    #     self.__do_splash_commit(const.__SPL_A_UPDATE__)
+    #
+    #     return res
+    #
+    # def __do_splash_commit(self, action):
+    #     """
+    #     Execute Splash Commit for this Product
+    #
+    #     :param action: str
+    #     :return: void
+    #     """
+    #     # ====================================================================#
+    #     # Check if Splash Commit is Allowed
+    #     from odoo.addons.splashsync.helpers import SettingsManager
+    #     if SettingsManager.is_no_commits():
+    #         return
+    #     # ====================================================================#
+    #     # Execute Splash Commit for this Product
+    #     from odoo.addons.splashsync.objects import Product
+    #     from odoo.addons.splashsync.client import OdooClient
+    #     for move_line in self:
+    #         OdooClient.commit(Product(), action, str(move_line.product_id.id))
 
