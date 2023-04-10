@@ -22,7 +22,7 @@ class OrderLinesHelper:
 
     __generic_fields = [
         'name', 'state', 'customer_lead', 'discount',
-        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
+        'product_uom_qty', 'qty_delivered_manual', 'qty_delivered', 'qty_invoiced', 'quantity'
     ]
 
     __float_fields = [
@@ -31,7 +31,7 @@ class OrderLinesHelper:
     ]
 
     __qty_fields = [
-        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
+        'product_uom_qty', 'qty_delivered_manual', 'qty_delivered', 'qty_invoiced', 'quantity'
     ]
 
     # ====================================================================#
@@ -113,7 +113,6 @@ class OrderLinesHelper:
                 pass
 
         return line_data
-
 
     # ====================================================================#
     # RAW Order & Invoice Line Management
@@ -206,6 +205,12 @@ class OrderLinesHelper:
                 return str(line.product_id[0].default_code)
             except:
                 return None
+
+        # ==================================================================== #
+        # Reserved Qty
+        if field_id == "qty_reserved":
+            from odoo.addons.splashsync.helpers import OrderPickingHelper
+            return OrderPickingHelper.get_reserved_qty(line)
 
         return None
 

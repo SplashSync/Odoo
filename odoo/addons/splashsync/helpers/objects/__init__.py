@@ -24,6 +24,7 @@ from .products.images import ProductImagesHelper
 from .products.suppliers import SupplierHelper
 from .products.inventory import InventoryHelper
 from .orders.lines import OrderLinesHelper
+from .orders.picking import OrderPickingHelper
 from .invoices.payments import InvoicePaymentsHelper
 from .relations import M2MHelper, M2OHelper
 from .taxes import TaxHelper

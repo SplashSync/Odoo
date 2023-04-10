@@ -52,13 +52,17 @@ class Orderlines:
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
         # ==================================================================== #
         # Qty Shipped/Delivered
-        FieldFactory.create(const.__SPL_T_INT__, "qty_delivered_manual", "Delivered Qty")
+        FieldFactory.create(const.__SPL_T_INT__, "qty_delivered", "Delivered Qty")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/OrderItem", "orderDelivery")
         FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
-
         FieldFactory.isReadOnly()
-
+        # ==================================================================== #
+        # Qty Reserved
+        FieldFactory.create(const.__SPL_T_INT__, "qty_reserved", "Reserved Qty")
+        FieldFactory.inlist("lines")
+        FieldFactory.association("product_id@lines", "product_uom_qty@lines", "price_unit@lines")
+        FieldFactory.isReadOnly()
         # ==================================================================== #
         # Qty Invoiced
         FieldFactory.create(const.__SPL_T_INT__, "qty_invoiced", "Invoiced Qty")

@@ -12,3 +12,4 @@
 #  file that was distributed with this source code.
 
 from .lines import OrderLinesHelper
+from .picking import OrderPickingHelper

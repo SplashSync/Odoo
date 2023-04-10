@@ -11,7 +11,7 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
-from splashpy import const
+from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
 
@@ -51,6 +51,7 @@ class OrderStatus:
         FieldFactory.microData("http://schema.org/Order", "orderStatus")
         FieldFactory.addChoices(OrderStatus.__get_status_choices())
         FieldFactory.group("General")
+        FieldFactory.isNotTested()
         # ====================================================================#
         # Order is Canceled
         FieldFactory.create(const.__SPL_T_BOOL__, "isCanceled", "Is canceled")
@@ -82,18 +83,22 @@ class OrderStatus:
         if field_id == "state":
             self._out[field_id] = self._get_splash_status()
             self._in.__delitem__(index)
+        # ====================================================================#
         # Order is Canceled
         if field_id == "isCanceled":
             self._out[field_id] = (self.object.state in ["cancel"])
             self._in.__delitem__(index)
+        # ====================================================================#
         # Order is Validated
         if field_id == "isValidated":
             self._out[field_id] = (self.object.state in ["sent", "sale", "done"])
             self._in.__delitem__(index)
+        # ====================================================================#
         # Order is Processing
         if field_id == "isProcessing":
             self._out[field_id] = (self.object.state in ["sale"])
             self._in.__delitem__(index)
+        # ====================================================================#
         # Order is Closed
         if field_id == "isClosed":
             self._out[field_id] = (self.object.state in ["done"])
@@ -101,12 +106,57 @@ class OrderStatus:
 
     def setStatusFields(self, field_id, field_data):
         # ====================================================================#
-        # Order Global State
-        if field_id == "state":
-            state = self._get_odoo_status(field_data)
-            if isinstance(state, str) and self.object.state != state:
+        # Is Order Global State Field
+        if field_id != "state":
+            return
+        self._in.__delitem__(field_id)
+        # ====================================================================#
+        # Load Picking Helper
+        from odoo.addons.splashsync.helpers import OrderPickingHelper
+        # ====================================================================#
+        # Check if State Changed
+        state = self._get_odoo_status(field_data)
+        if not isinstance(state, str) or self.object.state == state:
+            return
+        # ====================================================================#
+        # Update Order State
+        try:
+            # ====================================================================#
+            # UNLOCK Required
+            if self.object.state == "done" and state in ['cancel', 'draft', 'send', 'sale']:
+                self.object.action_unlock()
+            # ====================================================================#
+            # UN RESERVE STOCKS
+            if state in ['cancel', 'draft']:
+                for picking in self.object.picking_ids:
+                    picking.action_cancel()
+            # ====================================================================#
+            # Cancel State
+            if state == 'cancel':
+                self.object.action_cancel()
+            # ====================================================================#
+            # IS Draft
+            if state == 'draft':
+                self.object.action_draft()
+            # ====================================================================#
+            # IS Send
+            if state == 'send':
                 self.object.state = state
-            self._in.__delitem__(field_id)
+            # ====================================================================#
+            # IS Order
+            if state == 'sale':
+                self.object.action_confirm()
+                for picking in self.object.picking_ids:
+                    OrderPickingHelper.confirm(picking)
+            # ====================================================================#
+            # IS Delivered
+            if state == 'done':
+                self.object.action_done()
+                for picking in self.object.picking_ids:
+                    OrderPickingHelper.done(picking)
+
+        except Exception as exception:
+            return Framework.log().fromException(exception)
 
     def _is_editable(self, state=None):
         """
