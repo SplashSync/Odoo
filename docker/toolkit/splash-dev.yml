@@ -65,6 +65,37 @@ splash:
                 Name:               Odoo DEV C2
 
         ########################################################################
+        # Odoo V16
+        ########################################################################
+        # [Main Company]
+        odoo-v16-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V16 Main
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v16.odoo.local
+                WsPath:             /splash
+                Name:               Odoo V16 Main
+        ########################################################################
+        # [Company 1]
+        odoo-v16-c1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               Odoo V16 C1
+            host:               false
+            connector:          soap
+            config:
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://v16.odoo.local
+                WsPath:             /splash?cname=PhpUnit1
+                Name:               Odoo V16 C1
+
+        ########################################################################
         # Odoo V15
         ########################################################################
         # [Main Company]
@@ -102,7 +133,7 @@ splash:
         odoo-v14-main:
             id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo V13 Main
+            name:               Odoo V14 Main
             host:               false
             connector:          soap
             config:

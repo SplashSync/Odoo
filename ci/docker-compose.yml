@@ -38,6 +38,7 @@ services:
         volumes:
             - ./docker/odoo:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+            - ../Py-Core:/mnt/splashpy
             - ./scripts:/scripts:ro
         entrypoint:         bash /etc/odoo/entrypoint.sh
         environment:
