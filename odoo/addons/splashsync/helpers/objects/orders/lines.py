@@ -199,6 +199,14 @@ class OrderLinesHelper:
         # ==================================================================== #
 
         # ==================================================================== #
+        # Product type
+        if field_id == "detailed_type":
+            try:
+                return str(line.product_id[0].detailed_type)
+            except:
+                return None
+
+        # ==================================================================== #
         # Product reference
         if field_id == "product_ref":
             try:

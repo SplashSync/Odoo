@@ -186,6 +186,8 @@ services:
         container_name: toolkit.odoo.local
         logging: { driver: "none" }
         volumes:
+            # Specify Local Tests
+            - './docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
 #            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
             - './docker/toolkit/splash-dev.yml:/app/config/packages/splash.yml:ro'

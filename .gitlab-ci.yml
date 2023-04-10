@@ -82,6 +82,12 @@ V15:Contacts:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 #  when:               always
 
+V16:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+
 #################################################################
 ## Products - Functional Tests
 #################################################################
@@ -108,6 +114,12 @@ V15:Products:
     <<: *functional
     stage:              Products
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
+#    when:               always
+
+V16:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
 #    when:               always
 
 #################################################################
@@ -138,6 +150,12 @@ V15:Orders:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
 #    when:               always
 
+V16:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
 #################################################################
 ## Invoices - Functional Tests
 #################################################################
@@ -164,6 +182,12 @@ V15:Invoices:
     <<: *functional
     stage:              Invoices
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+V16:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
 #    when:               always
 
 ################################################################

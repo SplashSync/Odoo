@@ -104,6 +104,11 @@ class Orderlines:
         # ==================================================================== #
 
         # ==================================================================== #
+        # Product type
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "detailed_type", "Type")
+        FieldFactory.inlist("lines")
+        FieldFactory.isReadOnly().isNotTested()
+        # ==================================================================== #
         # Product reference
         FieldFactory.create(const.__SPL_T_VARCHAR__, "product_ref", "Product Ref.")
         FieldFactory.inlist("lines")
