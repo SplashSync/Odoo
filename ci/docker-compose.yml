@@ -65,6 +65,8 @@ services:
         image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit
         logging: { driver: "none" }
         volumes:
+            # Specify Local Tests
+            - './docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
             - './ci/splash.yml:/app/config/packages/splash.yml:ro'
             - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
