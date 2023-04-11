@@ -122,6 +122,11 @@ class OrderCore:
         if self.is_ready_for_create() is not True:
             return Framework.log().error(self.is_ready_for_create())
         # ====================================================================#
+        # Safety Check - Name is Required
+        if "name" not in self._in:
+            from odoo import _
+            self._in["name"] = _('New')
+        # ====================================================================#
         # Safety Check - Tracking Policy is Required
         if "picking_policy" not in self._in:
             self._in["picking_policy"] = "one"
