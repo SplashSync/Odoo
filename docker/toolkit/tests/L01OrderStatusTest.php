@@ -21,7 +21,7 @@ use Splash\Tests\Tools\ObjectsCase;
 use Splash\Models\Objects\Order\Status;
 
 /**
- * Local Test Suite - Verify Writing of Orders & Invoices Status
+ * Local Test Suite - Verify Writing of Orders Status
  */
 class L01OrderStatusTest extends ObjectsCase
 {
@@ -70,6 +70,10 @@ class L01OrderStatusTest extends ObjectsCase
         $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
         $this->assertNotEmpty($object);
         $this->assertEquals($expectedStatus, $object['state']);
+        //====================================================================//
+        //   Check Status
+        $this->assertNotEmpty($object["name"]);
+        $this->assertNotEquals("New", $object["name"]);
         //====================================================================//
         //   Check Lines
         foreach ($object["lines"] ?? array() as $line) {
@@ -168,7 +172,7 @@ class L01OrderStatusTest extends ObjectsCase
     {
         return array_merge(
             $this->reduceFieldList($this->fakeFieldsList($objectType, array(), true), true),
-            array("qty_delivered@lines", "qty_reserved@lines", "detailed_type@lines"),
+            array("name", "qty_delivered@lines", "qty_reserved@lines", "detailed_type@lines"),
         );
     }
 }
