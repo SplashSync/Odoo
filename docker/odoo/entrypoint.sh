@@ -55,9 +55,16 @@ check_odoo_config "database" "$ODOO_DATABASE"
 check_odoo_config "http-interface" "$ODOO_INTERFACE"
 check_odoo_config "http-port" "80"
 check_odoo_config "log-handler" "$ODOO_LOG_LEVEL"
-if [ -z "$CI_MODE" ]; then
+
+# CI/CD Mode => Disable Sources Reload
+if [ -z $ODOO_DEV ]; then
+  echo "[ODOO BOOT] User Mode => Disable Auto Reload Mode"
+  check_odoo_config "dev" ""
+else
+  echo "[ODOO BOOT] Developer Mode => Enable Auto Reload Mode"
   check_odoo_config "dev" "reload"
 fi
+
 # Fast Boot => Disable All Modules Install && Updates
 if [ -z "$FAST_BOOT" ]; then
   echo "[ODOO BOOT] Normal Mode"

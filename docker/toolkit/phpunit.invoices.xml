@@ -17,7 +17,7 @@
 
     <testsuites>
         <testsuite name="All">
-            <directory>tests/*</directory>
+            <directory>tests</directory>
             <directory>vendor/splash/phpcore/Tests/*</directory>
         </testsuite>
     </testsuites>
@@ -40,6 +40,8 @@
         <server name="SPLASH_TRAVIS" value="true" />
 
         <const  name="SPLASH_TYPES" value="Invoice" />
+
+        <const  name="SPLASH_FIELDS" value="name" />
    </php>
 
 </phpunit>

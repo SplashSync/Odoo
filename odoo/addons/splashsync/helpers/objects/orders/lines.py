@@ -202,7 +202,16 @@ class OrderLinesHelper:
         # Product type
         if field_id == "detailed_type":
             try:
-                return str(line.product_id[0].detailed_type)
+                if "detailed_type" in dir(line.product_id[0]):
+                    # ==================================================================== #
+                    # Odoo 15+
+                    return str(line.product_id[0].detailed_type)
+                elif "type" in dir(line.product_id[0]):
+                    # ==================================================================== #
+                    # Odoo 12/13/14
+                    return str(line.product_id[0].type)
+
+                return None
             except:
                 return None
 

@@ -57,6 +57,7 @@ services:
         environment:
             - ODOO_DATABASE=OdooLatest
             - ODOO_INTERFACE=172.120.0.99
+            - ODOO_DEV=1
 
     ################################################################################
     # Odoo V16 Server Container
@@ -78,6 +79,7 @@ services:
         environment:
             - ODOO_DATABASE=OdooV16
             - ODOO_INTERFACE=172.120.0.16
+            - ODOO_DEV=1
 
     ################################################################################
     # Odoo V15 Server Container
@@ -99,6 +101,7 @@ services:
         environment:
             - ODOO_DATABASE=OdooV15
             - ODOO_INTERFACE=172.120.0.15
+            - ODOO_DEV=1
 
     ################################################################################
     # Odoo V14 Server Container
@@ -110,6 +113,7 @@ services:
         volumes:
             - ./docker/odoo:/etc/odoo:ro
             - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+            - ../Py-Core:/mnt/splashpy
         entrypoint:         bash /etc/odoo/entrypoint.sh
         hostname:           v14.odoo.local
         networks:
@@ -120,6 +124,7 @@ services:
         environment:
             - ODOO_DATABASE=OdooV14
             - ODOO_INTERFACE=172.120.0.14
+            - ODOO_DEV=1
 
     ################################################################################
     # Odoo V13 Server Container
@@ -142,6 +147,7 @@ services:
         environment:
             - ODOO_DATABASE=OdooV13
             - ODOO_INTERFACE=172.120.0.13
+            - ODOO_DEV=1
 
     ################################################################################
     # Odoo V12 Server Container
@@ -164,13 +170,14 @@ services:
         environment:
             - ODOO_DATABASE=OdooV12
             - ODOO_INTERFACE=172.120.0.12
+            - ODOO_DEV=1
 
     ################################################################################
     # Postgres Database Container
     db:
-        image: postgres:10
+        image: postgres:12
         container_name: db.odoo.local
-        logging: { driver: "none" }
+#        logging: { driver: "none" }
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo

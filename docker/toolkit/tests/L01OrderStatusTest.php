@@ -23,7 +23,7 @@ use Splash\Models\Objects\Order\Status;
 /**
  * Local Test Suite - Verify Writing of Orders & Invoices Status
  */
-class L05OrderInvoicesStatusTest extends ObjectsCase
+class L01OrderStatusTest extends ObjectsCase
 {
     /**
      * @var array

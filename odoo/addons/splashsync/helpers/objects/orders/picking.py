@@ -70,7 +70,7 @@ class OrderPickingHelper:
             from odoo.tools.float_utils import float_is_zero
             for move_line in picking.move_line_ids.filtered(lambda m: float_is_zero(m.qty_done, precision_rounding=m.product_uom_id.rounding)):
                 move_line.qty_done = move_line.product_qty
-            picking.action_done()
+            picking._action_done()
 
         # ====================================================================#
         # Odoo 15 & 16
