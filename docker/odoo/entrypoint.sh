@@ -55,7 +55,9 @@ check_odoo_config "database" "$ODOO_DATABASE"
 check_odoo_config "http-interface" "$ODOO_INTERFACE"
 check_odoo_config "http-port" "80"
 check_odoo_config "log-handler" "$ODOO_LOG_LEVEL"
-check_odoo_config "dev" "reload"
+if [ -z "$CI_MODE" ]; then
+  check_odoo_config "dev" "reload"
+fi
 # Fast Boot => Disable All Modules Install && Updates
 if [ -z "$FAST_BOOT" ]; then
   echo "[ODOO BOOT] Normal Mode"
