@@ -190,11 +190,8 @@ class InvoiceLines:
         if self.object.state not in ['draft', 'cancel']:
             return
         # ==================================================================== #
-        # Get Invoice Lines
-        invoice_lines = self.object.line_ids if SystemManager.compare_version(13) >= 0 else self.object.invoice_line_ids
-        # ==================================================================== #
         # Delete Remaining Invoice Lines...
-        for invoice_line in invoice_lines:
+        for invoice_line in self.object.invoice_line_ids:
             if invoice_line.id not in updated_invoice_line_ids:
                 self.object.invoice_line_ids = [(3, invoice_line.id, 0)]
 
