@@ -17,8 +17,8 @@
 
     <testsuites>
         <testsuite name="All">
-            <directory>tests</directory>
-<!--            <directory>vendor/splash/phpcore/Tests/*</directory>-->
+            <file>tests/L01OrderStatusTest.php</file>
+            <directory>vendor/splash/phpcore/Tests/*</directory>
         </testsuite>
     </testsuites>
 
@@ -40,9 +40,6 @@
         <server name="SPLASH_TRAVIS" value="true" />
 
         <const  name="SPLASH_TYPES" value="Order" />
-<!--        <const  name="SPLASH_SEQUENCE" value="Odoo V15 Main" />-->
-<!--        <const  name="SPLASH_FIELDS" value="journal_code@payments,name@payments" />-->
-        <const  name="SPLASH_FIELDS" value="name" />
     </php>
 
 </phpunit>

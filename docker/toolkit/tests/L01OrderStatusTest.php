@@ -69,9 +69,11 @@ class L01OrderStatusTest extends ObjectsCase
         //   Load Object
         $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
         $this->assertNotEmpty($object);
-        $this->assertEquals($expectedStatus, $object['state']);
         //====================================================================//
         //   Check Status
+        $this->assertEquals($expectedStatus, $object['state']);
+        //====================================================================//
+        //   Check Name
         $this->assertNotEmpty($object["name"]);
         $this->assertNotEquals("New", $object["name"]);
         //====================================================================//
