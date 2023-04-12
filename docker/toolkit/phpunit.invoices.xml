@@ -40,6 +40,6 @@
         <server name="SPLASH_TRAVIS" value="true" />
 
         <const  name="SPLASH_TYPES" value="Invoice" />
-   </php>
+    </php>
 
 </phpunit>
