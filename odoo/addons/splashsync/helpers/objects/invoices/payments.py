@@ -118,7 +118,7 @@ class InvoicePaymentsHelper:
         # Execute Domain Search with Filter
         results = []
         methods = http.request.env["account.journal"].search(
-            InvoicePaymentsHelper.get_helper().get_sales_types_filter(),
+            InvoicePaymentsHelper.__get_helper().get_sales_types_filter(),
             limit=50
         )
         # ====================================================================#
@@ -149,7 +149,6 @@ class InvoicePaymentsHelper:
 
         :return: account.payment
         """
-        from odoo.addons.splashsync.objects.invoice import InvoiceStatus
         # ====================================================================#
         # Detect Payment Method
         payment_data["journal_id"] = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
@@ -172,10 +171,11 @@ class InvoicePaymentsHelper:
             # ==================================================================== #
             # Unit Tests - Ensure Invoice is Open/Posted (Default draft)
             if Framework.isDebugMode() and invoice.state == 'draft':
-                InvoiceStatus.get_helper().set_validated(invoice)
+                from odoo.addons.splashsync.helpers.objects.invoices import InvoiceStatusHelper
+                InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
             # Create Raw Payment
-            return InvoicePaymentsHelper.get_helper().add(invoice, payment_data)
+            return InvoicePaymentsHelper.__get_helper().add(invoice, payment_data)
 
         except Exception as exception:
             Framework.log().error("Unable to create Payment, please check inputs.")
@@ -260,16 +260,16 @@ class InvoicePaymentsHelper:
 
         :rtype: bool
         """
-        from odoo.addons.splashsync.objects.invoice import InvoiceStatus
+        from odoo.addons.splashsync.helpers.objects.invoices import InvoiceStatusHelper
         payment_name = str(payment.name)
         try:
             # ==================================================================== #
             # Unit Tests - Ensure Invoice is Open (Default draft)
             if Framework.isDebugMode() and invoice.state == 'draft':
-                InvoiceStatus.get_helper().set_validated(invoice)
+                InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
             # Remove Payment
-            return InvoicePaymentsHelper.get_helper().remove(invoice, payment)
+            return InvoicePaymentsHelper.__get_helper().remove(invoice, payment)
         except Exception as exception:
             Framework.log().error("Failed to remove Payment " + payment_name + " from INV " + str(invoice.id))
             Framework.log().fromException(exception, False)
@@ -307,29 +307,51 @@ class InvoicePaymentsHelper:
             "Payments Validation fail: "+str(payments_total)+", expected "+str(invoice.amount_total)
         )
 
+    # ====================================================================#
+    # Forwarded Methods
+    # ====================================================================#
+
     @staticmethod
-    def get_helper():
+    def get_payments_list(invoice):
         """
-        Get Adapted Invoices Payments Helper
+        Get List of Payments For this Invoice
 
-        :rtype: Odoo12PaymentCrudHelper|Odoo13PaymentCrudHelper
-
+        :return: List of Payments
+        :rtype: dict
         """
-        from odoo.addons.splashsync.helpers import SystemManager
+        return InvoicePaymentsHelper.__get_helper().get_payments_list(invoice)
 
-        if SystemManager.compare_version(14) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.paymentsCrudV14 import Odoo14PaymentCrudHelper
-            return Odoo14PaymentCrudHelper
-        elif SystemManager.compare_version(13) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.paymentsCrudV13 import Odoo13PaymentCrudHelper
-            return Odoo13PaymentCrudHelper
-        elif SystemManager.compare_version(12) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.paymentsCrudV12 import Odoo12PaymentCrudHelper
-            return Odoo12PaymentCrudHelper
+    @staticmethod
+    def get_sales_types_filter():
+        """
+        Get Filters for Listing Available Payment Methods
+
+        :return: tuple
+        """
+        return InvoicePaymentsHelper.__get_helper().get_sales_types_filter()
 
     # ====================================================================#
     # Private Methods
     # ====================================================================#
+
+    @staticmethod
+    def __get_helper():
+        """
+        Get Adapted Invoices Payments Helper
+
+        :rtype: OdooV12PaymentsHelper|OdooV13PaymentsHelper|OdooV14PaymentsHelper
+        """
+        from odoo.addons.splashsync.helpers import SystemManager
+
+        if SystemManager.compare_version(14) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V14 import OdooV14PaymentsHelper
+            return OdooV14PaymentsHelper
+        elif SystemManager.compare_version(13) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V13 import OdooV13PaymentsHelper
+            return OdooV13PaymentsHelper
+        elif SystemManager.compare_version(12) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12PaymentsHelper
+            return OdooV12PaymentsHelper
 
     @staticmethod
     def __get_raw_values(payment, field_id):
@@ -380,7 +402,7 @@ class InvoicePaymentsHelper:
                 journal_code,
                 "name",
                 "account.journal",
-                InvoicePaymentsHelper.get_helper().get_sales_types_filter()
+                InvoicePaymentsHelper.get_sales_types_filter()
             )
             if isinstance(journal_id, int) and journal_id > 0:
                 return journal_id
@@ -389,7 +411,7 @@ class InvoicePaymentsHelper:
             default_id = SettingsManager.get_sales_journal_id()
 
             return default_id if isinstance(default_id, int) and default_id > 0 else None
-        except Exception as exception:
+        except Exception:
             return None
 
     @staticmethod

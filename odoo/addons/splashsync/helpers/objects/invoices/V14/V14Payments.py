@@ -16,9 +16,9 @@ from splashpy.componants import FieldFactory
 from datetime import date, datetime
 
 
-class Odoo14PaymentCrudHelper:
+class OdooV14PaymentsHelper:
     """
-    Odoo 14 Invoice Payments Crud Helper
+    Odoo V14 Invoice Payments Crud Helper
     """
 
     @staticmethod
@@ -91,10 +91,7 @@ class Odoo14PaymentCrudHelper:
         :return: List of Payments
         :rtype: dict
         """
-        from odoo.addons.splashsync.helpers import SystemManager
-        return SystemManager.getModel("account.payment").search([
-            ('reconciled_invoice_ids.id', '=', invoice.id)
-        ]).sorted(key=lambda r: r.id)
+        return invoice._get_reconciled_payments()
 
     @staticmethod
     def get_sales_types_filter():

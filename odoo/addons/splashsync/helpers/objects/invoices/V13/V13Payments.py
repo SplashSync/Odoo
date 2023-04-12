@@ -16,9 +16,9 @@ from splashpy.componants import FieldFactory
 from datetime import date, datetime
 
 
-class Odoo13PaymentCrudHelper:
+class OdooV13PaymentsHelper:
     """
-    Odoo 13 Invoice Payments Crud Helper
+    Odoo V13 Invoice Payments Crud Helper
     """
 
     @staticmethod
@@ -32,8 +32,8 @@ class Odoo13PaymentCrudHelper:
 
         :return: account.payment
         """
-        from odoo.addons.splashsync.helpers.objects.invoices.paymentsCrudV12 import Odoo12PaymentCrudHelper
-        return Odoo12PaymentCrudHelper.add(invoice, payment_data)
+        from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12PaymentsHelper
+        return OdooV12PaymentsHelper.add(invoice, payment_data)
 
     @staticmethod
     def remove(invoice, payment):
@@ -68,10 +68,8 @@ class Odoo13PaymentCrudHelper:
         :return: List of Payments
         :rtype: dict
         """
-        from odoo.addons.splashsync.helpers import SystemManager
-        return SystemManager.getModel("account.payment").search([
-            ('reconciled_invoice_ids.id', '=', invoice.id)
-        ]).sorted(key=lambda r: r.id)
+
+        return invoice._get_reconciled_payments()
 
     @staticmethod
     def get_sales_types_filter():

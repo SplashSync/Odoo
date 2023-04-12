@@ -26,6 +26,7 @@ from .products.inventory import InventoryHelper
 from .orders.lines import OrderLinesHelper
 from .orders.picking import OrderPickingHelper
 from .invoices.payments import InvoicePaymentsHelper
+from .invoices.status import InvoiceStatusHelper
 from .relations import M2MHelper, M2OHelper
 from .taxes import TaxHelper
 from .trans import TransHelper

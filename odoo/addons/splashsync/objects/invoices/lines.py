@@ -129,6 +129,7 @@ class InvoiceLines:
         :return: None
         """
         from odoo.addons.splashsync.helpers import OrderLinesHelper
+        from odoo.addons.splashsync.helpers import InvoiceStatusHelper
         # ==================================================================== #
         # Safety Check - field_id is an Invoice lines List
         if field_id != "lines":
@@ -140,7 +141,8 @@ class InvoiceLines:
             return
         # ==================================================================== #
         # Only if Invoice is Draft
-        if self.object.state not in ['draft', 'cancel']:
+        if not InvoiceStatusHelper.is_editable(self.object):
+            Framework.log().info("You cannot update Invoice lines at this state")
             return
         # ==================================================================== #
         # Walk on Received Invoice Lines...

@@ -95,6 +95,10 @@ class InvoiceCore:
         if self.is_ready_for_create() is not True:
             return Framework.log().error(self.is_ready_for_create())
         # ====================================================================#
+        # Safety Check - Name is Required
+        if "name" not in self._in:
+            self._in["name"] = "/"
+        # ====================================================================#
         # Collect Basic Core Fields
         req_fields = self.collectRequiredCoreFields()
         if req_fields is False:

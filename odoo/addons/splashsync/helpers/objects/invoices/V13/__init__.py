@@ -11,8 +11,5 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
-from .payments import InvoicePaymentsHelper
-from .status import InvoiceStatusHelper
-from .V12 import *
-from .V13 import *
-from .V14 import *
+from .V13Status import OdooV13StatusHelper
+from .V13Payments import OdooV13PaymentsHelper

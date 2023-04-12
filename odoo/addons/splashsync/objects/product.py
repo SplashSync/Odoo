@@ -76,7 +76,7 @@ class Product(
         """Get Hash of Fields Overrides"""
         return {
             "default_code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
-            "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
+            "name": {"group": "", "index": True, "itemtype": "http://schema.org/Product", "itemprop": "name"},
 
             "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},

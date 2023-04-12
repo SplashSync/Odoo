@@ -11,12 +11,11 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 
-from splashpy import const, Framework
-from splashpy.componants import FieldFactory
+from splashpy import Framework
 
-class Odoo12StatusHelper:
+class OdooV12StatusHelper:
     """
-    Odoo 12 Invoice Status Helper
+    Odoo V12 Invoice Status Helper
     """
 
     __known_state = {
@@ -35,86 +34,51 @@ class Odoo12StatusHelper:
         'cancel': 'PaymentCanceled',
     }
 
-    @staticmethod
-    def is_draft(invoice):
-        return invoice.state in ["draft"]
+    # ====================================================================#
+    # Invoice State Getters
+    # ====================================================================#
 
     @staticmethod
     def is_validated(invoice):
+        """
+        Check if Invoice is Validated
+
+        :param invoice:
+        :return: bool
+        """
         return invoice.state in ["open", "in_payment", "paid"]
 
     @staticmethod
-    def set_validated(invoice):
-        Odoo12StatusHelper.set_status(invoice, 'open')
-
-    @staticmethod
     def is_paid(invoice):
+        """
+        Check if Invoice is Paid
+
+        :param invoice:
+        :return: bool
+        """
         return invoice.state in ["paid"]
 
-    @staticmethod
-    def is_canceled(invoice):
-        return invoice.state in ["cancel"]
+
+
+    # ====================================================================#
+    # Invoice State Setters
+    # ====================================================================#
 
     @staticmethod
-    def is_editable(invoice, state=None):
+    def set_validated(invoice):
         """
-        Check if Invoice Status is Editable
+        Mark Invoice as Validated
 
-        :rtype: bool
+        :param invoice: account.invoice
+        :rtype: None
         """
-        if state is None:
-            return Odoo12StatusHelper.is_draft(invoice)
-        return state in ["draft"]
-
-    @staticmethod
-    def to_splash(invoice_or_state):
-        """
-        Get Translated Invoice Status
-
-        :param invoice_or_state: account.invoice|str
-        :rtype: str
-        """
-        if isinstance(invoice_or_state, str):
-            state = invoice_or_state
-        else:
-            state = invoice_or_state.state
-
-        if state in Odoo12StatusHelper.__known_state_trans.keys():
-            return Odoo12StatusHelper.__known_state_trans[state]
-        return ""
-
-    @staticmethod
-    def to_odoo(state):
-        """
-        Get Odoo Invoice Status
-
-        :param state: str
-        :rtype: str|None
-        """
-        for odoo_state, splash_state in Odoo12StatusHelper.__known_state_trans.items():
-            if state == splash_state:
-                return odoo_state
-        return None
-
-    @staticmethod
-    def get_status_choices():
-        """
-        Get List Of Possible Order Status Choices
-
-        :rtype: dict
-        """
-        response = []
-        for status, name in Odoo12StatusHelper.__known_state.items():
-            if Framework.isDebugMode() and status in ['in_payment', 'paid']:
-                continue
-            response.append((Odoo12StatusHelper.__known_state_trans[status], name))
-
-        return response
+        OdooV12StatusHelper.set_status(invoice, 'open')
 
     @staticmethod
     def set_status(invoice, new_state):
         """
         Really set Invoice Status
+
         :param invoice: account.invoice
         :param new_state: str
 
@@ -152,8 +116,62 @@ class Odoo12StatusHelper:
         if invoice.state == 'draft' and new_state in ['open', 'in_payment', 'paid']:
             invoice.action_invoice_open()
             invoice.refresh()
-        # ====================================================================#
-        # Open => Paid
-        if invoice.state == 'open' and new_state in ['in_payment', 'paid']:
-            invoice.action_invoice_paid()
-            invoice.refresh()
+        # # ====================================================================#
+        # # Open => Paid
+        # if invoice.state == 'open' and new_state in ['in_payment', 'paid']:
+        #     invoice.action_invoice_paid()
+        #     invoice.refresh()
+
+    # ====================================================================#
+    # Splash Methods
+    # ====================================================================#
+
+    @staticmethod
+    def to_splash(invoice_or_state):
+        """
+        Get Translated Invoice Status
+
+        :param invoice_or_state: account.invoice|str
+        :rtype: str
+        """
+        if isinstance(invoice_or_state, str):
+            state = invoice_or_state
+        else:
+            state = invoice_or_state.state
+
+        if state in OdooV12StatusHelper.__known_state_trans.keys():
+            return OdooV12StatusHelper.__known_state_trans[state]
+        return ""
+
+    @staticmethod
+    def to_odoo(state):
+        """
+        Get Odoo Invoice Status
+
+        :param state: str
+        :rtype: str|None
+        """
+        for odoo_state, splash_state in OdooV12StatusHelper.__known_state_trans.items():
+            if state == splash_state:
+                return odoo_state
+        return None
+
+    @staticmethod
+    def get_status_choices():
+        """
+        Get List Of Possible Order Status Choices
+
+        :rtype: dict
+        """
+        response = []
+        for status, name in OdooV12StatusHelper.__known_state.items():
+            if Framework.isDebugMode() and status in ['in_payment', 'paid']:
+                continue
+            response.append((
+                OdooV12StatusHelper.__known_state_trans[status],
+                '['+OdooV12StatusHelper.__known_state_trans[status]+'] '+name
+            ))
+
+        return response
+
+

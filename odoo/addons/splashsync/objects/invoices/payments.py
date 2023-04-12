@@ -24,6 +24,8 @@ class InvoicePayments:
     Access to Invoice Payments Fields
     """
 
+    __new_payments = None
+
     def buildPaymentsFields(self):
         """Build Invoice Payments Fields"""
         from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
@@ -39,6 +41,7 @@ class InvoicePayments:
         FieldFactory.microData("http://schema.org/Invoice", "PaymentMethod")
         FieldFactory.addChoices(InvoicePaymentsHelper.get_payment_code_names())
         InvoicePayments.__register_payment_associations()
+        FieldFactory.isNotTested()
         # ==================================================================== #
         # Payment Journal Name
         FieldFactory.create(const.__SPL_T_VARCHAR__, "journal_name", "Journal")
@@ -73,6 +76,7 @@ class InvoicePayments:
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "validFrom")
         InvoicePayments.__register_payment_associations()
+        FieldFactory.isNotTested()
         # ==================================================================== #
         # Payment Transaction Id
         if SystemManager.compare_version(14) >= 0:
@@ -82,16 +86,14 @@ class InvoicePayments:
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/Invoice", "paymentMethodId")
         InvoicePayments.__register_payment_associations()
+        FieldFactory.isNotTested()
         # ==================================================================== #
         # Payment Amount
         FieldFactory.create(const.__SPL_T_DOUBLE__, "amount", "Amount")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "price")
         InvoicePayments.__register_payment_associations()
-        if Framework.isDebugMode():
-            FieldFactory.addChoice(1.0, 1)
-            FieldFactory.addChoice(2.0, 2)
-            FieldFactory.addChoice(3.0, 3)
+        FieldFactory.isNotTested()
 
     def getPaymentsFields(self, index, field_id):
         """
@@ -112,7 +114,7 @@ class InvoicePayments:
         # ==================================================================== #
         # Read Payments Data
         payment_values = InvoicePaymentsHelper.get_values(
-            InvoicePaymentsHelper.get_helper().get_payments_list(self.object),
+            InvoicePaymentsHelper.get_payments_list(self.object),
             payments_list
         )
         for pos in range(len(payment_values)):
@@ -130,7 +132,6 @@ class InvoicePayments:
         :param field_data: hash
         :return: None
         """
-        from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
         # ==================================================================== #
         # Safety Check - field_id is a Payment List
         if field_id != "payments":
@@ -140,18 +141,39 @@ class InvoicePayments:
         if not isinstance(field_data, dict):
             field_data = {}
         # ==================================================================== #
-        # Init Payments fro Writing
+        # Store Payments for POST Update
+        self.__new_payments = OrderedDict(sorted(field_data.items())).values()
+        # ==================================================================== #
+        # Mark Field as Processed...
+        self._in.__delitem__(field_id)
+
+    def post_set_payments(self):
+        """
+        POST Set Invoice Payments List
+
+        :return: bool
+        """
+        # ====================================================================#
+        # Check if New Payments List Received
+        if self.__new_payments is None:
+            return True
+        payments = self.__new_payments
+        self.__new_payments = None
+        from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
+        from odoo.addons.splashsync.helpers import InvoiceStatusHelper
+        # ==================================================================== #
+        # Payments Allowed Only if Validated...
+        if not InvoiceStatusHelper.is_validated(self.object):
+            payments = {}
+        # ==================================================================== #
+        # Init Payments f or Writing
         index = 0
-        original_payment_ids = InvoicePaymentsHelper.get_helper().get_payments_list(self.object)
+        original_payment_ids = InvoicePaymentsHelper.get_payments_list(self.object)
         updated_payment_ids = []
-        payments = OrderedDict(sorted(field_data.items())).values()
         # ==================================================================== #
         # Validate Received Payments...
         if not InvoicePaymentsHelper.validate_payments_amounts(self.object, payments):
-            # ==================================================================== #
-            # Mark Field as Processed...
-            self._in.__delitem__(field_id)
-            return
+            return True
         # ==================================================================== #
         # Walk on Received Payments...
         for payment_data in payments:
@@ -162,28 +184,29 @@ class InvoicePayments:
             except Exception:
                 payment = None
             # ==================================================================== #
-            # Validate Invoice if Draft & Requested by Splash
-            self.pre_validate_status_if_possible()
-            # ==================================================================== #
             # Update Invoice Payment Line Values
             payment_id = InvoicePaymentsHelper.set_values(self.object, payment, payment_data)
             if payment_id is None:
-                return
+                return False
             # ==================================================================== #
             # Store Updated Order Line Id
             updated_payment_ids.append(payment_id)
             index += 1
         # ==================================================================== #
         # Delete Remaining Payments...
-        for payment in InvoicePaymentsHelper.get_helper().get_payments_list(self.object):
+        for payment in InvoicePaymentsHelper.get_payments_list(self.object):
             if payment.id not in updated_payment_ids:
                 InvoicePaymentsHelper.remove(self.object, payment)
-        # ==================================================================== #
-        # Mark Field as Processed...
-        self._in.__delitem__(field_id)
+
+        return True
 
     @staticmethod
     def __register_payment_associations():
+        """
+        Get Payment Fields Associations
+
+        :return: dict
+        """
         from odoo.addons.splashsync.helpers import SystemManager
         if SystemManager.compare_version(14) >= 0:
             FieldFactory.association(

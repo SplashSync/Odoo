@@ -72,8 +72,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "name": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
-            "ref": {"group": "General", "write": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
+            "name": {"group": "General", "write": False, "required": False, "index": True, "itemtype": "http://schema.org/Invoice", "itemprop": "name"},
+            "ref": {"group": "General", "write": True, "required": True, "index": True, "itemtype": "http://schema.org/Invoice", "itemprop": "confirmationNumber"},
             "description": {"group": "General", "itemtype": "http://schema.org/Invoice", "itemprop": "description"},
             "move_type": {"required": False},
             "extract_state": {"required": False},
@@ -99,6 +99,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "posted_before":                    {"write": False},
             "qr_code_method":                   {"write": False},
             "show_name_warning":                {"write": False},
+            "auto_post":                        {"write": False},
+            "to_check":                         {"write": False},
 
             "amount_residual":                  {"group": "Totals", "write": False},
             "amount_residual_signed":           {"group": "Totals", "write": False},
@@ -118,12 +120,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
 
     def create(self):
         """
-        Create a New Order
-        :return: Order Object
+        Create a New Invoice
+
+        :return: account.move
         """
-        # ====================================================================#
-        # DEBUG ONLY: Add Fake Line for Payments Test
-        self.add_fake_line_for_payment_testing()
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
@@ -169,6 +169,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         # Post Update of Invoice Status
         if not self.post_set_status():
             return False
+        # ====================================================================#
+        # Post Update of Invoice Status
+        if not self.post_set_payments():
+            return False
 
         self.object.move_type = "out_invoice"
 
@@ -186,7 +190,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             # ====================================================================#
             # Debug Mode => Force Order Delete
             if Framework.isDebugMode():
-                self.get_helper().set_status(invoice, 'draft')
+                from odoo.addons.splashsync.helpers import InvoiceStatusHelper
+                InvoiceStatusHelper.set_status(invoice, 'draft')
                 if "move_name" in dir(invoice):
                     invoice.move_name = False
             invoice.ensure_one().unlink()
@@ -196,25 +201,3 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             return Framework.log().fromException(exception, True)
 
         return True
-
-    def add_fake_line_for_payment_testing(self):
-        """
-        When Running Payment Tests, we add a fake Invoice Line
-        in order to validate Invoice and Register Payments
-        """
-        # ====================================================================#
-        # Only in Debug Mode
-        if not Framework.isDebugMode() or not Framework.isServerMode():
-            return
-        # ====================================================================#
-        # Only if NO Line but Payments
-        if "lines" in self._in.keys() or "payments" not in self._in.keys():
-            return
-
-        self._in["lines"] = {
-            "fake-item": {
-                "name":     "This is a Fake Line",
-                "quantity": 10,
-                "price_unit": {"ht": 1000.0, "ttc": 1000.0, "vat": 0.0, "tax": 0.0}
-            }
-        }

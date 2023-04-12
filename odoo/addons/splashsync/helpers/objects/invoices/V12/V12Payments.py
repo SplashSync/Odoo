@@ -17,9 +17,9 @@ from splashpy.componants import FieldFactory
 from datetime import date, datetime
 
 
-class Odoo12PaymentCrudHelper:
+class OdooV12PaymentsHelper:
     """
-    Odoo 12 Invoice Payments Crud Helper
+    Odoo V12 Invoice Payments Crud Helper
     """
 
     @staticmethod
@@ -88,7 +88,10 @@ class Odoo12PaymentCrudHelper:
         # ====================================================================#
         # Cancel Payment
         if payment.state == "posted":
-            payment.cancel()
+            if Framework.isDebugMode():
+                payment.sudo().cancel()
+            else:
+                payment.cancel()
         # ====================================================================#
         # Remove Payment
         invoice.payment_ids = [(3, payment.id, 0)]
