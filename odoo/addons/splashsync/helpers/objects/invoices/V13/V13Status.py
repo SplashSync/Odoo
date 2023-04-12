@@ -111,7 +111,7 @@ class OdooV13StatusHelper:
                 invoice.refresh()
         # ====================================================================#
         # Draft => Posted
-        if invoice.state == 'draft' and new_state in ['posted']:
+        if invoice.state == 'draft' and new_state in ['posted', 'paid']:
             invoice.action_post()
             invoice._compute_amount()
             invoice.refresh()
