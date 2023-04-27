@@ -83,7 +83,7 @@ class Product(
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
             "qty_at_date": {"group": ""},
-            "virtual_available": {"group": ""},
+            "virtual_available": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
             "outgoing_qty	": {"group": ""},
             "incoming_qty": {"group": ""},
 

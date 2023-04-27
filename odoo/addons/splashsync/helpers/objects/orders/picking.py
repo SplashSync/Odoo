@@ -56,28 +56,28 @@ class OrderPickingHelper:
         # Load Odoo System Manager
         from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
-        # Odoo 12 & 13
-        if SystemManager.compare_version(12) == 0 or SystemManager.compare_version(13) == 0:
-            Framework.log().warn("Picking Done: Odoo 12")
-            from odoo.tools.float_utils import float_is_zero
-            for move_line in picking.move_ids_without_package.filtered(lambda m: float_is_zero(m.quantity_done, precision_rounding=m.product_uom.rounding)):
-                move_line.quantity_done = move_line.product_qty
-            picking.action_done()
+        # Odoo 15 & 16
+        if SystemManager.compare_version(15) >= 0:
+            Framework.log().warn("Picking Done: Odoo 15+")
+            picking.action_set_quantities_to_reservation()
+            picking._action_done()
         # ====================================================================#
         # Odoo 14
-        elif SystemManager.compare_version(14) == 0:
+        elif SystemManager.compare_version(14) >= 0:
             Framework.log().warn("Picking Done: Odoo 14")
             from odoo.tools.float_utils import float_is_zero
             for move_line in picking.move_line_ids.filtered(lambda m: float_is_zero(m.qty_done, precision_rounding=m.product_uom_id.rounding)):
                 move_line.qty_done = move_line.product_qty
             picking._action_done()
-
         # ====================================================================#
-        # Odoo 15 & 16
-        elif SystemManager.compare_version(15) >= 0:
-            Framework.log().warn("Picking Done: Odoo 15+")
-            picking.action_set_quantities_to_reservation()
-            picking._action_done()
+        # Odoo 12 & 13
+        if SystemManager.compare_version(12) >= 0:
+            Framework.log().warn("Picking Done: Odoo 12")
+            from odoo.tools.float_utils import float_is_zero
+            for move_line in picking.move_ids_without_package.filtered(lambda m: float_is_zero(m.quantity_done, precision_rounding=m.product_uom.rounding)):
+                move_line.quantity_done = move_line.product_qty
+            picking.action_done()
+
 
     @staticmethod
     def get_reserved_qty(order_line):
