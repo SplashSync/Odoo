@@ -144,9 +144,9 @@ class InvoiceStatusHelper:
         :rtype: OdooV12StatusHelper|OdooV13StatusHelper
         """
         from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(12) == 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12StatusHelper
-            return OdooV12StatusHelper
-        elif SystemManager.compare_version(13) >= 0:
+        if SystemManager.compare_version(13) >= 0:
             from odoo.addons.splashsync.helpers.objects.invoices.V13 import OdooV13StatusHelper
             return OdooV13StatusHelper
+        elif SystemManager.compare_version(12) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12StatusHelper
+            return OdooV12StatusHelper
