@@ -33,7 +33,7 @@ stages:
 
 .functional:    &functional
     image:      docker/compose
-    when:       manual
+#    when:       manual
     retry:      1
     tags:
       - Dedicated-Docker
