@@ -20,7 +20,6 @@ variables:
 ################################################################
 # Defined Pipeline Stages
 stages:
-#  - Docker
   - Contacts
   - Products
   - Orders
