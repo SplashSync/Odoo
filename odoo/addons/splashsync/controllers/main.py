@@ -23,7 +23,11 @@ class Webservice(http.Controller):
         """
          Respond to Splash Webservice Requests
          """
-        return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
+        try:
+            return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
+        except Exception as exception:
+            if exception.__class__ == "psycopg2.errors.InFailedSqlTransaction":
+                return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
 
     @http.route('/splash/test', type='http', auth='user', website=True)
     def test(self, **kw):

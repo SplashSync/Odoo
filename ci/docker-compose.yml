@@ -1,0 +1,76 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+################################################################################
+# Docker Compose File
+#
+# This Docker File intend to Create a CI/CD Environment
+# for Splash Modules Testing
+#
+# 172.120.0.99        latest.odoo.local
+# 172.120.0.100       toolkit.odoo.local
+# 172.120.0.101       db.odoo.local
+#
+################################################################################
+
+version: "3.2"
+
+services:
+
+    ################################################################################
+    # Odoo Server Container
+    odoo:
+        image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/odoo:${ODOO_VERSION}
+        depends_on:
+            - db
+        volumes:
+            - ./docker/odoo:/etc/odoo:ro
+            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
+            - ../Py-Core:/mnt/splashpy
+            - ./scripts:/scripts:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        environment:
+            - ODOO_DATABASE=$CI_JOB_ID
+            - ODOO_MODULES=splashsync,contacts,product,website_sale_comparison,sale,purchase,stock
+            - CI_MODE=enabled
+            - ODOO_LOG_LEVEL=:WARNING
+
+    ################################################################################
+    # Postgres Database Container
+    db:
+        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/postgres:10
+        logging:        { driver: "none" }
+        command:        postgres -c 'max_connections=500'
+        environment:
+            - POSTGRES_DB=postgres
+            - POSTGRES_PASSWORD=odoo
+            - POSTGRES_USER=odoo
+
+    ################################################################################
+    # Splash Toolkit Container
+    toolkit:
+#        image: registry.gitlab.com/splashsync/odoo:toolkit
+        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit
+        logging: { driver: "none" }
+        volumes:
+            # Specify Local Tests
+            - './docker/toolkit/tests:/app/tests:ro'
+            # Specify Local Configuration File
+            - './ci/splash.yml:/app/config/packages/splash.yml:ro'
+            - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
+            - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
+            - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
+            - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
+

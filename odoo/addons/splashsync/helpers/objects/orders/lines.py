@@ -22,11 +22,16 @@ class OrderLinesHelper:
 
     __generic_fields = [
         'name', 'state', 'customer_lead', 'discount',
+        'product_uom_qty', 'qty_delivered_manual', 'qty_delivered', 'qty_invoiced', 'quantity'
+    ]
+
+    __float_fields = [
+        'discount',
         'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
     ]
 
     __qty_fields = [
-        'product_uom_qty', 'qty_delivered_manual', 'qty_invoiced', 'quantity'
+        'product_uom_qty', 'qty_delivered_manual', 'qty_delivered', 'qty_invoiced', 'quantity'
     ]
 
     # ====================================================================#
@@ -109,7 +114,6 @@ class OrderLinesHelper:
 
         return line_data
 
-
     # ====================================================================#
     # RAW Order & Invoice Line Management
     # ====================================================================#
@@ -149,10 +153,18 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Line Unit Price (HT)
         if field_id == "price_unit":
+
+            if OrderLinesHelper.is_order_line(line):
+                tax_ids = line.tax_id
+            elif OrderLinesHelper.is_move_line(line):
+                tax_ids = line.tax_ids
+            else:
+                tax_ids = line.invoice_line_tax_ids
+
             return PricesHelper.encode(
                 float(line.price_unit),
                 TaxHelper.get_tax_rate(
-                    line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids,
+                    tax_ids,
                     'sale'
                 ),
                 None,
@@ -163,19 +175,45 @@ class OrderLinesHelper:
         # Sales Taxes
         if field_id == "tax_name":
             try:
-                tax_ids = line.tax_id if OrderLinesHelper.is_order_line(line) else line.invoice_line_tax_ids
+                if OrderLinesHelper.is_order_line(line):
+                    tax_ids = line.tax_id
+                elif OrderLinesHelper.is_move_line(line):
+                    tax_ids = line.tax_ids
+                else:
+                    tax_ids = line.invoice_line_tax_ids
+
                 return tax_ids[0].name
             except:
                 return None
         if field_id == "tax_names":
-            return M2MHelper.get_names(
-                line,
-                "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
-            )
+
+            if OrderLinesHelper.is_order_line(line):
+                return M2MHelper.get_names(line, "tax_id")
+            elif OrderLinesHelper.is_move_line(line):
+                return M2MHelper.get_names(line, "tax_ids")
+            else:
+                return M2MHelper.get_names(line, "invoice_line_tax_ids")
 
         # ==================================================================== #
         # [EXTRA] Order Line Fields
         # ==================================================================== #
+
+        # ==================================================================== #
+        # Product type
+        if field_id == "detailed_type":
+            try:
+                if "detailed_type" in dir(line.product_id[0]):
+                    # ==================================================================== #
+                    # Odoo 15+
+                    return str(line.product_id[0].detailed_type)
+                elif "type" in dir(line.product_id[0]):
+                    # ==================================================================== #
+                    # Odoo 12/13/14
+                    return str(line.product_id[0].type)
+
+                return None
+            except:
+                return None
 
         # ==================================================================== #
         # Product reference
@@ -184,6 +222,12 @@ class OrderLinesHelper:
                 return str(line.product_id[0].default_code)
             except:
                 return None
+
+        # ==================================================================== #
+        # Reserved Qty
+        if field_id == "qty_reserved":
+            from odoo.addons.splashsync.helpers import OrderPickingHelper
+            return OrderPickingHelper.get_reserved_qty(line)
 
         return None
 
@@ -198,7 +242,13 @@ class OrderLinesHelper:
         """
 
         from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
-        tax_field_id = "tax_id" if OrderLinesHelper.is_order_line(line) else "invoice_line_tax_ids"
+
+        if OrderLinesHelper.is_order_line(line):
+            tax_field_id = "tax_id"
+        elif OrderLinesHelper.is_move_line(line):
+            tax_field_id = "tax_ids"
+        else:
+            tax_field_id = "invoice_line_tax_ids"
 
         # ==================================================================== #
         # [CORE] Order Line Fields
@@ -207,7 +257,14 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Linked Product ID
         if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
-            line.product_id = int(ObjectsHelper.id(field_data))
+            try:
+                line.product_id = OrderLinesHelper.detect_product_id({
+                    "product_id": field_data
+                })
+            except Exception as exception:
+                Framework.log().error("Unable to Update Product ID.")
+                Framework.log().fromException(exception, True)
+                return None
         # ==================================================================== #
         # Description
         # Qty Ordered | Qty Shipped/Delivered | Qty Invoiced
@@ -255,14 +312,24 @@ class OrderLinesHelper:
         return line.display_type is not False
 
     @staticmethod
-    def is_order_line(order_line):
+    def is_order_line(line):
         """
         Check if Line is Order Line (or Invoice Line)
 
-        :param order_line: sale.order.line|account.invoice.line
+        :param line: sale.order.line|account.move.line|account.invoice.line
         :return: bool
         """
-        return getattr(order_line, "_name") == "sale.order.line"
+        return getattr(line, "_name") in ["sale.order.line"]
+
+    @staticmethod
+    def is_move_line(line):
+        """
+        Check if Line is Account Move Line (Invoice Line)
+
+        :param line: sale.order.line|account.move.line|account.invoice.line
+        :return: bool
+        """
+        return getattr(line, "_name") in ["account.move.line"]
 
     # ====================================================================#
     # Order Specific Methods
@@ -285,9 +352,11 @@ class OrderLinesHelper:
         # ====================================================================#
         # Link to Product
         try:
-            req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-        except:
+            req_fields["product_id"] = OrderLinesHelper.detect_product_id(line_data)
+        except Exception as exception:
             Framework.log().error("Unable to create Order Line, Product Id is Missing")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Order Line")
             return None
         # ==================================================================== #
         # Description
@@ -295,14 +364,17 @@ class OrderLinesHelper:
         # Delivery Lead Time | Line Status
         for field_id in OrderLinesHelper.__generic_fields:
             try:
-                req_fields[field_id] = line_data[field_id]
-            except:
+                if field_id in OrderLinesHelper.__float_fields:
+                    req_fields[field_id] = float(line_data[field_id])
+                else:
+                    req_fields[field_id] = line_data[field_id]
+            except Exception:
                 pass
         # ====================================================================#
         # Unit Price
         try:
             req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
-        except:
+        except Exception:
             pass
         # ====================================================================#
         # Create Order Line
@@ -327,9 +399,10 @@ class OrderLinesHelper:
         :param line_data: dict
         :return: account.invoice.line
         """
+        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Load Account Id from Configuration
-        account_id = OrderLinesHelper.detect_sales_account_id(invoice)
+        account_id = OrderLinesHelper.detect_sales_account_id()
         # ====================================================================#
         # Safety Check
         if account_id is None or int(account_id) <= 0:
@@ -339,34 +412,50 @@ class OrderLinesHelper:
         # ====================================================================#
         # Prepare Minimal Order Line Data
         req_fields = {
-            "invoice_id": invoice.id,
             "account_id": account_id,
             "sequence": 10 + len(invoice.invoice_line_ids),
         }
         # ====================================================================#
+        # Link to Parent
+        if SystemManager.compare_version(13) >= 0:
+            req_fields["move_id"] = invoice.id
+        else:
+            req_fields["invoice_id"] = invoice.id
+
+        # ====================================================================#
         # Link to Product
         try:
-            req_fields["product_id"] = int(ObjectsHelper.id(line_data["product_id"]))
-        except:
-            pass
+            req_fields["product_id"] = OrderLinesHelper.detect_product_id(line_data)
+        except Exception as exception:
+            Framework.log().error("Unable to create Invoice Line, please check inputs.")
+            Framework.log().fromException(exception, False)
+            Framework.log().dump(req_fields, "New Invoice Line")
+            return None
         # ==================================================================== #
         # Description
         # Qty Invoiced
         for field_id in OrderLinesHelper.__generic_fields:
             try:
-                req_fields[field_id] = line_data[field_id]
+                if field_id in OrderLinesHelper.__float_fields:
+                    req_fields[field_id] = float(line_data[field_id])
+                else:
+                    req_fields[field_id] = line_data[field_id]
             except:
                 pass
         # ====================================================================#
         # Unit Price
         try:
+            req_fields["quantity"] = float(req_fields["quantity"])
             req_fields["price_unit"] = PricesHelper.extract(line_data["price_unit"], "ht")
         except:
             pass
         # ====================================================================#
         # Create Order Line
         try:
-            return http.request.env["account.invoice.line"].create(req_fields)
+            if SystemManager.compare_version(13) >= 0:
+                return SystemManager.getModel("account.move.line").create(req_fields)
+            else:
+                return http.request.env["account.invoice.line"].create(req_fields)
         except Exception as exception:
             Framework.log().error("Unable to create Invoice Line, please check inputs.")
             Framework.log().fromException(exception, False)
@@ -374,12 +463,11 @@ class OrderLinesHelper:
             return None
 
     @staticmethod
-    def detect_sales_account_id(invoice):
+    def detect_sales_account_id():
         """
         Detect Account id for NEW Invoices Lines
 
-        :param invoice: account.invoice
-        :return: account.invoice.line
+        :return: int|None
         """
         from odoo.addons.splashsync.helpers import SettingsManager
         # ====================================================================#
@@ -389,7 +477,54 @@ class OrderLinesHelper:
             # ====================================================================#
             # FallBack to Demo Account Id
             if account_id is None or int(account_id) <= 0:
-                account_id = invoice.account_id._name_search("200000 Product Sales")[0][0]
+                from odoo.addons.splashsync.helpers import SystemManager
+                accounts = SystemManager.getModel('account.account').search([
+                    ('name', '=', "Product Sales")
+                ])
+                account_id = accounts.ids[0] if len(accounts.ids) > 0 else None
             return account_id
         except:
             return None
+
+    @staticmethod
+    def detect_product_id(line_data):
+        """
+        Detect Product ID for NEW Lines without Product ID
+
+        :return: int|None
+        """
+        from odoo.addons.splashsync.helpers import SettingsManager
+        from odoo.addons.splashsync.helpers import SystemManager
+        # ====================================================================#
+        # Prepare Product
+        empty_product = {
+            "name": "Service",
+            'default_code': "SPL"
+        }
+        # ==================================================================== #
+        # Get Product ID From Line data
+        if "product_id" in line_data and isinstance(ObjectsHelper.id(line_data["product_id"]), (int, str)):
+            return int(ObjectsHelper.id(line_data["product_id"]))
+
+        # ==================================================================== #
+        # Search or Create for SPL Empty Product
+        # ==================================================================== #
+
+        # ====================================================================#
+        # Search for Product by SKU
+        model = SystemManager.getModel('product.product').search([('default_code', '=', empty_product['default_code'])])
+        if len(model) == 1:
+            return model[0][0].id
+        # ====================================================================#
+        # Ensure default type
+        if SystemManager.compare_version(15) >= 0:
+            empty_product['detailed_type'] = 'service'
+        elif "type":
+            empty_product['type'] = 'service'
+        # ====================================================================#
+        # Create Product
+        new_product = SystemManager.getModel('product.product')\
+            .with_context(create_product_product=True)\
+            .create(empty_product)
+
+        return new_product.id

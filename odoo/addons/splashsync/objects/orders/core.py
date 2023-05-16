@@ -122,6 +122,11 @@ class OrderCore:
         if self.is_ready_for_create() is not True:
             return Framework.log().error(self.is_ready_for_create())
         # ====================================================================#
+        # Safety Check - Name is Required
+        if "name" not in self._in:
+            from odoo import _
+            self._in["name"] = _('New')
+        # ====================================================================#
         # Safety Check - Tracking Policy is Required
         if "picking_policy" not in self._in:
             self._in["picking_policy"] = "one"
@@ -142,7 +147,7 @@ class OrderCore:
             # ====================================================================#
             # Setup Order Relations
             req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
-            object_filters = PartnersHelper.thirdparty_filter() if field_id is "partner_id" else PartnersHelper.address_filter()
+            object_filters = PartnersHelper.thirdparty_filter() if field_id == "partner_id" else PartnersHelper.address_filter()
             if not M2OHelper.verify_id(req_fields[field_id], "res.partner", object_filters):
                 return Framework.log().error("Unable to Identify Pointed Object: "+str(self._in[field_id]))
         # ====================================================================#

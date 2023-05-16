@@ -18,23 +18,33 @@
 <odoo>
 
     <record id="splashsync_product_normal_form_view" model="ir.ui.view">
-        <field name="name">splahsync.product.product.view.form.easy</field>
+        <field name="name">splashsync.product.product.view.form.easy</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='lst_price']" position="after">
-                <field name="variant_price_extra" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"/>
+            <xpath expr="//field[@name='lst_price']|//field[@name='list_price']" position="after">
+                <label for="variant_price_extra"/>
+                <field name="variant_price_extra" widget='monetary'
+                       string="Variant Extra Price"
+                       options="{'currency_field': 'currency_id', 'field_digits': True}"
+                       attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"
+                />
             </xpath>
         </field>
     </record>
 
     <record id="splashsync_product_variant_easy_edit_view" model="ir.ui.view">
-        <field name="name">splahsync.product.product.view.form.easy</field>
+        <field name="name">splashsync.product.product.view.form.easy</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='lst_price']" position="after">
-                <field name="variant_price_extra" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"/>
+            <xpath expr="//field[@name='lst_price']|//field[@name='list_price']" position="after">
+                <label for="variant_price_extra"/>
+                <field name="variant_price_extra" widget='monetary'
+                       string="Variant Extra Price"
+                       options="{'currency_field': 'currency_id', 'field_digits': True}"
+                       attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"
+                />
             </xpath>
         </field>
     </record>

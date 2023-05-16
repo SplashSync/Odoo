@@ -13,4 +13,6 @@
 
 from .objects import *
 from .settings import SettingsManager
+from .company import CompanyManager
+from .system import SystemManager
 from .test import TestsManager

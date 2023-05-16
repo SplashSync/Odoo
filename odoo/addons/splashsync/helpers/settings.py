@@ -13,7 +13,7 @@
 #
 
 from odoo import http
-from splashpy import Framework
+
 
 class SettingsManager():
 
@@ -57,7 +57,9 @@ class SettingsManager():
 
     @staticmethod
     def get_company():
-        return http.request.env['res.company'].sudo().browse([
+        from odoo.addons.splashsync.helpers import SystemManager
+
+        return SystemManager.getModelSudo('res.company').browse([
             SettingsManager.get_configuration().company_id.id
         ]).ensure_one()
 
@@ -68,7 +70,8 @@ class SettingsManager():
     @staticmethod
     def is_prd_simple_prices():
         try:
-            return bool(http.request.env['ir.config_parameter'].sudo().get_param('splash_product_simplified_prices'))
+            from odoo.addons.splashsync.helpers import SystemManager
+            return bool(SystemManager.getModelSudo('ir.config_parameter').get_param('splash_product_simplified_prices'))
         except Exception:
             pass
         try:
@@ -116,12 +119,13 @@ class SettingsManager():
     def get_configuration():
         """
         Get Company Configuration for WebService Requests
-        """
-        import logging
 
+        :return:  res.config.splash
+        """
         # ====================================================================#
         # Detect Company Id
-        company_id = SettingsManager.__detect_company_id()
+        from odoo.addons.splashsync.helpers import CompanyManager, SystemManager
+        company_id = CompanyManager.detect_company_id()
         if not company_id:
             raise Exception("[SPLASH] Unknown Company")
         # ====================================================================#
@@ -130,7 +134,7 @@ class SettingsManager():
             return SettingsManager.__current__
         # ====================================================================#
         # Load Splash Configuration For Company
-        config = http.request.env['res.config.splash'].get_config(company_id)
+        config = SystemManager.getModelSudo('res.config.splash').get_config(company_id)
         if config is None:
             raise Exception("[SPLASH] Unable to find configuration for "+str(company_id))
         # ====================================================================#
@@ -152,42 +156,3 @@ class SettingsManager():
         OdooClient.reset()
 
         pass
-
-    @staticmethod
-    def ensure_company():
-        """
-        Ensure Current User Company Requested One
-        """
-        expected_company_id = SettingsManager.get_company_id()
-        try:
-            if http.request.env.user.company_id.id != expected_company_id:
-                http.request.env.user.company_id = expected_company_id
-        except RuntimeError as e:
-            return
-
-    @staticmethod
-    def __detect_company_id():
-        """
-        Get Requested Company Id
-        """
-        # ====================================================================#
-        # Detect Company Id from Request Query
-        try:
-            if "cid" in http.request.params.keys() and int(http.request.params['cid']) > 0:
-                return int(http.request.params['cid'])
-            if "cname" in http.request.params.keys() and len(str(http.request.params['cname'])) > 0:
-                company = http.request.env['res.company'].sudo().name_search(str(http.request.params['cname']), limit=1)
-                return int(company[0][0])
-        except Exception:
-            pass
-        # ====================================================================#
-        # Detect Company Id from Logged User
-        try:
-            if not Framework.isServerMode() and http.request.env.user.company_id.id:
-                return http.request.env.user.company_id.id
-        except Exception:
-            pass
-
-        # ====================================================================#
-        # Use Default Company Id
-        return http.request.env['res.company']._get_main_company().id

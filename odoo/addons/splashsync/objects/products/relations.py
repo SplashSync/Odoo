@@ -111,8 +111,6 @@ class ProductsRelations:
             FieldFactory.microData("http://schema.org/Product", "onsProductTypeCodeName")
             FieldFactory.addChoices(M2OHelper.get_name_values("product.category"))
             FieldFactory.isNotTested()
-        #
-        # Framework.log().dump(allFields["x_ons_product_type"])
 
     def getProductsRelationsFields(self, index, field_id):
         # Check if Relation Field...
@@ -180,6 +178,11 @@ class ProductsRelations:
         # [MY LED] Product Tags
         if field_id == "tag_ids":
             self._out[field_id] = M2OHelper.get_name(self.object, "tag_ids")
+            self._in.__delitem__(index)
+        # ==================================================================== #
+        # [MY LED] ONS Product Type
+        if field_id == "ons_product_type":
+            self._out[field_id] = M2OHelper.get_name(self.object, "ons_product_type")
             self._in.__delitem__(index)
         # ==================================================================== #
         # [MY LED] ONS Product Type

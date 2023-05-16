@@ -2,7 +2,7 @@
 #
 #  This file is part of SplashSync Project.
 #
-#  Copyright (C) 2015-2019 Splash Sync  <www.splashsync.com>
+#  Copyright (C) Splash Sync  <www.splashsync.com>
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,23 +20,19 @@ from splashpy import const
 
 
 class InvoicePaymentsHelper:
-    """Collection of Static Functions to manage Invoices Payments content"""
+    """
+    Collection of Static Functions to manage Invoices Payments
+    """
 
+    # Codes of Generic Payment Fields
     __generic_fields = [
-        'name', 'state', 'payment_type', 'communication'
+        'name', 'ref', 'state', 'payment_type', 'communication'
     ]
 
-    __required_fields = [
-        'name', 'journal_code', 'payment_date', 'amount'
-    ]
-
-    __sales_types_filter = [
-        ('type', 'in', ["sale", "cash", "bank", "general"]),
-        ('default_credit_account_id', '<>', None),
-    ]
-
+    # Default Payment Method ID
     __payment_method_id = None
 
+    # Margin per Line for Payment Amount Rounding
     __payment_line_margin = 0.01
 
     @staticmethod
@@ -80,7 +76,7 @@ class InvoicePaymentsHelper:
             return payment.id
         # ====================================================================#
         # Check if Invoice is Open
-        if invoice.state != 'open' and not Framework.isDebugMode():
+        if invoice.state not in ['open', 'posted'] and not Framework.isDebugMode():
             Framework.log().error("Payments cannot be processed because the invoice is not open!")
             return None
 
@@ -121,7 +117,10 @@ class InvoicePaymentsHelper:
         # ====================================================================#
         # Execute Domain Search with Filter
         results = []
-        methods = http.request.env["account.journal"].search(InvoicePaymentsHelper.__sales_types_filter, limit=50)
+        methods = http.request.env["account.journal"].search(
+            InvoicePaymentsHelper.__get_helper().get_sales_types_filter(),
+            limit=50
+        )
         # ====================================================================#
         # Parse results
         for method in methods:
@@ -145,68 +144,39 @@ class InvoicePaymentsHelper:
         """
         Add a New Payment to an Invoice
 
-        :param invoice: account.invoice
+        :param invoice: account.invoice|account.move
         :param payment_data: str
 
         :return: account.payment
         """
         # ====================================================================#
         # Detect Payment Method
-        journal_id = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
-        if journal_id is None:
+        payment_data["journal_id"] = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
+        if payment_data["journal_id"] is None:
             Framework.log().error("Unable to detect Journal Id (Payment Method)")
             return None
         # ====================================================================#
         # Detect Payment Method Id
-        payment_type = "inbound" if float(payment_data["amount"]) > 0 else 'outbound'
-        payment_method_id = InvoicePaymentsHelper.__detect_payment_type(payment_type)
-        if payment_method_id is None:
+        payment_data["payment_type"] = "inbound" if float(payment_data["amount"]) > 0 else 'outbound'
+        payment_data["payment_method_id"] = InvoicePaymentsHelper.__detect_payment_type(payment_data["payment_type"])
+        if payment_data["payment_method_id"] is None:
             Framework.log().error("Unable to detect manual payments method")
             return None
         # ====================================================================#
-        # Detect Payment Date
-        try:
-            payment_date = datetime.strptime(payment_data["payment_date"], const.__SPL_T_DATECAST__).date()
-        except:
-            Framework.log().error("Unable to format payment date.")
-            return None
-        # ====================================================================#
         # Adjust Payment Amount
-        payment_amount = InvoicePaymentsHelper.__adjust_payment_amount(invoice, payment_data["amount"])
-        # ====================================================================#
-        # Prepare Minimal Payment Data
-        req_fields = {
-            "invoice_ids": [invoice.id],
-            "partner_id": invoice.partner_id.id,
-            "partner_type": 'customer',
-            "journal_id": journal_id,
-            "name": payment_data["name"],
-            "communication": payment_data["name"],
-            "amount": payment_amount,
-            "payment_date": payment_date,
-            "payment_type": payment_type,
-            "payment_method_id": payment_method_id,
-            "state": "draft"
-        }
+        payment_data["amount"] = InvoicePaymentsHelper.__adjust_payment_amount(invoice, payment_data["amount"])
         # ====================================================================#
         # Create Payment
         try:
             # ==================================================================== #
-            # Unit Tests - Ensure Invoice is Open (Default draft)
+            # Unit Tests - Ensure Invoice is Open/Posted (Default draft)
             if Framework.isDebugMode() and invoice.state == 'draft':
-                invoice.action_invoice_open()
-                invoice.refresh()
+                from odoo.addons.splashsync.helpers.objects.invoices import InvoiceStatusHelper
+                InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
             # Create Raw Payment
-            payment = http.request.env["account.payment"].create(req_fields)
-            # ====================================================================#
-            # Add Payment to Invoice
-            invoice.payment_ids = [(4, payment.id, 0)]
-            # ====================================================================#
-            # Validate Payment
-            payment.post()
+            return InvoicePaymentsHelper.__get_helper().add(invoice, payment_data)
 
-            return payment
         except Exception as exception:
             Framework.log().error("Unable to create Payment, please check inputs.")
             Framework.log().fromException(exception, False)
@@ -222,7 +192,13 @@ class InvoicePaymentsHelper:
 
         :return: bool
         """
-        for key in InvoicePaymentsHelper.__required_fields:
+        from odoo.addons.splashsync.helpers import SystemManager
+        if SystemManager.compare_version(14) >= 0:
+            required_fields = ['ref', 'journal_code', 'date', 'amount']
+        else:
+            required_fields = ['communication', 'journal_code', 'payment_date', 'amount']
+
+        for key in required_fields:
             if key not in payment_data:
                 return False
 
@@ -240,11 +216,17 @@ class InvoicePaymentsHelper:
         :return: True if Similar
         :rtype: bool
         """
-
+        from odoo.addons.splashsync.helpers import SystemManager
+        if SystemManager.compare_version(14) >= 0:
+            number_attr = "ref"
+            date_attr = "date"
+        else:
+            number_attr = "communication"
+            date_attr = "payment_date"
         # ==================================================================== #
         # Compare Payment Number
-        if isinstance(data["name"], str) and len(data["name"]) > 1:
-            if payment.name != data["name"]:
+        if isinstance(data[number_attr], str) and len(data[number_attr]) > 1:
+            if getattr(payment, number_attr) != data[number_attr]:
                 return False
         # ==================================================================== #
         # Compare Payment Method
@@ -253,8 +235,8 @@ class InvoicePaymentsHelper:
         # ==================================================================== #
         # Compare Payment Date
         try:
-            payment_date = datetime.strptime(data["payment_date"], const.__SPL_T_DATECAST__).date()
-            if payment.payment_date != payment_date:
+            payment_date = datetime.strptime(data[date_attr], const.__SPL_T_DATECAST__).date()
+            if getattr(payment, date_attr) != payment_date:
                 return False
         except Exception:
             return False
@@ -278,26 +260,18 @@ class InvoicePaymentsHelper:
 
         :rtype: bool
         """
+        from odoo.addons.splashsync.helpers.objects.invoices import InvoiceStatusHelper
+        payment_name = str(payment.name)
         try:
             # ==================================================================== #
             # Unit Tests - Ensure Invoice is Open (Default draft)
             if Framework.isDebugMode() and invoice.state == 'draft':
-                invoice.action_invoice_open()
-                invoice.refresh()
-            # ====================================================================#
-            # Unit Tests => Force Journal to Allow Update Posted
-            if Framework.isDebugMode():
-                payment.journal_id.update_posted = True
-            # ====================================================================#
-            # Cancel Payment
-            if payment.state == "posted":
-                payment.cancel()
+                InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
             # Remove Payment
-            invoice.payment_ids = [(3, payment.id, 0)]
-
-            return True
+            return InvoicePaymentsHelper.__get_helper().remove(invoice, payment)
         except Exception as exception:
+            Framework.log().error("Failed to remove Payment " + payment_name + " from INV " + str(invoice.id))
             Framework.log().fromException(exception, False)
             return False
 
@@ -327,15 +301,57 @@ class InvoicePaymentsHelper:
         margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ====================================================================#
         # Compare Payment Amount vs Invoice Residual
-        if abs(float(invoice.amount_total) - float(payments_total)) < margin:
+        if abs(float(invoice.amount_total) - float(payments_total)) <= margin:
             return True
         return Framework.log().error(
             "Payments Validation fail: "+str(payments_total)+", expected "+str(invoice.amount_total)
         )
 
     # ====================================================================#
+    # Forwarded Methods
+    # ====================================================================#
+
+    @staticmethod
+    def get_payments_list(invoice):
+        """
+        Get List of Payments For this Invoice
+
+        :return: List of Payments
+        :rtype: dict
+        """
+        return InvoicePaymentsHelper.__get_helper().get_payments_list(invoice)
+
+    @staticmethod
+    def get_sales_types_filter():
+        """
+        Get Filters for Listing Available Payment Methods
+
+        :return: tuple
+        """
+        return InvoicePaymentsHelper.__get_helper().get_sales_types_filter()
+
+    # ====================================================================#
     # Private Methods
     # ====================================================================#
+
+    @staticmethod
+    def __get_helper():
+        """
+        Get Adapted Invoices Payments Helper
+
+        :rtype: OdooV12PaymentsHelper|OdooV13PaymentsHelper|OdooV14PaymentsHelper
+        """
+        from odoo.addons.splashsync.helpers import SystemManager
+
+        if SystemManager.compare_version(14) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V14 import OdooV14PaymentsHelper
+            return OdooV14PaymentsHelper
+        elif SystemManager.compare_version(13) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V13 import OdooV13PaymentsHelper
+            return OdooV13PaymentsHelper
+        elif SystemManager.compare_version(12) >= 0:
+            from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12PaymentsHelper
+            return OdooV12PaymentsHelper
 
     @staticmethod
     def __get_raw_values(payment, field_id):
@@ -346,9 +362,7 @@ class InvoicePaymentsHelper:
         :param field_id: str
         :return: dict
         """
-
         from odoo.addons.splashsync.helpers import M2OHelper
-
         # ==================================================================== #
         # Generic Fields
         if field_id in InvoicePaymentsHelper.__generic_fields:
@@ -363,9 +377,9 @@ class InvoicePaymentsHelper:
             return M2OHelper.get_name(payment, "journal_id")
         # ==================================================================== #
         # Payment Date
-        if field_id == "payment_date":
-            if isinstance(payment.payment_date, date):
-                return payment.payment_date.strftime(const.__SPL_T_DATECAST__)
+        if field_id in ["date", "payment_date"]:
+            if isinstance(getattr(payment, field_id), date):
+                return getattr(payment, field_id).strftime(const.__SPL_T_DATECAST__)
             else:
                 return
         # ==================================================================== #
@@ -388,7 +402,7 @@ class InvoicePaymentsHelper:
                 journal_code,
                 "name",
                 "account.journal",
-                InvoicePaymentsHelper.__sales_types_filter
+                InvoicePaymentsHelper.get_sales_types_filter()
             )
             if isinstance(journal_id, int) and journal_id > 0:
                 return journal_id
@@ -397,13 +411,13 @@ class InvoicePaymentsHelper:
             default_id = SettingsManager.get_sales_journal_id()
 
             return default_id if isinstance(default_id, int) and default_id > 0 else None
-        except:
+        except Exception:
             return None
 
     @staticmethod
     def __detect_payment_type(mode='inbound'):
         """
-        Search for Manual Payment Method Id
+        Search for Manual Payment Method ID
 
         :return: int|None
         """
@@ -416,7 +430,7 @@ class InvoicePaymentsHelper:
                 [('payment_type', '=', mode)]
             )
             return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
-        except:
+        except Exception as exception:
             return None
 
     @staticmethod
@@ -429,15 +443,22 @@ class InvoicePaymentsHelper:
         :param amount:  float
         :return: float
         """
+        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Compute Allowed Margin
         margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
         # ====================================================================#
+        # Get Residual Amount
+        if SystemManager.compare_version(13) >= 0:
+            residual = invoice.amount_residual
+        else:
+            residual = invoice.residual
+        # ====================================================================#
         # Compare Payment Amount vs Invoice Residual
-        if abs(float(invoice.residual) - float(amount)) < margin:
+        if abs(float(residual) - float(amount)) <= margin:
             # Amounts are close enough to MERGE
-            Framework.log().warn("Payment Amount changed to "+str(invoice.residual))
-            return invoice.residual
+            Framework.log().warn("Payment Amount changed to "+str(residual))
+            return residual
         # Amounts are too far to MERGE
         return amount
 

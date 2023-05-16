@@ -20,7 +20,7 @@ class SupplierHelper:
 
     vendorDomain = "res.partner"
     domain = "product.supplierinfo"
-    filter = [("supplier", "=", True), ("is_company", "=", True)]
+    filter = [("is_company", "=", True)]
 
     @staticmethod
     def first(product):

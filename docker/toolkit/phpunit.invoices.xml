@@ -17,14 +17,14 @@
 
     <testsuites>
         <testsuite name="All">
-            <directory>Tests/*</directory>
+            <file>tests/L02InvoicesStatusTest.php</file>
             <directory>vendor/splash/phpcore/Tests/*</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>Tests</directory>
+            <directory>tests</directory>
             <directory>vendor/splash/phpcore</directory>
             <exclude>
                 <directory>vendor</directory>
@@ -40,7 +40,6 @@
         <server name="SPLASH_TRAVIS" value="true" />
 
         <const  name="SPLASH_TYPES" value="Invoice" />
-<!--        <const  name="SPLASH_FIELDS" value="journal_code@payments,name@payments" />-->
     </php>
 
 </phpunit>

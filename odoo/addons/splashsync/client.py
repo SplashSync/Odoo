@@ -12,7 +12,7 @@
 #  file that was distributed with this source code.
 #
 
-from odoo.addons.splashsync.helpers import SettingsManager
+from odoo.addons.splashsync.helpers import SettingsManager, CompanyManager
 from splashpy import Framework
 from splashpy.models.client import ClientInfo
 
@@ -69,7 +69,7 @@ class OdooClient(ClientInfo):
         from splashpy.server import SplashServer
         # ====================================================================#
         # Init Odoo User & Company
-        SettingsManager.ensure_company()
+        CompanyManager.ensure_company()
         # ====================================================================#
         # Build Splash Server with Common Options
         splash_server = SplashServer(

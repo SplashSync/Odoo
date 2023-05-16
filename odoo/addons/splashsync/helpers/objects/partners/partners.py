@@ -34,7 +34,7 @@ class PartnersHelper:
     @staticmethod
     def thirdparty_filter():
         """
-        Filter Thirdparty Objects (No Parent)
+        Filter Third Party Objects (No Parent)
         :return: list of tuples
         """
         return [('parent_id', '=', None)]
@@ -46,7 +46,10 @@ class PartnersHelper:
         :param model: Object
         :return: bool
         """
-        return model._inherit == 'res.partner'
+        if isinstance(model._inherit, list):
+            return True if 'res.partner' in model._inherit else False
+
+        return True if 'res.partner' == model._inherit else False
 
     @staticmethod
     def is_address(model):
@@ -58,6 +61,7 @@ class PartnersHelper:
         # ==================================================================== #
         # Safety Check - Partner
         if not PartnersHelper.is_partner(model):
+            Framework.log().warn('This Object is not a res.partner')
             return False
         # ==================================================================== #
         # Check condition - Parent Id
@@ -87,6 +91,7 @@ class PartnersHelper:
         # ==================================================================== #
         # Safety Check - Partner
         if not PartnersHelper.is_partner(model):
+            Framework.log().warn('This Object is not a res.partner')
             return False
         # ==================================================================== #
         # Check condition - No Parent Id
