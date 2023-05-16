@@ -177,7 +177,12 @@ class ProductsRelations:
         # ==================================================================== #
         # [MY LED] Product Tags
         if field_id == "tag_ids":
-            self._out[field_id] = M2MHelper.get_name(self.object, "tag_ids")
+            self._out[field_id] = M2OHelper.get_name(self.object, "tag_ids")
+            self._in.__delitem__(index)
+        # ==================================================================== #
+        # [MY LED] ONS Product Type
+        if field_id == "ons_product_type":
+            self._out[field_id] = M2OHelper.get_name(self.object, "ons_product_type")
             self._in.__delitem__(index)
         # ==================================================================== #
         # [MY LED] ONS Product Type
@@ -277,6 +282,7 @@ class ProductsRelations:
             "company_ids", "company_names",
             "product_brand_id", "product_brand",
             "tag_id", "tag_ids",
+            "ons_product_type"
         ]:
             return True
         return False

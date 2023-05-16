@@ -241,7 +241,7 @@ class M2OHelper:
         results = []
         values = http.request.env[domain].search(filters, limit=50)
         for value in values:
-            results += [(getattr(value, index), value.name)]
+            results += [(getattr(value, index), "["+str(getattr(value, index))+"] "+value.name)]
         return results
 
     @staticmethod
