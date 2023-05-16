@@ -146,7 +146,7 @@ class Product(
         return new_product
 
     def load(self, object_id):
-        """Load Odoo Object by Id"""
+        """Load Odoo Object by ID"""
         from odoo.exceptions import MissingError
         # ====================================================================#
         # Order Fields Inputs

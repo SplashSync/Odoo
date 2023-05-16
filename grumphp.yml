@@ -21,7 +21,10 @@
 parameters:
     mode:                   "splashsync"
     # For Building Splash Module
-    mod-enable:             false
+    mod-src:            '/odoo/addons/splashsync'
+    mod-target:         '/odoo/addons/splashsync/'
+    mod-file:           "splashsync-odoo-1.15.0"
+
     # For Building Splash Documentation
     doc-src:                '/resources/docs'
     doc-target:             '/public'

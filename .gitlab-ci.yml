@@ -209,3 +209,21 @@ pages:
     artifacts:
         paths:
             - public
+
+###############################################################
+# Build Module
+################################################################
+module:
+    image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-8.1
+    stage:      deploy
+    tags:       ['Dedicated']
+    ################################################################################
+    # Run Test Script
+    script:
+        # Install Composer Dependencies
+        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+        # Build Module
+        - php vendor/bin/grumphp run --tasks=build-module
+    artifacts:
+        paths:
+            - build

@@ -31,7 +31,7 @@ class ResConfigSettings(models.TransientModel):
 
     ws_host = fields.Char(
         string="Splash Server",
-        help="Url of your Splash Server (default: www.splashsync.com/ws/soap"
+        help="Url of your Splash Server (default: www.splashsync.com/ws/soap)"
     )
     ws_user = fields.Many2one(
         string="Webservice User",
@@ -60,7 +60,6 @@ class ResConfigSettings(models.TransientModel):
         string="Product SKU Detection",
         help="Detect Products by SKU before creation."
     )
-
 
     # ====================================================================#
     # SALES Settings
@@ -96,39 +95,14 @@ class ResConfigSettings(models.TransientModel):
 
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
-
         # ====================================================================#
         # Load Splash Configuration for Company
-        res.update(self.env['res.config.splash'].default_get())
-
-        # import logging
-        # from odoo.addons.splashsync.helpers import SettingsManager
-        # from odoo.addons.splashsync.helpers import SystemManager
-        # from odoo.addons.splashsync.helpers import CompanyManager
-
-
-        # logging.warning('[SPLASH] Get Configuration')
-        # logging.warning(SettingsManager.detect_company_id())
-        # logging.warning(res)
-        # logging.warning(self.env.company.id)
-        # logging.warning(http.request.env.company.id)
-
-        # from odoo.release import version_info
-        #
-        # logging.warning(SystemManager.major_version())
-        # logging.warning(SystemManager.compare_version(13))
-        # logging.warning(self.env.company.id)
-        # logging.warning(self.env.company.name)
-        # logging.warning(self.env)
-        # logging.warning(CompanyManager.get_id(self))
-        # logging.warning(CompanyManager.get_name(self))
-        # logging.warning(SystemManager.compare_version(14))
-        # logging.warning(version_info)
-        # logging.warning(http.request.env.company.id)
+        res.update(self.env['res.config.splash'].sudo().default_get())
 
         return res
 
     def set_values(self):
+        import logging
         super(ResConfigSettings, self).set_values()
         # ====================================================================#
         # Detect Current User Company ID
@@ -136,10 +110,11 @@ class ResConfigSettings(models.TransientModel):
         company_id = CompanyManager.get_id(self)
         # ====================================================================#
         # Load Current Company Configuration
-        splash_config = self.env['res.config.splash'].get_config(company_id)
+        splash_config = self.env['res.config.splash'].sudo().get_config(company_id)
         # ====================================================================#
         # Company Configuration NOT Found
         if splash_config is None:
+            logging.warning('[SPLASH] Configuration not found => Create')
             http.request.env['res.config.splash'].create({
                 'company_id': company_id,
                 'ws_id': self.ws_id,

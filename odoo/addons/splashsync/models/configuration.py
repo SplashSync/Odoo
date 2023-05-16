@@ -67,7 +67,7 @@ class ResConfigSplash(models.Model):
 
     ws_host = fields.Char(
         string="Splash Server",
-        help="Url of your Splash Server (default: www.splashsync.com/ws/soap"
+        help="Url of your Splash Server (default: www.splashsync.com/ws/soap)"
     )
     ws_user = fields.Many2one(
         string="Webservice User",
@@ -200,6 +200,7 @@ class ResConfigSplash(models.Model):
 
         :return: void
         """
+        import logging
         # ====================================================================#
         # Detect Current User Company ID
         from odoo.addons.splashsync.helpers import CompanyManager
@@ -212,6 +213,13 @@ class ResConfigSplash(models.Model):
         # ====================================================================#
         # Load Current Company Configuration
         config = self.env['res.config.splash'].sudo().search([('company_id', '=', company_id)], limit=1)
+        # ====================================================================#
+        # Company Configuration NOT Found
+        if len(config) == 0:
+            logging.warning('[SPLASH] Configuration not Found => Update Skipped')
+
+            return
+
         # ====================================================================#
         # Update Company Values
         config.write({
@@ -232,6 +240,7 @@ class ResConfigSplash(models.Model):
             'sales_advanced_taxes': self.sales_advanced_taxes,
             'sales_check_payments_amount': self.sales_check_payments_amount,
         })
+        logging.warning('[SPLASH] Configuration ID '+str(config.id)+' Updated')
 
     def get_default_values(self, company_id):
         """
@@ -265,13 +274,15 @@ class ResConfigSplash(models.Model):
         :param: company_id: int
         :rtype: None | ResConfigSplash
         """
+        import logging
         # Search for Company Configuration
         config = self.env['res.config.splash'].search([('company_id', '=', company_id)], limit=1)
-        if len(config) == 0:
+        if len(config) < 2:
             return
 
         for conf in self.env['res.config.splash'].search([('company_id', '=', company_id)]):
             if conf.id != config.id:
+                logging.warning('[SPLASH] Duplicated Configuration ID '+str(conf.id)+' Deleted')
                 conf.unlink()
 
     @staticmethod
