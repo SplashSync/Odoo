@@ -11,103 +11,188 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 #
-#  @author Bernard Paquier <contact@splashsync.com>
-#
 ################################################################################
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
 
 ################################################################
 # Defined Pipeline Stages
 stages:
-  - tests_V12
-  - tests_V13
+#  - Docker
+  - Contacts
+  - Products
+  - Orders
+  - Invoices
   - deploy
 
 ################################################################
-# Functional Tests
+# Init & Functional Tests
 ################################################################
 
-.core_tests:    &core_tests
-    image:      docker:stable
-    stage:      tests_V12
-    retry:      2
+.functional:    &functional
+    image:      docker/compose
+#    when:       manual
+    retry:      1
     tags:
       - Dedicated-Docker
     services:
       - docker:dind
-    ################################################################################
-    # Install & Configure Environment
-    before_script:
-      # Init Docker
-      - docker info
-      # Install Git & Docker Compose
-      - apk add --no-cache git docker-compose
-      # Load SplashPy Module
-      - rm -Rf ../Py-Core
-      - git clone --depth=1 https://github.com/SplashSync/PyCore.git ../Py-Core
-      - chmod 7777 -Rf ../Py-Core
-      # Configure Docker Compose
-      - sed -i 's|odoo:12|${ODOO_VERSION}|g' docker-compose.yml
-      # Build Docker Compose
-      - mkdir logs
-      - docker network create splashsync --attachable
-      - docker-compose up -d
-    ################################################################################
-    # Run Test Script
-    script:
-      # Wait Until Odoo Container Started
-      - docker-compose exec -T toolkit php bin/console
-      - docker-compose exec -T toolkit bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' odoo:8069)" != "200" ]]; do echo "Wait for Odoo..."; sleep 10; done'
-      - docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
-      # Run Splash Unit tests from Splash Toolkit
-      - docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG}
-      - docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
-      - docker-compose logs --tail="2000" odoo
-      # Use Splash Toolkit to build Splash Manifest
-      - mkdir manifest
-      - docker-compose exec -T toolkit php bin/console splash:server:manifest
-      - docker-compose exec -T toolkit cat splash.json >> manifest/splash.json
-      - docker-compose exec -T toolkit cat splash.yml >> manifest/splash.yml
-    ################################################################################
-    # Run After Script
-    after_script:
-      - docker-compose stop
-      - docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
     artifacts:
-      paths:
-        - logs
-        - manifest
+        name: "$CI_JOB_NAME"
+        when: always
+        paths:
+            - logs
+    before_script:
+      - sh ci/before_script.sh
+    script:
+      - sh ci/start_odoo.sh
+      - sh ci/test_odoo.sh
+    after_script:
+      - sh ci/after_script.sh
 
-tests-V12:contacts:
-    <<: *core_tests
-    variables:
-        PHPUNIT_CONFIG:   phpunit.contacts.xml
-        ODOO_VERSION:     odoo:12
 
-tests-V12:products:
-    <<: *core_tests
-#    when:               manual
-    variables:
-        PHPUNIT_CONFIG:   phpunit.products.xml
-        ODOO_VERSION:     odoo:12
+################################################################
+# Contacts - Functional Tests
+################################################################
 
-tests-V12:orders:
-    <<: *core_tests
-#    when:               manual
-    variables:
-        PHPUNIT_CONFIG:   phpunit.orders.xml
-        ODOO_VERSION:     odoo:12
+# ALL TESTS PASSED
+V12:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
 
-tests-V12:invoices:
-    <<: *core_tests
-#    when:               manual
-    variables:
-        PHPUNIT_CONFIG:   phpunit.invoices.xml
-        ODOO_VERSION:     odoo:12
+V13:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
 
+V14:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+
+V15:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
+
+#V16:Contacts:
+#    <<: *functional
+#    stage:              Contacts
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+#  when:               always
 
 #################################################################
-## Build Documentation
+## Products - Functional Tests
 #################################################################
+
+V12:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
+#  when:               always
+
+V13:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
+#  when:               always
+
+V14:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
+#    when:               always
+
+V15:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
+#    when:               always
+
+#V16:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
+#    when:               always
+
+#################################################################
+## Orders - Functional Tests
+#################################################################
+
+V12:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
+V13:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
+V14:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
+V15:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
+#V16:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    when:               always
+
+#################################################################
+## Invoices - Functional Tests
+#################################################################
+
+V12:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+V13:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+V14:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+V15:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+#V16:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    when:               always
+
+################################################################
+# Build Documentation
+################################################################
 pages:
     image:      registry.gitlab.com/splashsync/php-console:pages
     stage:      deploy
@@ -124,3 +209,21 @@ pages:
     artifacts:
         paths:
             - public
+
+###############################################################
+# Build Module
+################################################################
+module:
+    image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-8.1
+    stage:      deploy
+    tags:       ['Dedicated']
+    ################################################################################
+    # Run Test Script
+    script:
+        # Install Composer Dependencies
+        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+        # Build Module
+        - php vendor/bin/grumphp run --tasks=build-module
+    artifacts:
+        paths:
+            - build

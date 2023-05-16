@@ -25,7 +25,6 @@ class ProductTemplate(models.Model):
     # !!! Odoo Core Features Overrides !!!
     # ====================================================================#
 
-    @api.multi
     def create_variant_ids(self):
         _logger = logging.getLogger("SPLASH SYNC")
         _logger.warning("Variants Auto-creation is disabled when Splash Module is Active")

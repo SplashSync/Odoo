@@ -22,9 +22,14 @@
     },
     
     "require-dev": {
-        "php":                                      "~7.2",
-        "badpixxel/php-sdk":                        "dev-main",
-        "splash/phpcore":                           "dev-master",
+        "php":                                      "^7.4|^8.0",
+        "badpixxel/php-sdk":                        "^2.0",
+        "splash/phpcore":                           "^2.0",
         "splash/console":                           "dev-master"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpro/grumphp": false
+        }
     }
 }

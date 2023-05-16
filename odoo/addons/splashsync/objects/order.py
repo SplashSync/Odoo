@@ -48,8 +48,8 @@ class Order(OdooObject, SafeName, OrderCore, OrderAddress, OrderCarrier, OrderDe
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "name": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
-            "client_order_ref": {"write": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderNumber"},
+            "name": {"write": False, "required": False, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
+            "client_order_ref": {"write": True, "required": True, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderNumber"},
 
             "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
             "date_due": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},
@@ -86,6 +86,9 @@ class Order(OdooObject, SafeName, OrderCore, OrderAddress, OrderCarrier, OrderDe
         # ====================================================================#
         # Create a New Simple Order
         new_order = self.getModel().create(req_fields)
+        # ====================================================================#
+        # Unset Order Name to Avoid Overwrites
+        self._in.__delitem__("name")
         # ====================================================================#
         # Safety Check - Error
         if new_order is None:

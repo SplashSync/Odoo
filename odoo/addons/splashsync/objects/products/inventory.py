@@ -57,7 +57,8 @@ class ProductsInventory:
         # Safety Check - Is Tracked Product
         if self.object.type not in ['product']:
             Framework.log().warn("You can only adjust inventory of storable products.")
+            Framework.log().warn("Product "+str(self.object.id)+" is a "+str(self.object.type))
             return
         # ==================================================================== #
         # BASIC METHOD - Create Inventory Adjustment
-        InventoryHelper.create_inventory_adjustment(self.object, float(field_data))
+        InventoryHelper.update_qty_available(self.object, float(field_data))

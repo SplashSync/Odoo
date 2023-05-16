@@ -33,7 +33,10 @@ class IrHttp(models.AbstractModel):
         # ====================================================================#
         # Init as Super User
         request.session.uid = None
-        request.uid = SUPERUSER_ID
+        if "update_env" in dir(request):
+            request.update_env(SUPERUSER_ID)
+        else:
+            request.uid = SUPERUSER_ID
         # ====================================================================#
         # Setup Splash User
         from odoo.addons.splashsync.helpers import SettingsManager
@@ -42,4 +45,7 @@ class IrHttp(models.AbstractModel):
         if int(splash_user) <= 0:
             raise exceptions.AccessDenied()
         request.session.uid = None
-        request.uid = splash_user.id
+        if "update_env" in dir(request):
+            request.update_env(splash_user.id)
+        else:
+            request.uid = splash_user.id

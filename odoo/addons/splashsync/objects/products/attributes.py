@@ -121,12 +121,12 @@ class ProductsAttributes:
                 self._set_attribute_extra_price(attr_value.attribute_id.id, value)
         # ==================================================================== #
         # Delete Remaining Product Attributes Values...
-        to_delete_values = self.object.attribute_value_ids.filtered(
+        to_delete_values = self.object.attribute_line_ids.filtered(
             lambda v: not AttributesHelper.is_wnva(v.attribute_id) and v.attribute_id.id not in new_attributes_ids
         )
         for attr_value in to_delete_values:
             # Remove Attribute from Values
-            self.object.attribute_value_ids = [(3, attr_value.id, 0)]
+            self.object.attribute_line_ids = [(3, attr_value.id, 0)]
             # Update Template Attribute Values with Variants Values
             self._set_variants_value_ids(attr_value.attribute_id)
         self._in.__delitem__(field_id)
@@ -140,7 +140,7 @@ class ProductsAttributes:
         values = []
         # ====================================================================#
         # Walk on Product Attributes Values
-        for attr_value in self.object.attribute_value_ids:
+        for attr_value in self.object.product_template_attribute_value_ids:
             # Filter Attributes that are NOT Variants Attributes
             if AttributesHelper.is_wnva(attr_value.attribute_id):
                 continue
@@ -185,7 +185,9 @@ class ProductsAttributes:
         """
         # ====================================================================#
         # Find Product Current Attributes Values
-        current_value = self.object.attribute_value_ids.filtered(lambda v: v.attribute_id.id == new_value.attribute_id.id)
+        current_value = self.object.product_template_attribute_value_ids.filtered(
+            lambda v: v.attribute_id.id == new_value.attribute_id.id
+        )
         # ====================================================================#
         # If Values are Similar => Nothing to Do => Exit
         if len(current_value) == 1 and new_value.id == current_value.id:
@@ -193,9 +195,9 @@ class ProductsAttributes:
         # ====================================================================#
         # Update Attribute Value => Remove Old Value => Add New Value
         if len(current_value):
-            self.object.attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
+            self.object.product_template_attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
         else:
-            self.object.attribute_value_ids = [(4, new_value.id, 0)]
+            self.object.product_template_attribute_value_ids = [(4, new_value.id, 0)]
         # ====================================================================#
         # Update Template Attribute Values with Variants Values
         self._set_variants_value_ids(new_value.attribute_id)
@@ -252,7 +254,7 @@ class ProductsAttributes:
         # Collect Variants Product Values Ids
         values_ids = []
         for variant in self.template.with_context(active_test=active_test).product_variant_ids:
-            for value in variant.attribute_value_ids.filtered(lambda v: v.attribute_id.id == attribute.id):
+            for value in variant.attribute_line_ids.filtered(lambda v: v.attribute_id.id == attribute.id):
                 values_ids += [value.id]
         # ====================================================================#
         # Update Product Template Attribute Values Ids

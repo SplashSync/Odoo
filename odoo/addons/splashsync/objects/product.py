@@ -13,11 +13,13 @@
 
 from . import OdooObject
 from splashpy import const
+from .products import ProductsCore
 from .products import ProductsVariants, ProductsAttributes, ProductsPrices, ProductsImages
 from .products import ProductsFeatures, ProductsRelations, ProductsSupplier, ProductsInventory
 
 class Product(
     OdooObject,
+    ProductsCore,
     ProductsAttributes,
     ProductsVariants,
     ProductsPrices,
@@ -51,30 +53,37 @@ class Product(
 
     @staticmethod
     def get_composite_fields():
-        """Get List of Fields NOT To Parse Automatically """
-        return [
+        """
+        Get List of Fields NOT To Parse Automatically
+        """
+        from odoo.addons.splashsync.helpers import SystemManager
+        composite = [
             "id", "valuation", "cost_method", "tracking",
             "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
-            "service_to_purchase", "qty_available"
+            "service_to_purchase", "qty_available", 'priority', "description"
         ]
+        if SystemManager.compare_version(15) >= 0:
+            composite += ["type"]
+
+        return composite
+
 
     @staticmethod
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
             "default_code": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "model"},
-            "name": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "name"},
-            "description": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "description"},
+            "name": {"group": "", "index": True, "itemtype": "http://schema.org/Product", "itemprop": "name"},
 
             "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
 
             "qty_at_date": {"group": ""},
-            "virtual_available": {"group": ""},
+            "virtual_available": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
             "outgoing_qty	": {"group": ""},
             "incoming_qty": {"group": ""},
 
@@ -83,6 +92,7 @@ class Product(
             "image": {"group": "", "notest": True},
 
             "type": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
+            "detailed_type": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
 
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
@@ -94,12 +104,15 @@ class Product(
 
     def create(self):
         """Create a New Product with Variants Detection"""
+        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
         # ====================================================================#
         # Ensure default type
-        if "type" not in self._in:
+        if SystemManager.compare_version(15) >= 0 and "detailed_type" not in self._in:
+            self._in['detailed_type'] = 'product'
+        elif "type" not in self._in:
             self._in['type'] = 'product'
         # ====================================================================#
         # Init List of required Fields
@@ -133,7 +146,7 @@ class Product(
         return new_product
 
     def load(self, object_id):
-        """Load Odoo Object by Id"""
+        """Load Odoo Object by ID"""
         from odoo.exceptions import MissingError
         # ====================================================================#
         # Order Fields Inputs
@@ -155,6 +168,9 @@ class Product(
             return False
         except MissingError:
             return False
+
+        from odoo.addons.splashsync.helpers import AttributesHelper
+        AttributesHelper.debug(model)
 
         return model
 
