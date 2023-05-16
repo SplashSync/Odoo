@@ -25,7 +25,7 @@ stages:
   - Products
   - Orders
   - Invoices
-  - Deploy
+  - deploy
 
 ################################################################
 # Init & Functional Tests
@@ -195,7 +195,7 @@ V15:Invoices:
 ################################################################
 pages:
     image:      registry.gitlab.com/splashsync/php-console:pages
-    stage:      Deploy
+    stage:      deploy
     retry:      2
     tags:
       - Dedicated
