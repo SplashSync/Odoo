@@ -19,8 +19,6 @@ class ResConfigSplash(models.Model):
     _name = 'res.config.splash'
     _description = 'Splash Sync Module Configuration'
     _transient = False
-    _inherit = 'res.config'
-    _check_company_auto = True
 
     # Default Company Settings
     __default__ = {
@@ -148,8 +146,6 @@ class ResConfigSplash(models.Model):
         # ====================================================================#
         # Reset Configuration
         SettingsManager.reset()
-
-        return self.next()
 
     def default_get(self, fields=None):
         """
