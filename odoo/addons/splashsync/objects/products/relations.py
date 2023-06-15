@@ -265,7 +265,7 @@ class ProductsRelations:
         # ==================================================================== #
         # [MY LED] ONS Product Type
         if field_id == "ons_product_type":
-            M2OHelper.set_name(self.object, "ons_product_type", field_data, domain="product.category")
+            M2OHelper.set_name(self.template, "ons_product_type", field_data, domain="product.category")
             self._in.__delitem__(field_id)
 
     @staticmethod
