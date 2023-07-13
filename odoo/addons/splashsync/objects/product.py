@@ -58,7 +58,7 @@ class Product(
         """
         from odoo.addons.splashsync.helpers import SystemManager
         composite = [
-            "id", "valuation", "cost_method", "tracking",
+            "id", "valuation", "cost_method",
             "image", "image_small", "image_medium", "image_variant",
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
@@ -81,6 +81,7 @@ class Product(
             "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
+            "tracking": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
 
             "qty_at_date": {"group": ""},
             "virtual_available": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
