@@ -116,6 +116,10 @@ class Product(
         elif "type" not in self._in:
             self._in['type'] = 'product'
         # ====================================================================#
+        # Ensure default type
+        if "tracking" not in self._in:
+            self._in['tracking'] = 'none'
+        # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
         if reqFields is False:
