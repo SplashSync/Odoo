@@ -84,7 +84,7 @@ class ProductsRelations:
                 FieldFactory.group("Relations")
                 FieldFactory.addChoices(M2OHelper.get_name_values(self.m2o_rel[autoId]["model"]))
                 FieldFactory.microData(self.m2o_rel[autoId]["item_type"], self.m2o_rel[autoId]["item_prop"])
-                FieldFactory.isNotTested()
+                # FieldFactory.isNotTested()
 
     def buildProductsM2MRelationsFields(self):
         """
