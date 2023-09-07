@@ -130,8 +130,11 @@ class SettingsManager():
             raise Exception("[SPLASH] Unknown Company")
         # ====================================================================#
         # Load Splash Configuration from Cache
-        if SettingsManager.__current__ is not None and SettingsManager.__current__.company_id.id == company_id:
-            return SettingsManager.__current__
+        try:
+            if SettingsManager.__current__.company_id.id == company_id:
+                return SettingsManager.__current__
+        except Exception:
+            pass
         # ====================================================================#
         # Load Splash Configuration For Company
         config = SystemManager.getModelSudo('res.config.splash').get_config(company_id)
