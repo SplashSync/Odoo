@@ -37,7 +37,8 @@ class OrderStatus:
     }
 
     __known_state_extras = {
-        'OrderOutOfStock': 'done',
+        'OrderToShip': 'sale',
+        'OrderOutOfStock': 'sale',
         'OrderInTransit': 'done',
         'OrderPickupAvailable': 'done',
         'OrderReturned': 'done',
