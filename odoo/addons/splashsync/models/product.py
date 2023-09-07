@@ -70,15 +70,6 @@ class ProductProduct(models.Model):
 
         return res
 
-    def _compute_quantities(self):
-        res = super(ProductProduct, self)._compute_quantities()
-
-        # ====================================================================#
-        # Execute Splash Commit
-        self.__do_splash_commit(const.__SPL_A_UPDATE__)
-
-        return res
-
     def unlink(self):
         # ====================================================================#
         # Execute Splash Commit
