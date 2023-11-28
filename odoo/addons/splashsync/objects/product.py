@@ -84,7 +84,8 @@ class Product(
             "tracking": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
 
             "qty_at_date": {"group": ""},
-            "virtual_available": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
+            "free_qty": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
+            "virtual_available": {"group": ""},
             "outgoing_qty	": {"group": ""},
             "incoming_qty": {"group": ""},
 
