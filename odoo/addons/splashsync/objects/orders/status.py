@@ -30,7 +30,6 @@ class OrderStatus:
 
     __known_state_trans = {
         'draft': 'OrderDraft',
-        'sent': 'OrderPaymentDue',
         'sale': 'OrderProcessing',
         'done': 'OrderDelivered',
         'cancel': 'OrderCanceled',
@@ -39,6 +38,7 @@ class OrderStatus:
     __known_state_extras = {
         'OrderToShip': 'sale',
         'OrderOutOfStock': 'sale',
+        'OrderPaymentDue': 'sale',
         'OrderInTransit': 'done',
         'OrderPickupAvailable': 'done',
         'OrderReturned': 'done',
