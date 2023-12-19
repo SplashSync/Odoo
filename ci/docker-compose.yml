@@ -68,7 +68,7 @@ services:
             # Specify Local Tests
             - './docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - './ci/splash.yml:/app/config/packages/splash.yml:ro'
+            - './ci/splash.yaml:/app/config/packages/splash.yaml:ro'
             - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
             - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
             - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
