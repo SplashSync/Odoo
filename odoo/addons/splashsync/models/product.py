@@ -68,6 +68,10 @@ class ProductProduct(models.Model):
         # Execute Splash Commit
         self.__do_splash_commit(const.__SPL_A_UPDATE__)
 
+        # ====================================================================#
+        # Execute Splash Commit for linked Products (BOMs)
+        self.__do_splash_commit_boms(const.__SPL_A_UPDATE__)
+
         return res
 
     def unlink(self):
@@ -97,4 +101,39 @@ class ProductProduct(models.Model):
         from odoo.addons.splashsync.client import OdooClient
         for product in self:
             OdooClient.commit(Product(), action, str(product.id))
+
+    def __do_splash_commit_boms(self, action):
+        """
+        Execute Splash Commit for this linked Products (BOMs)
+
+        :param action: str
+        :return: void
+        """
+        # ====================================================================#
+        # Check if Splash Commit is Allowed
+        from odoo.addons.splashsync.helpers import SettingsManager
+        if SettingsManager.is_no_commits():
+            return
+        # ====================================================================#
+        # Execute Splash Commit for this Product
+        from odoo.addons.splashsync.objects import Product
+        from odoo.addons.splashsync.client import OdooClient
+
+        for product in self:
+            try:
+                for bom_line in product.bom_line_ids:
+                    # ====================================================================#
+                    # Single Product Selected
+                    if bom_line.bom_id.product_id.id > 0:
+                        OdooClient.commit(Product(), action, str(bom_line.bom_id.product_id.id))
+                    else:
+                        # ====================================================================#
+                        # Product Template Selected
+                        OdooClient.commit(
+                            Product(),
+                            action,
+                            list(map(str, bom_line.bom_id.product_tmpl_id.product_variant_ids.ids))
+                        )
+            except Exception:
+                pass
 
