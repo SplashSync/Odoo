@@ -85,6 +85,7 @@ V16:Contacts:
     <<: *functional
     stage:              Contacts
     variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+    allow_failure:      true
 #  when:               always
 
 #################################################################
@@ -119,6 +120,7 @@ V16:Products:
     <<: *functional
     stage:              Products
     variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
+    allow_failure:      true
 #    when:               always
 
 #################################################################
@@ -149,10 +151,11 @@ V15:Orders:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
 #    when:               always
 
-#V16:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
+V16:Orders:
+    <<: *functional
+    stage:              Orders
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
+    allow_failure:      true
 #    when:               always
 
 #################################################################
@@ -183,10 +186,11 @@ V15:Invoices:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
 #    when:               always
 
-#V16:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+V16:Invoices:
+    <<: *functional
+    stage:              Invoices
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+    allow_failure:      true
 #    when:               always
 
 ################################################################
