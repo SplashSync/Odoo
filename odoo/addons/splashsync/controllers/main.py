@@ -15,6 +15,7 @@
 from odoo import http
 from splashpy import Framework
 from odoo.addons.splashsync.client import OdooClient
+from werkzeug.wrappers import Request
 
 class Webservice(http.Controller):
 
@@ -24,10 +25,10 @@ class Webservice(http.Controller):
          Respond to Splash Webservice Requests
          """
         try:
-            return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
+            return OdooClient.get_server().fromWerkzeug(self.__get_request())
         except Exception as exception:
             if exception.__class__ == "psycopg2.errors.InFailedSqlTransaction":
-                return OdooClient.get_server().fromWerkzeug(http.request.httprequest)
+                return OdooClient.get_server().fromWerkzeug(self.__get_request())
 
     @http.route('/splash/test', type='http', auth='user', website=True)
     def test(self, **kw):
@@ -65,5 +66,24 @@ class Webservice(http.Controller):
         Framework.log().info('Server Type: ' + str(infos['shortdesc']))
         Framework.log().info('Server Url: ' + str(infos["serverurl"]))
         Framework.log().info('Module Version: ' + str(infos["moduleversion"]))
+        # ====================================================================#
+        # Detect Wrong Request Object
+        if not isinstance(http.request.httprequest, Request):
+            Framework.log().warn("Odoo Requests Detected: "+str(http.request.httprequest.__class__.__name__))
 
         return raw_html + Framework.log().to_html_list(True)
+
+    def __get_request(self, **kw):
+        """
+         Extract Werkzeug Request from Arguments
+        """
+        # ====================================================================#
+        # Already a Werkzeug Request Object
+        if isinstance(http.request.httprequest, Request):
+            return http.request.httprequest
+        # ====================================================================#
+        # Detect Odoo Request Object
+        if isinstance(http.request.httprequest, http.HTTPRequest):
+            return Request(http.request.httprequest._HTTPRequest__environ)
+
+        return None
