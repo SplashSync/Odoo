@@ -30,6 +30,7 @@ splash:
             host:               false
             connector:          soap
             config:
+                Extended:           true
                 WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
@@ -60,6 +61,7 @@ splash:
             host:               false
             connector:          soap
             config:
+                Extended:           true
                 WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
@@ -75,6 +77,7 @@ splash:
             host:               false
             connector:          soap
             config:
+                Extended:           true
                 WsIdentifier:       ThisIsOdooC2WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
                 WsHost:             http://odoo:8069
