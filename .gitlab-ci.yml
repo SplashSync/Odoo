@@ -81,10 +81,10 @@ V15:Contacts:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 #  when:               always
 
-#V16:Contacts:
-#    <<: *functional
-#    stage:              Contacts
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+V16:Contacts:
+    <<: *functional
+    stage:              Contacts
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
 #  when:               always
 
 #################################################################
@@ -115,10 +115,10 @@ V15:Products:
     variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
 #    when:               always
 
-#V16:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
+V16:Products:
+    <<: *functional
+    stage:              Products
+    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
 #    when:               always
 
 #################################################################
