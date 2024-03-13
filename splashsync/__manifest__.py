@@ -34,6 +34,7 @@
        'views/product_view.xml',
        'security/ir.model.access.csv',
     ],
+    'images': ["static/description/banner.png"],
     'post_init_hook': 'post_init_hook',
 }
 
