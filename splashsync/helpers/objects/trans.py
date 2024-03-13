@@ -53,29 +53,15 @@ class TransHelper:
         :param model: model
         :param field_name: str
         :param iso_lang: str
+        :param default: str
         :return: str
         """
         try:
-            from odoo.addons.splashsync.helpers import SystemManager
-
-            # Since V16, Translations are Stored in objects
-            if SystemManager.compare_version(16) >= 0:
-                return getattr(model.with_context({"lang": iso_lang}), field_name)
-
-            # For compatibility with versions before V16
-            translations = TransHelper.getModel()._get_ids(
-                model.__class__.__name__ + "," + field_name,
-                "model",
-                iso_lang,
-                [model.id]
-            )
-            if model.id in translations and isinstance(translations[model.id], str):
-                return translations[model.id]
+            return getattr(model.with_context({"lang": iso_lang}), field_name)
         except Exception as exception:
             from splashpy import Framework
             Framework.log().fromException(exception)
             return "Translation Error"
-        return default
 
     @staticmethod
     def set(model, field_name, iso_lang, value):
@@ -88,27 +74,7 @@ class TransHelper:
         :return: void
         """
         try:
-            from odoo.addons.splashsync.helpers import SystemManager
-
-            # Since V16, Translations are Stored in objects
-            if SystemManager.compare_version(16) >= 0:
-                # setattr(model.with_context({"lang": iso_lang}), field_name, {iso_lang: value})
-                # setattr(model.({"lang": iso_lang}), field_name, value)
-                model.with_context({"lang": iso_lang}).write({
-                    field_name: value
-                })
-                # model.with_context({"lang": iso_lang})[field_name] = value
-                return
-
-            # For compatibility with versions before V16
-            else:
-                TransHelper.getModel()._set_ids(
-                    model.__class__.__name__ + "," + field_name,
-                    "model",
-                    iso_lang,
-                    [model.id],
-                    value
-                )
+            model.update_field_translations(field_name, {iso_lang: value})
         except Exception as exception:
             from splashpy import Framework
             Framework.log().fromException(exception)
