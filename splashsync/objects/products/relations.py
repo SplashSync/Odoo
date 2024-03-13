@@ -50,24 +50,6 @@ class ProductsRelations:
         }
     }
 
-    # Product Many2Many Attributes Definition
-    m2m_rel = {
-        # ==================================================================== #
-        # Product Routes
-        "route": {
-            "item_type": "http://schema.org/Product",
-            "item_prop": "routes",
-            "model": "stock.location.route",
-        },
-        # ==================================================================== #
-        # Public Categories
-        "public_categ": {
-            "item_type": "http://schema.org/Product",
-            "item_prop": "publicCategory",
-            "model": "product.public.category",
-        }
-    }
-
     def buildProductsM2ORelationsFields(self):
         """
         Product Many2One Attributes Automatic Links
@@ -92,17 +74,18 @@ class ProductsRelations:
         :return: none
         """
         allFields = self.getModel().fields_get()
-        for autoId in self.m2m_rel:
+        config = self.__getProductsM2MRelationsFieldsIds()
+        for autoId in config:
             autoIds = autoId+"_ids"
             if autoIds in allFields:
                 FieldFactory.create(const.__SPL_T_INLINE__, autoId+"_ids", allFields[autoIds]["string"]+" IDS")
-                FieldFactory.microData(self.m2m_rel[autoId]["item_type"], self.m2m_rel[autoId]["item_prop"] + "Id")
+                FieldFactory.microData(config[autoId]["item_type"], config[autoId]["item_prop"] + "Id")
                 FieldFactory.group("Relations")
                 FieldFactory.isReadOnly()
                 FieldFactory.create(const.__SPL_T_INLINE__, autoId, allFields[autoIds]["string"])
                 FieldFactory.group("Relations")
-                FieldFactory.addChoices(M2OHelper.get_name_values(self.m2m_rel[autoId]["model"]))
-                FieldFactory.microData(self.m2m_rel[autoId]["item_type"], self.m2m_rel[autoId]["item_prop"])
+                FieldFactory.addChoices(M2OHelper.get_name_values(config[autoId]["model"]))
+                FieldFactory.microData(config[autoId]["item_type"], config[autoId]["item_prop"])
                 FieldFactory.isNotTested()
 
     def buildProductsRelationsFields(self):
@@ -183,7 +166,7 @@ class ProductsRelations:
         """
         Read Product Many2Many Relation
         """
-        for autoId in self.m2m_rel:
+        for autoId in self.__getProductsM2MRelationsFieldsIds():
             autoIds = autoId + "_ids"
             if field_id == autoIds:
                 self._out[field_id] = M2MHelper.get_ids(self.object, autoIds)
@@ -258,9 +241,9 @@ class ProductsRelations:
         """
         Write Product Many2Many Relation
         """
-        for autoId in self.m2m_rel:
+        for autoId in self.__getProductsM2MRelationsFieldsIds():
             autoIds = autoId + "_ids"
-            config = self.m2m_rel[autoId]
+            config = self.__getProductsM2MRelationsFieldsIds()[autoId]
             if field_id == autoIds:
                 M2MHelper.set_ids(self.object, autoIds, field_data, domain=config["model"])
                 self._in.__delitem__(field_id)
@@ -339,4 +322,47 @@ class ProductsRelations:
 
         return False
 
+    @staticmethod
+    def __getProductsM2MRelationsFieldsIds():
+        """
+        Get Payment Fields Associations
 
+        :return: dict
+        """
+        from odoo.addons.splashsync.helpers import SystemManager
+
+        if SystemManager.compare_version(16) >= 0:
+            return {
+                # ==================================================================== #
+                # Product Routes
+                "route": {
+                    "item_type": "http://schema.org/Product",
+                    "item_prop": "routes",
+                    "model": "stock.route",
+                    # "model": "stock.location.route",
+                },
+                # ==================================================================== #
+                # Public Categories
+                "public_categ": {
+                    "item_type": "http://schema.org/Product",
+                    "item_prop": "publicCategory",
+                    "model": "product.public.category",
+                }
+            }
+        else:
+            return {
+                # ==================================================================== #
+                # Product Routes
+                "route": {
+                    "item_type": "http://schema.org/Product",
+                    "item_prop": "routes",
+                    "model": "stock.location.route",
+                },
+                # ==================================================================== #
+                # Public Categories
+                "public_categ": {
+                    "item_type": "http://schema.org/Product",
+                    "item_prop": "publicCategory",
+                    "model": "product.public.category",
+                }
+            }
