@@ -30,6 +30,7 @@ class OrderStatus:
 
     __known_state_trans = {
         'draft': 'OrderDraft',
+        'sent': 'OrderPaymentDue',
         'sale': 'OrderProcessing',
         'done': 'OrderDelivered',
         'cancel': 'OrderCanceled',

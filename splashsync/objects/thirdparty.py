@@ -88,6 +88,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
 
             "website": {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
             "activity_summary": {"write": False},
+            "use_partner_credit_limit": {"write": False},
 
             "additional_info": {"notest": True},
             "parent_id": {"notest": True},
@@ -145,7 +146,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
 
     def load(self, object_id):
         """
-        Load Odoo Object by Id
+        Load Odoo Object by ID
         :param object_id: str
         :return: ThirdParty Object
         """
