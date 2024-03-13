@@ -93,6 +93,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
             "activity_summary": {"write": False},
 
             "additional_info": {"notest": True},
+            "company_registry": {"notest": True},
 
             "image": {"group": "Images", "notest": True},
         }
