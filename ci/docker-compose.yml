@@ -50,7 +50,7 @@ services:
     ################################################################################
     # Postgres Database Container
     db:
-        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/postgres:10
+        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/postgres:12
         logging:        { driver: "none" }
         command:        postgres -c 'max_connections=500'
         environment:
