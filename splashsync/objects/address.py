@@ -91,6 +91,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
 
             "website": {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
             "activity_summary": {"write": False},
+            "use_partner_credit_limit": {"write": False},
 
             "additional_info": {"notest": True},
             "company_registry": {"notest": True},
