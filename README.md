@@ -12,7 +12,7 @@ For all install instructions, see: [Odoo Module Doc](https://splashsync.gitlab.i
 
 ## Requirements
 
-* Python 3.6+
+* Python 3.9+
 * Odoo V12
 * An active Splash Sync User Account
 

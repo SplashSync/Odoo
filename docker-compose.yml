@@ -189,14 +189,13 @@ services:
     ################################################################################
     # Splash Toolkit Container
     toolkit:
-        image: 'splashsync/toolkit:alpine'
+        image: 'splashsync/toolkit'
         container_name: toolkit.odoo.local
         logging: { driver: "none" }
         volumes:
             # Specify Local Tests
             - './docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-#            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
             - './docker/toolkit/splash-dev.yml:/app/config/packages/splash.yaml:ro'
             - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
             - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
