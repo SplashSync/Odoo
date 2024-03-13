@@ -21,7 +21,8 @@
     'author': 'SplashSync',
     'maintainer': 'contact@splashsync.com',
     'license': 'GPL-3',
-    'application': 'true',
+    'application': True,
+    'application': True,
     'external_dependencies': {
         'python': ["splashpy"],
         'bin': [],
