@@ -138,4 +138,5 @@ dmypy.json
 /vendor/
 /reboot.sh
 /public/
+/resources/
 /composer.lock
