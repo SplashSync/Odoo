@@ -1,0 +1,4 @@
+[submodule "resources"]
+	path = resources
+	url = git@github.com:SplashSync/Odoo.git
+	branch = resources
