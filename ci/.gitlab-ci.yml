@@ -60,7 +60,7 @@ Contacts:Main:
     <<: *functional
     stage:              Contacts
     variables:
-        SPLASH_SEQUENCE:  "Odoo Main",
+        SPLASH_SEQUENCE:  "Odoo Main"
         SPLASH_TYPES:     "Address,ThirdParty"
 
 Contacts:C1:
