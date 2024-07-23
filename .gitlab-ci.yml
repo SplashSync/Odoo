@@ -38,9 +38,9 @@ stages:
 ################################################################
 
 .functional:    &functional
-    image:      docker/compose
+    image:      docker:latest
 #    when:       manual
-    retry:      1
+#    retry:      1
     tags:
       - Dedicated-Docker
     services:
@@ -59,7 +59,7 @@ stages:
       - sh resources/ci/start_odoo.sh
       - sh resources/ci/test_odoo.sh
     after_script:
-      - sh ci/after_script.sh
+      - sh resources/ci/after_script.sh
 
 V16:Contacts:
     <<: *functional
