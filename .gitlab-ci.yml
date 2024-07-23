@@ -19,10 +19,9 @@
 
 
 variables:
-    DOCKER_HOST:              tcp://docker:2375/
-    DOCKER_DRIVER:            overlay2
+#    DOCKER_HOST:              tcp://docker:2375/
+#    DOCKER_DRIVER:            overlay2
     GIT_SUBMODULE_STRATEGY:   normal
-    ODOO_VERSION:             16.0
 
 ################################################################
 # Defined Pipeline Stages
