@@ -14,24 +14,14 @@
 ################################################################################
 
 ################################################################################
-# Docker Compose File
-#
-# This Docker File intend to Create a CI/CD Environment
-# for Splash Modules Testing
-#
-# 172.120.0.99        latest.odoo.local
-# 172.120.0.100       toolkit.odoo.local
-# 172.120.0.101       db.odoo.local
-#
+# Docker Compose File for CI/CD
 ################################################################################
-
-version: "3.2"
 
 services:
 
     ################################################################################
     # Odoo Server Container
-    odoo:
+    app:
         image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/odoo:${ODOO_VERSION}
         depends_on:
             - db
@@ -69,8 +59,7 @@ services:
             - './docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
             - './ci/splash.yaml:/app/config/packages/splash.yaml:ro'
-            - './docker/toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
-            - './docker/toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
-            - './docker/toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
-            - './docker/toolkit/phpunit.orders.xml:/app/phpunit.orders.xml:ro'
+        environment:
+              - SPLASH_SEQUENCE=${SPLASH_SEQUENCE}
+              - SPLASH_TYPES=${SPLASH_TYPES}
 

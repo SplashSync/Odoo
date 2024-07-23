@@ -23,7 +23,7 @@ set -e
 ################################################################
 # Wait Until Odoo Container Started
 title "TEST --> Execute Tests from Toolkit"
-echo "Execute ${PHPUNIT_CONFIG} Sequence"
-docker compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG} --testdox
+echo "Execute ${SPLASH_TYPES} Sequence on ${SPLASH_SEQUENCE}"
+docker compose exec -T toolkit php vendor/bin/phpunit --testdox
 subtitle "TEST --> Archive Odoo Tests Logs"
 docker compose logs --tail="2000" app >> logs/odoo.tests.txt
