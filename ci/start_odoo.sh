@@ -32,7 +32,7 @@ http_code="000";
 subtitle "$cpt => $http_code: Wait for Odoo...";
 while [ "$http_code" != "200" ]
 do
-  http_code=$(docker compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
+  http_code=$(docker compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' app:80');
   cpt=$(( cpt+1 ));
   subtitle "$cpt => $http_code: Wait for Odoo...";
   docker compose logs --tail="10" app
