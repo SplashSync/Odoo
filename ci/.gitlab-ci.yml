@@ -31,7 +31,7 @@ stages:
 ################################################################
 
 .functional:    &functional
-    image:      docker/compose
+    image:      docker:latest
 #    when:       manual
     retry:      1
     tags:
