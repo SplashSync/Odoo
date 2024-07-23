@@ -21,9 +21,9 @@ variables:
 # Defined Pipeline Stages
 stages:
   - Contacts
-#  - Products
-#  - Orders
-#  - Invoices
+  - Products
+  - Orders
+  - Invoices
 #  - deploy
 
 ################################################################
