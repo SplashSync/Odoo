@@ -26,10 +26,8 @@ services:
         depends_on:
             - db
         volumes:
-            - ./docker/odoo:/etc/odoo:ro
-            - ./odoo/addons/splashsync:/mnt/extra-addons/splashsync:ro
-            - ../Py-Core:/mnt/splashpy
-            - ./scripts:/scripts:ro
+            - ./odoo:/etc/odoo:ro
+            - ../../splashsync:/mnt/extra-addons/splashsync:ro
         entrypoint:         bash /etc/odoo/entrypoint.sh
         environment:
             - ODOO_DATABASE=$CI_JOB_ID
@@ -53,12 +51,12 @@ services:
     toolkit:
 #        image: registry.gitlab.com/splashsync/odoo:toolkit
         image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit
-        logging: { driver: "none" }
+        logging:        { driver: "none" }
         volumes:
             # Specify Local Tests
-            - './docker/toolkit/tests:/app/tests:ro'
+            - './toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - './ci/splash.yaml:/app/config/packages/splash.yaml:ro'
+            - '../ci/splash.yaml:/app/config/packages/splash.yaml:ro'
         environment:
               - SPLASH_SEQUENCE=${SPLASH_SEQUENCE}
               - SPLASH_TYPES=${SPLASH_TYPES}
