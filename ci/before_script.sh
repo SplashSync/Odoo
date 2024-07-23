@@ -19,7 +19,7 @@
 set -e
 ################################################################
 # import Layout Functions
-./../scripts/functions.sh
+resources/scripts/functions.sh
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
