@@ -55,8 +55,8 @@ stages:
     script:
       - pwd
       - ls -la
-      - sh ci/start_odoo.sh
-      - sh ci/test_odoo.sh
+      - sh resources/ci/start_odoo.sh
+      - sh resources/ci/test_odoo.sh
     after_script:
       - sh ci/after_script.sh
 
