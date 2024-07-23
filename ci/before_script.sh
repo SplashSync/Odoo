@@ -40,5 +40,6 @@ mkdir -p logs
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"
-docker compose up -d --force-recreate
+docker network create splashsync
+docker compose up -d --force-recreate --quiet-pull
 docker image ls
