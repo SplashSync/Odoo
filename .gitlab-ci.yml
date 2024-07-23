@@ -22,7 +22,7 @@ variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
 #    GIT_STRATEGY: clone
-#    GIT_SUBMODULE_STRATEGY: normal
+    GIT_SUBMODULE_STRATEGY: normal
 
 ################################################################
 # Defined Pipeline Stages
