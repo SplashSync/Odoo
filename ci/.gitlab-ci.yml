@@ -14,8 +14,8 @@
 ################################################################################
 
 variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
+  DOCKER_HOST:    tcp://docker:2375/
+  DOCKER_DRIVER:  overlay2
 
 ################################################################
 # Defined Pipeline Stages
@@ -44,52 +44,39 @@ stages:
         paths:
             - logs
     before_script:
-      - pwd
-      - ls -l
-      - sh ci/before_script.sh
+      - sh resources/ci/before_script.sh
     script:
-      - sh ci/start_odoo.sh
-      - sh ci/test_odoo.sh
+      - sh resources/ci/start_odoo.sh
+      - sh resources/ci/test_odoo.sh
     after_script:
-      - sh ci/after_script.sh
+      - sh resources/ci/after_script.sh
 
 
 ################################################################
 # Contacts - Functional Tests
 ################################################################
 
-## ALL TESTS PASSED
-#V12:Contacts:
-#    <<: *functional
-#    stage:              Contacts
-#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-#V13:Contacts:
-#    <<: *functional
-#    stage:              Contacts
-#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-#V14:Contacts:
-#    <<: *functional
-#    stage:              Contacts
-#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-#V15:Contacts:
-#    <<: *functional
-#    stage:              Contacts
-#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-##  when:               always
-#
-V16:Contacts:
+Contacts:Main:
     <<: *functional
     stage:              Contacts
-    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-    allow_failure:      false
-#  when:               always
-#
+    variables:
+        SPLASH_SEQUENCE:  "Odoo Main",
+        SPLASH_TYPES:     "Address,ThirdParty"
+
+Contacts:C1:
+    <<: *functional
+    stage:              Contacts
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C1"
+        SPLASH_TYPES:     "Address,ThirdParty"
+
+Contacts:C2:
+    <<: *functional
+    stage:              Contacts
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C2"
+        SPLASH_TYPES:     "Address,ThirdParty"
+
 ##################################################################
 ### Products - Functional Tests
 ##################################################################
