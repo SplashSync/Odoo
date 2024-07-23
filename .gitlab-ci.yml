@@ -64,5 +64,5 @@ stages:
 V16:Contacts:
     <<: *functional
     stage:              Contacts
-    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+    variables:          { SPLASH_SEQUENCE:     "Odoo Main", SPLASH_TYPES:   "Address,ThirdParty" }
     allow_failure:      false
