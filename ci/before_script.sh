@@ -21,6 +21,11 @@ set -e
 # import Layout Functions
 . resources/scripts/functions.sh
 ################################################################
+# Init Git & Submodules
+title "BEFORE --> Init Git Submodules"
+apk add --no-cache git
+git submodule update --remote
+################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
 docker version
