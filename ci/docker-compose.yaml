@@ -56,7 +56,7 @@ services:
             # Specify Local Tests
             - './toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - '../ci/splash.yaml:/app/config/packages/splash.yaml:ro'
+            - './toolkit/splash.yaml:/app/config/packages/splash.yaml:ro'
         environment:
               - SPLASH_SEQUENCE=${SPLASH_SEQUENCE}
               - SPLASH_TYPES=${SPLASH_TYPES}
