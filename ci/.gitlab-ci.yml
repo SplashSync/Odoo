@@ -62,6 +62,7 @@ Contacts:Main:
     variables:
         SPLASH_SEQUENCE:  "Odoo Main"
         SPLASH_TYPES:     "Address,ThirdParty"
+    when:               always
 
 Contacts:C1:
     <<: *functional
@@ -69,6 +70,7 @@ Contacts:C1:
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Address,ThirdParty"
+    when:               always
 
 Contacts:C2:
     <<: *functional
@@ -76,112 +78,92 @@ Contacts:C2:
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Address,ThirdParty"
+    when:               always
 
-##################################################################
-### Products - Functional Tests
-##################################################################
-#
-#V12:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-##  when:               always
-#
-#V13:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-##  when:               always
-#
-#V14:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
-##    when:               always
-#
-#V15:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
-##    when:               always
-#
-#V16:Products:
-#    <<: *functional
-#    stage:              Products
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
-#    allow_failure:      true
-##    when:               always
-#
-##################################################################
-### Orders - Functional Tests
-##################################################################
-#
-#V12:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
-##    when:               always
-#
-#V13:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
-##    when:               always
-#
-#V14:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.orders.xml }
-##    when:               always
-#
-#V15:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
-##    when:               always
-#
-#V16:Orders:
-#    <<: *functional
-#    stage:              Orders
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
-#    allow_failure:      true
-##    when:               always
-#
-##################################################################
-### Invoices - Functional Tests
-##################################################################
-#
-#V12:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-##    when:               always
-#
-#V13:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-##    when:               always
-#
-#V14:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-##    when:               always
-#
-#V15:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-##    when:               always
-#
-#V16:Invoices:
-#    <<: *functional
-#    stage:              Invoices
-#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    allow_failure:      true
-##    when:               always
-#
+################################################################
+# Products - Functional Tests
+################################################################
+
+Products:Main:
+    <<: *functional
+    stage:                Products
+    variables:
+        SPLASH_SEQUENCE:  "Odoo Main"
+        SPLASH_TYPES:     "Product"
+    when:                 always
+
+Products:C1:
+    <<: *functional
+    stage:                Products
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C1"
+        SPLASH_TYPES:     "Product"
+    when:                 always
+
+Products:C2:
+    <<: *functional
+    stage:                Products
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C2"
+        SPLASH_TYPES:     "Product"
+    when:                 always
+
+#################################################################
+## Orders - Functional Tests
+#################################################################
+
+Orders:Main:
+    <<: *functional
+    stage:                Orders
+    variables:
+        SPLASH_SEQUENCE:  "Odoo Main"
+        SPLASH_TYPES:     "Order"
+    when:                 always
+
+Orders:C1:
+    <<: *functional
+    stage:                Orders
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C1"
+        SPLASH_TYPES:     "Order"
+    when:                 always
+
+Orders:C2:
+    <<: *functional
+    stage:                Orders
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C2"
+        SPLASH_TYPES:     "Order"
+    when:                 always
+
+################################################################
+# Invoices - Functional Tests
+################################################################
+
+Invoices:Main:
+    <<: *functional
+    stage:                Invoices
+    variables:
+        SPLASH_SEQUENCE:  "Odoo Main"
+        SPLASH_TYPES:     "Invoice"
+    when:                 always
+
+Invoices:C1:
+    <<: *functional
+    stage:                Invoices
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C1"
+        SPLASH_TYPES:     "Invoice"
+    when:                 always
+
+Invoices:C2:
+    <<: *functional
+    stage:                Invoices
+    variables:
+        SPLASH_SEQUENCE:  "Odoo C2"
+        SPLASH_TYPES:     "Invoice"
+    when:                 always
+
 #################################################################
 ## Build Documentation
 #################################################################
