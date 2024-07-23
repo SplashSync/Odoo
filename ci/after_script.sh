@@ -19,17 +19,17 @@
 set -e
 ################################################################
 # import Layout Functions
-. scripts/functions.sh
+. resources/scripts/functions.sh
 ################################################################
 # Stop Container & Show Logs
 title "AFTER --> Stop Docker"
-docker-compose stop
+docker compose stop
 
 subtitle "AFTER --> Archive Odoo Logs"
-docker-compose logs --tail="2000" odoo >> logs/odoo.all.txt
+docker compose logs --tail="2000" app >> logs/odoo.all.txt
 
 if [ $CI_JOB_STATUS != 'success' ];
 then
   subtitle "AFTER --> Show Odoo Logs"
-  docker-compose logs --tail="50" odoo
+  docker compose logs --tail="50" app
 fi;

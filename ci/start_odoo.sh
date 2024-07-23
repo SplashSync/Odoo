@@ -19,11 +19,11 @@
 #set -e
 ################################################################
 # import Layout Functions
-. scripts/functions.sh
+. resources/scripts/functions.sh
 ################################################################
 # Ensure Toolkit Started
 title "TEST --> Start Toolkit"
-docker-compose exec -T toolkit php bin/console | grep Symfony
+docker compose exec -T toolkit php bin/console | grep Symfony
 ################################################################
 # Wait Until Odoo Container Started
 title "TEST --> Start Odoo"
@@ -32,10 +32,10 @@ http_code="000";
 subtitle "$cpt => $http_code: Wait for Odoo...";
 while [ "$http_code" != "200" ]
 do
-  http_code=$(docker-compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
+  http_code=$(docker compose exec -T toolkit bash -c 'curl -s -o /dev/null -w ''%{http_code}'' odoo:80');
   cpt=$(( cpt+1 ));
   subtitle "$cpt => $http_code: Wait for Odoo...";
-  docker-compose logs --tail="10" odoo
+  docker compose logs --tail="10" app
   sleep 10;
   if [ $cpt == '6' ];
   then
@@ -44,4 +44,4 @@ do
   fi
 done
 subtitle "TEST --> Odoo Started !"
-docker-compose logs --tail="2000" odoo >> logs/odoo.init.txt
+docker compose logs --tail="2000" app >> logs/odoo.init.txt

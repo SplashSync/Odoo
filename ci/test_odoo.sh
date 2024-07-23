@@ -19,11 +19,11 @@
 set -e
 ################################################################
 # import Layout Functions
-. scripts/functions.sh
+. resources/scripts/functions.sh
 ################################################################
 # Wait Until Odoo Container Started
 title "TEST --> Execute Tests from Toolkit"
 echo "Execute ${PHPUNIT_CONFIG} Sequence"
-docker-compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG} --testdox
+docker compose exec -T toolkit php vendor/bin/phpunit -c ${PHPUNIT_CONFIG} --testdox
 subtitle "TEST --> Archive Odoo Tests Logs"
-docker-compose logs --tail="2000" odoo >> logs/odoo.tests.txt
+docker compose logs --tail="2000" app >> logs/odoo.tests.txt

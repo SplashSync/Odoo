@@ -19,12 +19,12 @@
 set -e
 ################################################################
 # import Layout Functions
-resources/scripts/functions.sh
+. resources/scripts/functions.sh
 ################################################################
 # Init Docker
 title "BEFORE --> Init Docker"
 docker version
-docker-compose version
+docker compose version
 docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
 ################################################################
 # Load SplashPy Module
@@ -36,10 +36,9 @@ chmod 7777 -Rf ../Py-Core
 ################################################################
 # Configure Docker Compose
 subtitle "BEFORE --> Configure Docker Compose"
-cp -Rf ci/docker-compose.yml docker-compose.yml
 mkdir -p logs
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"
-docker-compose up -d --force-recreate
+docker compose up -d --force-recreate
 docker image ls
