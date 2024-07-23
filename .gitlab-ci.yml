@@ -19,8 +19,9 @@
 
 
 variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    GIT_SUBMODULE_STRATEGY: recursive
 
 ################################################################
 # Defined Pipeline Stages
