@@ -19,7 +19,7 @@ from .currency import CurrencyHelper
 from .files import OddoFilesHelper
 from .lists import ListsHelper
 from .partners.partners import PartnersHelper
-from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper
+from .products.attributes import AttributesHelper, ValuesHelper, LinesHelper, TemplateValuesHelper
 from .products.images import ProductImagesHelper
 from .products.suppliers import SupplierHelper
 from .products.inventory import InventoryHelper

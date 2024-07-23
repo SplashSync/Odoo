@@ -132,7 +132,7 @@ class AttributesHelper:
         """
         return AttributesHelper.getModel().create({
             "name": attr_code,
-            "type": "select",
+            "display_type": "select",
             "create_variant": "no_variant" if is_wnva else "always"
         })
 
@@ -261,8 +261,80 @@ class ValuesHelper:
         return http.request.env["product.attribute.value"]
 
 
+class TemplateValuesHelper:
+    """Collection of Static Functions to Manage Product Templates Attributes Values"""
+
+    @staticmethod
+    def touch(template, attr_value):
+        """
+        Load or Create a Product Template Attribute Value
+        :param template: product.template
+        :param attr_value: product.attribute.value
+        :return: product.template.attribute.value
+        """
+        # ====================================================================#
+        # Detect Existing Template Attribute Line
+        attribute_line = LinesHelper.touch(template, attr_value)
+        if attribute_line is None:
+            Framework.log().error("An Error Occurred while Touching Template Attribute Line")
+            return None
+        # ====================================================================#
+        # Detect Existing Template Attribute Value
+        for attr_value in attribute_line.product_template_value_ids.filtered(lambda v: v.product_attribute_value_id.id == attr_value.id):
+            return attr_value
+        # ====================================================================#
+        # Update Attribute Line
+        attribute_line.value_ids = [(4, attr_value.id, 0)]
+        # ====================================================================#
+        # Detect Existing Template Attribute Value
+        for attr_value in attribute_line.product_template_value_ids.filtered(lambda v: v.product_attribute_value_id.id == attr_value.id):
+            return attr_value
+
+        return TemplateValuesHelper.getModel().create({
+            "product_tmpl_id": attribute_line.product_tmpl_id.id,
+            "attribute_id": attr_value.attribute_id.id,
+            "attribute_line_id": attribute_line.id,
+            "product_attribute_value_id": attr_value.id,
+        })
+#
+    # ====================================================================#
+    # Odoo ORM Access
+    # ====================================================================#
+
+    @staticmethod
+    def getModel():
+        """Get Product Attributes Value Model Class"""
+        return http.request.env["product.template.attribute.value"]
+
+
 class LinesHelper:
     """Collection of Static Functions to Manage Product Templates Attributes Lines"""
+    @staticmethod
+    def touch(template, attr_value):
+        """
+        Load or Add a Product Template Attribute Line
+
+        :param template: product.template
+        :param attr_value: product.attribute.value
+        """
+        # ====================================================================#
+        # Detect Existing Template Attribute Line
+        attribute_line = None
+        for attr_line in template.attribute_line_ids.filtered(lambda v: v.attribute_id.id == attr_value.attribute_id.id):
+            attribute_line = attr_line
+        # ====================================================================#
+        # Template Attribute Line Found
+        if attribute_line is not None:
+            return attribute_line
+        # ====================================================================#
+        # NO EXISTS => Create Template Attribute Line with Attribute Value
+        LinesHelper.add(template, attr_value)
+        # ====================================================================#
+        # Reload Template Attribute Line
+        for attr_line in template.attribute_line_ids.filtered(lambda v: v.attribute_id.id == attr_value.attribute_id.id):
+            return attr_line
+
+        return None
 
     @staticmethod
     def add(template, new_value):

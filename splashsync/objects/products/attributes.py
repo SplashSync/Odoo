@@ -16,7 +16,7 @@ from collections import OrderedDict
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import ListHelper
-from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, TransHelper, ValuesHelper, SettingsManager
+from odoo.addons.splashsync.helpers import AttributesHelper, LinesHelper, TransHelper, ValuesHelper, SettingsManager, TemplateValuesHelper
 
 
 class ProductsAttributes:
@@ -62,10 +62,7 @@ class ProductsAttributes:
         if not SettingsManager.is_prd_simple_prices():
             FieldFactory.create(const.__SPL_T_DOUBLE__, "price_extra", "Extra Price")
             FieldFactory.inlist("attributes")
-            FieldFactory.microData(
-                "http://schema.org/Product",
-                "VariantAttributeCode" if Framework.isDebugMode() else "VariantExtraPrice"
-            )
+            FieldFactory.microData("http://schema.org/Product", "VariantExtraPrice")
             FieldFactory.isNotTested()
 
     def getAttributesFields(self, index, field_id):
@@ -190,14 +187,14 @@ class ProductsAttributes:
         )
         # ====================================================================#
         # If Values are Similar => Nothing to Do => Exit
-        if len(current_value) == 1 and new_value.id == current_value.id:
+        if len(current_value) == 1 and new_value.id == current_value.product_attribute_value_id.id:
             return
         # ====================================================================#
         # Update Attribute Value => Remove Old Value => Add New Value
+        self.object.product_template_attribute_value_ids = [(4, temp_value.id, 0)]
         if len(current_value):
-            self.object.product_template_attribute_value_ids = [(3, current_value.id, 0), (4, new_value.id, 0)]
-        else:
-            self.object.product_template_attribute_value_ids = [(4, new_value.id, 0)]
+            for value in current_value:
+                self.object.product_template_attribute_value_ids = [(3, value.id, 0)]
         # ====================================================================#
         # Update Template Attribute Values with Variants Values
         self._set_variants_value_ids(new_value.attribute_id)
@@ -246,17 +243,19 @@ class ProductsAttributes:
     def _set_variants_value_ids(self, attribute, active_test=True):
         """
         Get List of Product Value Ids for product Variants
+
         :param attribute: product.attribute
         :param active_test: bool
         :return: list
         """
         # ====================================================================#
-        # Collect Variants Product Values Ids
+        # Collect Product Variants Used Values Ids
         values_ids = []
         for variant in self.template.with_context(active_test=active_test).product_variant_ids:
-            for value in variant.attribute_line_ids.filtered(lambda v: v.attribute_id.id == attribute.id):
-                values_ids += [value.id]
+            for tpl_attr_value in variant.product_template_attribute_value_ids.filtered(lambda v: v.attribute_id.id == attribute.id):
+                values_ids += [tpl_attr_value.product_attribute_value_id.id]
         # ====================================================================#
         # Update Product Template Attribute Values Ids
         LinesHelper.set(self.template, attribute, values_ids)
+
         return values_ids
