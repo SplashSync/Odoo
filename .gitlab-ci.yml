@@ -21,7 +21,7 @@
 variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_STRATEGY: normal
 
 ################################################################
 # Defined Pipeline Stages
@@ -51,7 +51,10 @@ stages:
             - logs
     before_script:
       - pwd
-      - ls -l
+      - ls -la
+      - git submodule sync
+      - git submodule update --init
+      - ls -la
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
