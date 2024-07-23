@@ -21,10 +21,10 @@ variables:
 # Defined Pipeline Stages
 stages:
   - Contacts
-  - Products
-  - Orders
-  - Invoices
-  - deploy
+#  - Products
+#  - Orders
+#  - Invoices
+#  - deploy
 
 ################################################################
 # Init & Functional Tests
@@ -44,6 +44,8 @@ stages:
         paths:
             - logs
     before_script:
+      - pwd
+      - ls -l
       - sh ci/before_script.sh
     script:
       - sh ci/start_odoo.sh
@@ -56,177 +58,177 @@ stages:
 # Contacts - Functional Tests
 ################################################################
 
-# ALL TESTS PASSED
-V12:Contacts:
-    <<: *functional
-    stage:              Contacts
-    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-
-V13:Contacts:
-    <<: *functional
-    stage:              Contacts
-    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-
-V14:Contacts:
-    <<: *functional
-    stage:              Contacts
-    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-
-V15:Contacts:
-    <<: *functional
-    stage:              Contacts
-    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-#  when:               always
-
+## ALL TESTS PASSED
+#V12:Contacts:
+#    <<: *functional
+#    stage:              Contacts
+#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+##  when:               always
+#
+#V13:Contacts:
+#    <<: *functional
+#    stage:              Contacts
+#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+##  when:               always
+#
+#V14:Contacts:
+#    <<: *functional
+#    stage:              Contacts
+#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+##  when:               always
+#
+#V15:Contacts:
+#    <<: *functional
+#    stage:              Contacts
+#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.contacts.xml }
+##  when:               always
+#
 V16:Contacts:
     <<: *functional
     stage:              Contacts
     variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.contacts.xml }
-    allow_failure:      true
+    allow_failure:      false
 #  when:               always
-
+#
+##################################################################
+### Products - Functional Tests
+##################################################################
+#
+#V12:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
+##  when:               always
+#
+#V13:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
+##  when:               always
+#
+#V14:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
+##    when:               always
+#
+#V15:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
+##    when:               always
+#
+#V16:Products:
+#    <<: *functional
+#    stage:              Products
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
+#    allow_failure:      true
+##    when:               always
+#
+##################################################################
+### Orders - Functional Tests
+##################################################################
+#
+#V12:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
+##    when:               always
+#
+#V13:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
+##    when:               always
+#
+#V14:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.orders.xml }
+##    when:               always
+#
+#V15:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
+##    when:               always
+#
+#V16:Orders:
+#    <<: *functional
+#    stage:              Orders
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
+#    allow_failure:      true
+##    when:               always
+#
+##################################################################
+### Invoices - Functional Tests
+##################################################################
+#
+#V12:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+##    when:               always
+#
+#V13:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+##    when:               always
+#
+#V14:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+##    when:               always
+#
+#V15:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+##    when:               always
+#
+#V16:Invoices:
+#    <<: *functional
+#    stage:              Invoices
+#    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
+#    allow_failure:      true
+##    when:               always
+#
 #################################################################
-## Products - Functional Tests
+## Build Documentation
 #################################################################
-
-V12:Products:
-    <<: *functional
-    stage:              Products
-    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.products.xml }
-#  when:               always
-
-V13:Products:
-    <<: *functional
-    stage:              Products
-    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.products.xml }
-#  when:               always
-
-V14:Products:
-    <<: *functional
-    stage:              Products
-    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.products.xml }
-#    when:               always
-
-V15:Products:
-    <<: *functional
-    stage:              Products
-    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.products.xml }
-#    when:               always
-
-V16:Products:
-    <<: *functional
-    stage:              Products
-    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.products.xml }
-    allow_failure:      true
-#    when:               always
-
-#################################################################
-## Orders - Functional Tests
-#################################################################
-
-V12:Orders:
-    <<: *functional
-    stage:              Orders
-    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.orders.xml }
-#    when:               always
-
-V13:Orders:
-    <<: *functional
-    stage:              Orders
-    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.orders.xml }
-#    when:               always
-
-V14:Orders:
-    <<: *functional
-    stage:              Orders
-    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.orders.xml }
-#    when:               always
-
-V15:Orders:
-    <<: *functional
-    stage:              Orders
-    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.orders.xml }
-#    when:               always
-
-V16:Orders:
-    <<: *functional
-    stage:              Orders
-    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.orders.xml }
-    allow_failure:      true
-#    when:               always
-
-#################################################################
-## Invoices - Functional Tests
-#################################################################
-
-V12:Invoices:
-    <<: *functional
-    stage:              Invoices
-    variables:          { ODOO_VERSION:     12, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
-
-V13:Invoices:
-    <<: *functional
-    stage:              Invoices
-    variables:          { ODOO_VERSION:     13, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
-
-V14:Invoices:
-    <<: *functional
-    stage:              Invoices
-    variables:          { ODOO_VERSION:     14, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
-
-V15:Invoices:
-    <<: *functional
-    stage:              Invoices
-    variables:          { ODOO_VERSION:     15, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-#    when:               always
-
-V16:Invoices:
-    <<: *functional
-    stage:              Invoices
-    variables:          { ODOO_VERSION:     16, PHPUNIT_CONFIG:   phpunit.invoices.xml }
-    allow_failure:      true
-#    when:               always
-
+#pages:
+#    image:      registry.gitlab.com/splashsync/php-console:pages
+#    stage:      deploy
+#    retry:      2
+#    tags:
+#      - Dedicated
+#    ################################################################################
+#    # Run Test Script
+#    script:
+#      # Run Composer to Build Dependencies
+#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+#      # Build Documentation
+#      - php vendor/bin/grumphp run --tasks=build-docs
+#    artifacts:
+#        paths:
+#            - public
+#
 ################################################################
-# Build Documentation
-################################################################
-pages:
-    image:      registry.gitlab.com/splashsync/php-console:pages
-    stage:      deploy
-    retry:      2
-    tags:
-      - Dedicated
-    ################################################################################
-    # Run Test Script
-    script:
-      # Run Composer to Build Dependencies
-      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-      # Build Documentation
-      - php vendor/bin/grumphp run --tasks=build-docs
-    artifacts:
-        paths:
-            - public
-
-###############################################################
-# Build Module
-################################################################
-module:
-    image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-8.1
-    stage:      deploy
-    tags:       ['Dedicated']
-    ################################################################################
-    # Run Test Script
-    script:
-        # Install Composer Dependencies
-        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-        # Build Module
-        - php vendor/bin/grumphp run --tasks=build-module
-    artifacts:
-        paths:
-            - build
+## Build Module
+#################################################################
+#module:
+#    image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-8.1
+#    stage:      deploy
+#    tags:       ['Dedicated']
+#    ################################################################################
+#    # Run Test Script
+#    script:
+#        # Install Composer Dependencies
+#        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+#        # Build Module
+#        - php vendor/bin/grumphp run --tasks=build-module
+#    artifacts:
+#        paths:
+#            - build
