@@ -21,8 +21,8 @@
 variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
-    GIT_STRATEGY: clone
-    GIT_SUBMODULE_STRATEGY: normal
+#    GIT_STRATEGY: clone
+#    GIT_SUBMODULE_STRATEGY: normal
 
 ################################################################
 # Defined Pipeline Stages
@@ -50,11 +50,13 @@ stages:
         when: always
         paths:
             - logs
-#    before_script:
-#      - sh ci/before_script.sh
-    script:
+    before_script:
       - pwd
       - ls -la
+      - ls -la resources
+      - sh ci/before_script.sh
+    script:
+
       - sh resources/ci/start_odoo.sh
       - sh resources/ci/test_odoo.sh
     after_script:
