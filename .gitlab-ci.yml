@@ -14,4 +14,4 @@
 ################################################################################
 
 include:
-  - 'resources/ci/.gitlab-ci.yml'
+  - 'https://raw.githubusercontent.com/SplashSync/Odoo/resources/ci/.gitlab-ci.yml'
