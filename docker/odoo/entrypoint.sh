@@ -90,7 +90,7 @@ else
     pip3 install -e /mnt/splashpy
   else
     echo "Install Splash PyCore Module from Repository"
-    pip3 install splashpy
+    pip3 install splashpy  --prefer-binary
   fi
 
   if (pip3 list -l --format=columns | grep 'splashpy');
