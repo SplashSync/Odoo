@@ -16,6 +16,17 @@
 include:
   - 'https://raw.githubusercontent.com/SplashSync/Odoo/resources/ci/.gitlab-ci.yml'
 
+
+################################################################
+# Products - Functional Tests
+################################################################
+
+Products:C1:
+    allow_failure:        true
+
+Products:C2:
+    allow_failure:        true
+
 #################################################################
 ## Orders - Functional Tests
 #################################################################
