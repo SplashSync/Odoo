@@ -47,7 +47,7 @@ services:
         env_file:
             - ./odoo/odoo.env
         environment:
-            - ODOO_DATABASE=Odoo
+            - ODOO_DATABASE=Odoo${ODOO_VERSION}
             - ODOO_INTERFACE=172.120.0.10
             - ODOO_DEV=1
 
