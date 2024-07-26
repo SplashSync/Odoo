@@ -13,7 +13,7 @@
 #
 
 from odoo import http
-
+from odoo.addons.splashsync.helpers.company import CompanyManager
 
 class TaxHelper:
     """Collection of Static Functions to manage Odoo Tax Rules"""
@@ -72,9 +72,11 @@ class TaxHelper:
             ("amount", "=", tax_rate),
             ("amount_type", "=", "percent"),
             ("type_tax_use", "=", type_tax_use),
+            ("company_id", "=", CompanyManager.get_id(TaxHelper.getModel())),
         ])
         if len(taxes) == 0:
             return TaxHelper.__create_for_debug(tax_rate, type_tax_use)
+
         return taxes[0]
 
     @staticmethod
@@ -92,12 +94,13 @@ class TaxHelper:
         tax_data = {
             "amount": tax_rate,
             "amount_type": "percent",
-            "company_id": http.request.env['res.company']._get_main_company().id,
+            "company_id": CompanyManager.get_id(TaxHelper.getModel()),
             "name": "UNIT TESTS " + str(tax_rate) + "%",
             "type_tax_use": type_tax_use,
             "sequence": 1,
             "tax_group_id": 1,
         }
+
         return TaxHelper.getModel().create(tax_data)
 
     @staticmethod

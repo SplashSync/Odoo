@@ -171,7 +171,7 @@ class ProductsPrices:
             return
         # ==================================================================== #
         # Update Product Sell Taxes
-        if field_id in ["lst_price", "list_price"]:
+        if field_id in ["lst_price", "list_price", "variant_price"]:
             tax_rate = PricesHelper.taxPercent(field_data)
             if tax_rate is not None and tax_rate > 0:
                 tax = TaxHelper.find_by_rate(tax_rate, 'sale')
