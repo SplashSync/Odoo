@@ -74,7 +74,7 @@ class TransHelper:
         :return: void
         """
         try:
-            model.update_field_translations(field_name, {iso_lang: value})
+            model.with_context({'lang': iso_lang}).write({field_name: value})
         except Exception as exception:
             from splashpy import Framework
             Framework.log().fromException(exception)
