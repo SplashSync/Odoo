@@ -38,6 +38,8 @@ chmod 7777 -Rf ../Py-Core
 subtitle "BEFORE --> Configure Docker Compose"
 cp -Rf resources/ci/docker-compose.yaml resources/docker/docker-compose.yaml
 mkdir -p logs
+mkdir -p manifest
+mkdir -p reports
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"

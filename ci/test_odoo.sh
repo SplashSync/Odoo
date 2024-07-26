@@ -27,3 +27,9 @@ echo "Execute ${SPLASH_TYPES} Sequence on ${SPLASH_SEQUENCE}"
 docker compose exec -T toolkit php vendor/bin/phpunit --testdox
 subtitle "TEST --> Archive Odoo Tests Logs"
 docker compose logs --tail="2000" app >> logs/odoo.tests.txt
+
+subtitle "TOOLKIT --> Build Splash Manifest"
+docker compose exec -T toolkit php bin/console splash:server:manifest
+docker cp "$(docker compose ps -q toolkit)":/app/splash.json  "$(pwd)"/manifest/splash.json
+docker cp "$(docker compose ps -q toolkit)":/app/splash.yml   "$(pwd)"/manifest/splash.yml
+echo "Manifests exported to $(pwd)/manifest"

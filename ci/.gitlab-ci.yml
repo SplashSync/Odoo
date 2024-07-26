@@ -33,8 +33,6 @@ stages:
 
 .functional:    &functional
     image:      docker:latest
-#    when:       manual
-    retry:      1
     tags:
       - Dedicated-Docker
     services:
@@ -44,6 +42,10 @@ stages:
         when: always
         paths:
             - logs
+            - manifest
+            - reports
+        reports:
+            junit: "*-report.xml"
     before_script:
       - sh resources/ci/before_script.sh
     script:
@@ -51,7 +53,6 @@ stages:
       - sh resources/ci/test_odoo.sh
     after_script:
       - sh resources/ci/after_script.sh
-
 
 ################################################################
 # Contacts - Functional Tests
