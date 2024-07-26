@@ -237,9 +237,13 @@ class M2OHelper:
         # No Domain or Filter => Skip
         if domain is None or not isinstance(domain, str) or len(domain) < 5:
             return True
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
         results = []
-        values = http.request.env[domain].search(filters, limit=50)
+        values = http.request.env[domain].search(
+            filters + CompanyManager.get_filters(http.request.env[domain]),
+            limit=50
+        )
         for value in values:
             results += [(getattr(value, index), "["+str(getattr(value, index))+"] "+value.name)]
         return results
@@ -325,8 +329,13 @@ class M2OHelper:
             return True
         if object_id is None or object_id is False:
             return False
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
-        results = http.request.env[domain].search([('id', '=', int(object_id))] + filters)
+        results = http.request.env[domain].search(
+            [('id', '=', int(object_id))]
+            + filters
+            + CompanyManager.get_filters(http.request.env[domain])
+        )
         return len(results) > 0
 
     @staticmethod
@@ -342,9 +351,13 @@ class M2OHelper:
         # No Domain or Filter => Skip
         if not isinstance(object_name, str) or not isinstance(index, str) or not isinstance(domain, str):
             return None
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
-        results = http.request.env[domain].search([(index, '=ilike', object_name)] + filters)
-
+        results = http.request.env[domain].search(
+            [(index, '=ilike', object_name)]
+            + filters
+            + CompanyManager.get_filters(http.request.env[domain])
+        )
         # Results Found => Ok
         if len(results) > 0:
             # More than One Result Found => Ok but Warning
