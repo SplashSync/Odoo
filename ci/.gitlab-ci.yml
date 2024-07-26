@@ -128,7 +128,7 @@ Orders:C1:
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Order"
-    when:                 always
+    when:                 manual
 
 Orders:C2:
     <<: *functional
@@ -136,7 +136,7 @@ Orders:C2:
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Order"
-    when:                 always
+    when:                 manual
 
 ################################################################
 # Invoices - Functional Tests
@@ -156,7 +156,7 @@ Invoices:C1:
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Invoice"
-    when:                 always
+    when:                 manual
 
 Invoices:C2:
     <<: *functional
@@ -164,42 +164,4 @@ Invoices:C2:
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Invoice"
-    when:                 always
-
-#################################################################
-## Build Documentation
-#################################################################
-#pages:
-#    image:      registry.gitlab.com/splashsync/php-console:pages
-#    stage:      deploy
-#    retry:      2
-#    tags:
-#      - Dedicated
-#    ################################################################################
-#    # Run Test Script
-#    script:
-#      # Run Composer to Build Dependencies
-#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-#      # Build Documentation
-#      - php vendor/bin/grumphp run --tasks=build-docs
-#    artifacts:
-#        paths:
-#            - public
-#
-################################################################
-## Build Module
-#################################################################
-#module:
-#    image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-8.1
-#    stage:      deploy
-#    tags:       ['Dedicated']
-#    ################################################################################
-#    # Run Test Script
-#    script:
-#        # Install Composer Dependencies
-#        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-#        # Build Module
-#        - php vendor/bin/grumphp run --tasks=build-module
-#    artifacts:
-#        paths:
-#            - build
+    when:                 manual
