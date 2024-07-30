@@ -79,9 +79,9 @@ class CompanyManager:
         :return: dict
         """
         if "company_ids" in model.fields_get().keys():
-            return ['|', ('company_ids', 'in', [CompanyManager.get_id(model)]), ('company_id', '=?', False)]
+            return ['|', ('company_ids', 'in', [CompanyManager.get_id(model)]), ('company_id', '=', False)]
         if "company_id" in model.fields_get().keys():
-            return ['|', ('company_id', 'in', [CompanyManager.get_id(model)]), ('company_id', '=?', False)]
+            return ['|', ('company_id', 'in', [CompanyManager.get_id(model)]), ('company_id', '=', False)]
 
         return []
 
