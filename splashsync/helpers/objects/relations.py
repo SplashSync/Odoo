@@ -318,7 +318,7 @@ class M2OHelper:
     @staticmethod
     def verify_id(object_id, domain=None, filters=[]):
         """
-        Validate Id
+        Validate ID
         :param object_id: None, int, str   Id to Verify
         :param domain: str          Target Objects Domain
         :param filters: list        Additional Search Filters

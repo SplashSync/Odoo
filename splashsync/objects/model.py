@@ -18,10 +18,10 @@ from splashpy import Framework
 from odoo import http
 from odoo.exceptions import MissingError
 from odoo.addons.splashsync.helpers.objects import BasicFields, BinaryFields, ListsHelper, ObjectConfigurator
-from .core import SalesRelations
+from .core import SalesRelations, CompanyRelations
 
 
-class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicFields, SalesRelations):
+class OdooObject(ListsHelper, BinaryFields, BaseObject, SimpleFields, BasicFields, SalesRelations, CompanyRelations):
 
     configurator = None
 
