@@ -190,6 +190,9 @@ class ProductsAttributes:
         if len(current_value) == 1 and new_value.id == current_value.product_attribute_value_id.id:
             return
         # ====================================================================#
+        # Touch Template Attribute Value
+        temp_value = TemplateValuesHelper.touch(self.template, new_value)
+        # ====================================================================#
         # Update Attribute Value => Remove Old Value => Add New Value
         self.object.product_template_attribute_value_ids = [(4, temp_value.id, 0)]
         if len(current_value):

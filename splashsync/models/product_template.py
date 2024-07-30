@@ -30,6 +30,9 @@ class ProductTemplate(models.Model):
         _logger.warning("Variants Auto-creation is disabled when Splash Module is Active")
         return True
 
+    def _create_variant_ids(self):
+        return self.create_variant_ids()
+
     @api.model
     def create(self, vals):
         res = super(ProductTemplate, self).create(vals)
