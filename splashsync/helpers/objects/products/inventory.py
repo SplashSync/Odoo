@@ -236,7 +236,10 @@ class InventoryHelper:
             return location
         # ====================================================================#
         # Search for Default Stock Location for Company ID
-        for location in http.request.env["stock.location"].search(CompanyManager.get_filters(location)):
+        locations = http.request.env["stock.location"].search(
+            ['|', ('company_id', 'in', [CompanyManager.get_id(location)]), ('company_id', '=', False)]
+        )
+        for location in locations:
             if location.name == "Stock":
                 return location
 
