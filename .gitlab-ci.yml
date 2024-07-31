@@ -20,28 +20,28 @@ include:
 # Products - Functional Tests
 ################################################################
 
-Products:C1:
+Products:C1-Extra:
     allow_failure:        true
 
-Products:C2:
+Products:C2-Extra:
     allow_failure:        true
 
 #################################################################
 ## Orders - Functional Tests
 #################################################################
 
-Orders:C1:
+Orders:C1-Extra:
     allow_failure:        true
 
-Orders:C2:
+Orders:C2-Extra:
     allow_failure:        true
 
 ################################################################
 # Invoices - Functional Tests
 ################################################################
 
-Invoices:C1:
+Invoices:C1-Extra:
     allow_failure:        true
 
-Invoices:C2:
+Invoices:C2-Extra:
     allow_failure:        true
