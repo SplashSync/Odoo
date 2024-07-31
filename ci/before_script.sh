@@ -43,6 +43,8 @@ mkdir -p reports
 ################################################################
 # Build Docker Compose
 subtitle "BEFORE --> Start Docker Compose"
-docker network create splashsync
+if [[ "$(docker network ls | grep "splashsync")" == "" ]] ; then
+    docker network create splashsync
+fi
 docker compose up -d --force-recreate --quiet-pull
 docker image ls
