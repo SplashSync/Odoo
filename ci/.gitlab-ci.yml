@@ -58,7 +58,7 @@ stages:
 # Contacts - Functional Tests
 ################################################################
 
-Contacts:Main:
+Contacts:C0-Main:
     <<: *functional
     stage:              Contacts
     variables:
@@ -66,17 +66,19 @@ Contacts:Main:
         SPLASH_TYPES:     "Address,ThirdParty"
     when:               always
 
-Contacts:C1:
+Contacts:C1-Extra:
     <<: *functional
     stage:              Contacts
+    needs:              ["Contacts:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Address,ThirdParty"
     when:               always
 
-Contacts:C2:
+Contacts:C2-Extra:
     <<: *functional
     stage:              Contacts
+    needs:              ["Contacts:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Address,ThirdParty"
@@ -86,7 +88,7 @@ Contacts:C2:
 # Products - Functional Tests
 ################################################################
 
-Products:Main:
+Products:C0-Main:
     <<: *functional
     stage:                Products
     variables:
@@ -94,17 +96,19 @@ Products:Main:
         SPLASH_TYPES:     "Product"
     when:                 always
 
-Products:C1:
+Products:C1-Extra:
     <<: *functional
     stage:                Products
+    needs:                ["Products:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Product"
     when:                 always
 
-Products:C2:
+Products:C2-Extra:
     <<: *functional
     stage:                Products
+    needs:                ["Products:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Product"
@@ -114,23 +118,25 @@ Products:C2:
 ## Orders - Functional Tests
 #################################################################
 
-Orders:Main:
+Orders:C0-Main:
     <<: *functional
     stage:                Orders
+    needs:                ["Orders:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo Main"
         SPLASH_TYPES:     "Order"
     when:                 always
 
-Orders:C1:
+Orders:C1-Extra:
     <<: *functional
     stage:                Orders
+    needs:                ["Orders:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Order"
     when:                 manual
 
-Orders:C2:
+Orders:C2-Extra:
     <<: *functional
     stage:                Orders
     variables:
@@ -142,7 +148,7 @@ Orders:C2:
 # Invoices - Functional Tests
 ################################################################
 
-Invoices:Main:
+Invoices:C0-Main:
     <<: *functional
     stage:                Invoices
     variables:
@@ -150,17 +156,19 @@ Invoices:Main:
         SPLASH_TYPES:     "Invoice"
     when:                 always
 
-Invoices:C1:
+Invoices:C1-Extra:
     <<: *functional
     stage:                Invoices
+    needs:                ["Invoices:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C1"
         SPLASH_TYPES:     "Invoice"
     when:                 manual
 
-Invoices:C2:
+Invoices:C2-Extra:
     <<: *functional
     stage:                Invoices
+    needs:                ["Invoices:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Invoice"
