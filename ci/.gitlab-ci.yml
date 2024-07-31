@@ -138,6 +138,7 @@ Orders:C1-Extra:
 Orders:C2-Extra:
     <<: *functional
     stage:                Orders
+    needs:                ["Orders:C0-Main"]
     variables:
         SPLASH_SEQUENCE:  "Odoo C2"
         SPLASH_TYPES:     "Order"
