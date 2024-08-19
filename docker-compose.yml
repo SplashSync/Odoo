@@ -13,6 +13,37 @@
 #
 ################################################################################
 
+
+
+
+name:   "splashsync_odoo_${ODOO_VERSION}_env"
+
+################################################################################
+# Developer Odoo Docker Compose Stack
+services:
+    ################################################################################
+    # Odoo Debug Container
+    dev:
+        image:          "odoo:${ODOO_VERSION}"
+        container_name: dev.odoo.local
+        depends_on:
+            - db
+            - toolkit
+        volumes:
+            - ./resources/docker/odoo:/etc/odoo:ro
+            - ./splashsync:/mnt/extra-addons/splashsync:ro
+        entrypoint:         bash /etc/odoo/entrypoint.sh
+        hostname:           dev.odoo.local
+        networks:
+            odoo:           { ipv4_address: 172.120.0.11, aliases: [ dev.odoo.local ] }
+            splashsync:     { aliases: [ dev.odoo.local ] }
+        env_file:
+            - ./resources/docker/odoo/odoo.env
+        environment:
+            - ODOO_DATABASE=Odoo${ODOO_VERSION}Dev
+            - ODOO_INTERFACE=172.120.0.11
+            - ODOO_DEV=1
+
 ################################################################################
 # Generic Odoo Docker Compose Stack
 include:
