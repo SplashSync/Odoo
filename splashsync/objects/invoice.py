@@ -201,3 +201,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             return Framework.log().fromException(exception, True)
 
         return True
+
+    @staticmethod
+    def objectsListFiltered(filter):
+        if isinstance(filter, str) and len(filter) > 0:
+            return ["|", ('name', "ilike", filter), ('ref', "ilike", filter)]
+        else:
+            return []

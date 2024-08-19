@@ -120,3 +120,10 @@ class Order(OdooObject, SafeName, OrderCore, OrderAddress, OrderCarrier, OrderDe
             return Framework.log().fromException(exception)
 
         return True
+
+    @staticmethod
+    def objectsListFiltered(filter):
+        if isinstance(filter, str) and len(filter) > 0:
+            return ["|", ('name', "ilike", filter), ('client_order_ref', "ilike", filter)]
+        else:
+            return []

@@ -213,3 +213,10 @@ class Product(
         )
 
         return int(model[0][0].id)
+
+    @staticmethod
+    def objectsListFiltered(filter):
+        if isinstance(filter, str) and len(filter) > 0:
+            return ["|", ('name', "ilike", filter), ('default_code', "ilike", filter)]
+        else:
+            return []
