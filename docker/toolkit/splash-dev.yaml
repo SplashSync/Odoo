@@ -74,7 +74,7 @@ splash:
         odoo-dev:
             id:                 ThisIsOdooC0WsId
             key:                ThisIsYourEncryptionKeyForSplash
-            name:               Odoo Main
+            name:               Odoo Dev
             host:               false
             connector:          soap
             config:
