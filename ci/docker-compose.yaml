@@ -49,7 +49,6 @@ services:
     ################################################################################
     # Splash Toolkit Container
     toolkit:
-#        image: registry.gitlab.com/splashsync/odoo:toolkit
         image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit
         logging:        { driver: "none" }
         volumes:

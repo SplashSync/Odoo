@@ -20,6 +20,7 @@
 # for Splash Modules
 #
 # 172.120.0.10        app.odoo.local
+# 172.120.0.11        dev.odoo.local
 # 172.120.0.100       toolkit.odoo.local
 # 172.120.0.101       db.odoo.local
 #
@@ -74,7 +75,7 @@ services:
             # Specify Local Tests
             - './toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - './toolkit/splash.yaml:/app/config/packages/splash.yaml:ro'
+            - './toolkit/splash-dev.yaml:/app/config/packages/splash.yaml:ro'
             - './toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
             - './toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
             - './toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'

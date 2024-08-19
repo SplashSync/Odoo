@@ -7,8 +7,8 @@ splash:
 # If disabled, configuration must be store in Static, on connections section
 ################################################################################
     cache:
-        enabled: true
-        lifetime: 10
+        enabled:    true
+        lifetime:   3600
 
     # Allow Notifications for Generic Users
     notify: ["ROLE_USER"]

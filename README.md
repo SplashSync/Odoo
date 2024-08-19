@@ -10,3 +10,20 @@ Just used for DEV
 Any Pull requests are welcome! 
 
 This module is part of [SplashSync](http://www.splashsync.com) project.
+
+## How to debug Odoo from PyCharm
+
+### Create a DEV Container
+
+PyCharm fail while using an include in docker files, thus we need a dev container
+
+
+### Create Interpreter
+
+Select Docker Compose, setup docker-compose.yaml path and select dev container
+
+### Configure Run Configuration
+- Python runner
+- With Docker Interpreter
+- Script ==> /usr/bin/odoo
+- Path Mapping => See Screenshots
