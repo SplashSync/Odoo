@@ -21,6 +21,8 @@ class ProductProduct(models.Model):
     """Override for Odoo Products to Make it Work with Splash"""
     _inherit = 'product.product'
 
+    splash_attribute_lock = False
+
     variant_price_extra = fields.Float(
         string='Variant Extra Price',
         help="Variant Extra Price. Used by Splash Module to manage variants extra prices at product level."
@@ -36,6 +38,22 @@ class ProductProduct(models.Model):
     # ====================================================================#
     # !!! Odoo Core Features Overrides !!!
     # ====================================================================#
+
+    def _unlink_or_archive(self, check_access=True):
+        """Unlink or archive products.
+        Try in batch as much as possible because it is much faster.
+        Use dichotomy when an exception occurs.
+
+        This method override default one to prevent archive/unlink
+        when template attributes are updated by Splash
+        """
+        # ====================================================================#
+        # Product is Locked by Splash
+        if type(self).splash_attribute_lock:
+            return
+        # ====================================================================#
+        # Redirect to Odoo Core Action
+        super(ProductProduct, self)._unlink_or_archive(check_access)
 
     @api.depends('variant_price_extra')
     def _compute_product_price_extra(self):
@@ -82,6 +100,10 @@ class ProductProduct(models.Model):
         res = super(ProductProduct, self).unlink()
 
         return res
+
+
+    def set_splash_attribute_lock(self, state=False):
+        type(self).splash_attribute_lock = state
 
     def __do_splash_commit(self, action):
         """
