@@ -42,6 +42,13 @@ class Product(
         return 'product.product'
 
     @staticmethod
+    def objectsListFiltered(filter):
+        if isinstance(filter, str) and len(filter) > 0:
+            return ["|", ('name', "ilike", filter), ('default_code', "ilike", filter)]
+        else:
+            return []
+
+    @staticmethod
     def get_listed_fields():
         """Get List of Object Fields to Include in Lists"""
         return ['code', 'name', 'qty_available', 'list_price']
@@ -214,9 +221,4 @@ class Product(
 
         return int(model[0][0].id)
 
-    @staticmethod
-    def objectsListFiltered(filter):
-        if isinstance(filter, str) and len(filter) > 0:
-            return ["|", ('name', "ilike", filter), ('default_code', "ilike", filter)]
-        else:
-            return []
+

@@ -38,12 +38,11 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         return 'account.invoice'
 
     @staticmethod
-    def objectsListFiltered():
-        from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(14) >= 0:
+    def objectsListFiltered(filter):
+        if isinstance(filter, str) and len(filter) > 0:
+            return [('move_type', '=', "out_invoice"), "|", ('name', "ilike", filter), ('ref', "ilike", filter)]
+        else:
             return [('move_type', '=', "out_invoice")]
-        """Filter on Search Query"""
-        return [('type', '=', "out_invoice")]
 
     @staticmethod
     def get_listed_fields():
@@ -201,10 +200,3 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             return Framework.log().fromException(exception, True)
 
         return True
-
-    @staticmethod
-    def objectsListFiltered(filter):
-        if isinstance(filter, str) and len(filter) > 0:
-            return ["|", ('name', "ilike", filter), ('ref', "ilike", filter)]
-        else:
-            return []
