@@ -26,8 +26,8 @@ services:
         depends_on:
             - db
         volumes:
-            - ./odoo:/etc/odoo:ro
-            - ../../splashsync:/mnt/extra-addons/splashsync:ro
+            - ./resources/docker/odoo:/etc/odoo:ro
+            - ./splashsync:/mnt/extra-addons/splashsync:ro
         entrypoint:         bash /etc/odoo/entrypoint.sh
         environment:
             - ODOO_DATABASE=$CI_JOB_ID
@@ -53,9 +53,9 @@ services:
         logging:        { driver: "none" }
         volumes:
             # Specify Local Tests
-            - './toolkit/tests:/app/tests:ro'
+            - './resources/docker/toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - './toolkit/splash.yaml:/app/config/packages/splash.yaml:ro'
+            - './resources/docker/toolkit/splash.yaml:/app/config/packages/splash.yaml:ro'
         environment:
               - SPLASH_SEQUENCE=${SPLASH_SEQUENCE}
               - SPLASH_TYPES=${SPLASH_TYPES}
