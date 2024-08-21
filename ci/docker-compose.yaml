@@ -34,6 +34,8 @@ services:
             - ODOO_MODULES=splashsync,contacts,product,website_sale_comparison,sale,purchase,stock
             - CI_MODE=enabled
             - ODOO_LOG_LEVEL=:WARNING
+        networks:
+            - odoo
 
     ################################################################################
     # Postgres Database Container
@@ -45,6 +47,8 @@ services:
             - POSTGRES_DB=postgres
             - POSTGRES_PASSWORD=odoo
             - POSTGRES_USER=odoo
+        networks:
+            - odoo
 
     ################################################################################
     # Splash Toolkit Container
@@ -59,4 +63,11 @@ services:
         environment:
               - SPLASH_SEQUENCE=${SPLASH_SEQUENCE}
               - SPLASH_TYPES=${SPLASH_TYPES}
+        networks:
+            - odoo
 
+################################################################################
+# Default Private Network
+networks:
+    odoo:
+        driver: bridge
