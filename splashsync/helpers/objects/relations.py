@@ -351,9 +351,13 @@ class M2OHelper:
         # No Domain or Filter => Skip
         if not isinstance(object_name, str) or not isinstance(index, str) or not isinstance(domain, str):
             return None
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
-        results = http.request.env[domain].search([(index, '=ilike', object_name)] + filters)
-
+        results = http.request.env[domain].search(
+            [(index, '=ilike', object_name)]
+            + filters
+            + CompanyManager.get_filters(http.request.env[domain])
+        )
         # Results Found => Ok
         if len(results) > 0:
             # More than One Result Found => Ok but Warning
