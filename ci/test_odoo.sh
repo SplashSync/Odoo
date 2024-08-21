@@ -24,8 +24,9 @@ set -e
 # Wait Until Odoo Container Started
 title "TEST --> Execute Tests from Toolkit"
 echo "Execute ${SPLASH_TYPES} Sequence on ${SPLASH_SEQUENCE}"
-docker compose exec -T toolkit php vendor/bin/phpunit --testdox
+docker compose exec -T toolkit php vendor/bin/phpunit --testdox --log-junit test-report.xml
 subtitle "TEST --> Archive Odoo Tests Logs"
+docker cp "$(docker compose ps -q toolkit)":/app/test-report.xml  "$(pwd)"/reports/test-report.xml
 docker compose logs --tail="2000" app >> logs/odoo.tests.txt
 
 subtitle "TOOLKIT --> Build Splash Manifest"
