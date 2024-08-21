@@ -100,6 +100,9 @@ class ProductsAttributes:
             return
         new_attributes_ids = []
         # ==================================================================== #
+        # Lock Product Attributes from Unlinking...
+        self.object.set_splash_attribute_lock(True)
+        # ==================================================================== #
         # Walk on Product Attributes Field...
         if isinstance(field_data, dict):
             # Force Attributes Ordering
@@ -126,6 +129,9 @@ class ProductsAttributes:
             self.object.attribute_line_ids = [(3, attr_value.id, 0)]
             # Update Template Attribute Values with Variants Values
             self._set_variants_value_ids(attr_value.attribute_id)
+        # ==================================================================== #
+        # Unlock Product Attributes from Unlinking...
+        self.object.set_splash_attribute_lock(False)
         self._in.__delitem__(field_id)
 
     def _get_attributes_values(self, value_id):
@@ -190,6 +196,9 @@ class ProductsAttributes:
         if len(current_value) == 1 and new_value.id == current_value.product_attribute_value_id.id:
             return
         # ====================================================================#
+        # Touch Template Attribute Value
+        temp_value = TemplateValuesHelper.touch(self.template, new_value)
+        # ====================================================================#
         # Update Attribute Value => Remove Old Value => Add New Value
         self.object.product_template_attribute_value_ids = [(4, temp_value.id, 0)]
         if len(current_value):
@@ -240,7 +249,7 @@ class ProductsAttributes:
             if iso_field_id in field_values.keys():
                 TransHelper.set(attr_value, 'name', iso_code, field_values[iso_field_id])
 
-    def _set_variants_value_ids(self, attribute, active_test=True):
+    def _set_variants_value_ids(self, attribute, active_test=False):
         """
         Get List of Product Value Ids for product Variants
 

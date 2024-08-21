@@ -42,9 +42,13 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         return 'res.partner'
 
     @staticmethod
-    def objectsListFiltered():
+    def objectsListFiltered(filter):
         """Filter on Search Query"""
-        return PartnersHelper.thirdparty_filter()
+        query = PartnersHelper.thirdparty_filter()
+        if isinstance(filter, str) and len(filter) > 0:
+            return query + ["|", ('name', "ilike", filter), ('email', "ilike", filter)]
+        else:
+            return query
 
     @staticmethod
     def get_listed_fields():

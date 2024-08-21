@@ -14,3 +14,4 @@
 
 from .relations import SalesRelations
 from .safe_name import SafeName
+from .company import CompanyRelations

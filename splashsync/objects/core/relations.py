@@ -14,7 +14,7 @@
 
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
-from odoo.addons.splashsync.helpers import M2MHelper, M2OHelper
+from odoo.addons.splashsync.helpers import M2MHelper, M2OHelper, CompanyManager
 
 
 class SalesRelations:
@@ -23,12 +23,16 @@ class SalesRelations:
     """
 
     def buildSalesRelationFields(self):
+
         # ==================================================================== #
         # Sale Person Name
         if "user_id" in self.getModel().fields_get():
             FieldFactory.create(const.__SPL_T_VARCHAR__, "user_id", "Salesperson Name")
             FieldFactory.microData("http://schema.org/Author", "name")
-            FieldFactory.addChoices(M2OHelper.get_name_values("res.users"))
+            FieldFactory.addChoices(M2OHelper.get_name_values(
+                "res.users",
+                [('company_ids', 'in', [CompanyManager.get_id(self.getModel())])]
+            ))
             FieldFactory.group("General")
         # ==================================================================== #
         # Sale Person Email

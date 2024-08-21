@@ -237,9 +237,13 @@ class M2OHelper:
         # No Domain or Filter => Skip
         if domain is None or not isinstance(domain, str) or len(domain) < 5:
             return True
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
         results = []
-        values = http.request.env[domain].search(filters, limit=50)
+        values = http.request.env[domain].search(
+            filters + CompanyManager.get_filters(http.request.env[domain]),
+            limit=50
+        )
         for value in values:
             results += [(getattr(value, index), "["+str(getattr(value, index))+"] "+value.name)]
         return results
@@ -314,7 +318,7 @@ class M2OHelper:
     @staticmethod
     def verify_id(object_id, domain=None, filters=[]):
         """
-        Validate Id
+        Validate ID
         :param object_id: None, int, str   Id to Verify
         :param domain: str          Target Objects Domain
         :param filters: list        Additional Search Filters
@@ -325,8 +329,13 @@ class M2OHelper:
             return True
         if object_id is None or object_id is False:
             return False
+        from odoo.addons.splashsync.helpers import CompanyManager
         # Execute Domain Search with Filter
-        results = http.request.env[domain].search([('id', '=', int(object_id))] + filters)
+        results = http.request.env[domain].search(
+            [('id', '=', int(object_id))]
+            + filters
+            + CompanyManager.get_filters(http.request.env[domain])
+        )
         return len(results) > 0
 
     @staticmethod

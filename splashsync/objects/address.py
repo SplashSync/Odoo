@@ -42,7 +42,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         return 'res.partner'
 
     @staticmethod
-    def objectsListFiltered():
+    def objectsListFiltered(filter):
         """Filter on Search Query"""
         return PartnersHelper.address_filter()
 

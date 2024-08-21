@@ -71,6 +71,21 @@ class CompanyManager:
         return CompanyManager.main_name()
 
     @staticmethod
+    def get_filters(model):
+        """
+        Get Company Search Filters from Odoo Model
+
+        :param: odoo.models.TransientModel
+        :return: dict
+        """
+        if "company_ids" in model.fields_get().keys():
+            return [('company_ids', 'in', [CompanyManager.get_id(model), False])]
+        if "company_id" in model.fields_get().keys():
+            return ['|', ('company_id', 'in', [CompanyManager.get_id(model)]), ('company_id', '=?', False)]
+
+        return []
+
+    @staticmethod
     def ensure_company():
         """
         Ensure Current User Company Requested One
