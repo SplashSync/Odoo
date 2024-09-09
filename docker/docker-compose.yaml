@@ -89,6 +89,7 @@ networks:
     ################################################################################
     # Default Private Network
     odoo:
+        name:   py-odoo-dev
         driver: bridge
         ipam:
             config:
