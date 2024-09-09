@@ -140,22 +140,14 @@ class ProductProduct(models.Model):
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Product
         from odoo.addons.splashsync.client import OdooClient
+        from odoo.addons.splashsync.helpers import BomHelper
 
         for product in self:
-            try:
-                for bom_line in product.bom_line_ids:
-                    # ====================================================================#
-                    # Single Product Selected
-                    if bom_line.bom_id.product_id.id > 0:
-                        OdooClient.commit(Product(), action, str(bom_line.bom_id.product_id.id))
-                    else:
-                        # ====================================================================#
-                        # Product Template Selected
-                        OdooClient.commit(
-                            Product(),
-                            action,
-                            list(map(str, bom_line.bom_id.product_tmpl_id.product_variant_ids.ids))
-                        )
-            except Exception:
-                pass
+            # ====================================================================#
+            # Propagate Commit to BOM Ascending Products
+            OdooClient.commit(
+                Product(),
+                action,
+                BomHelper.get_ascending_ids(product)
+            )
 

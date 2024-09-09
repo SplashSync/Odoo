@@ -57,6 +57,16 @@ class StockMove(models.Model):
         # Execute Splash Commit for this Product
         from odoo.addons.splashsync.objects import Product
         from odoo.addons.splashsync.client import OdooClient
+        from odoo.addons.splashsync.helpers import BomHelper
+
         for move in self:
             for move_line in move.move_line_ids:
                 OdooClient.commit(Product(), action, str(move_line.product_id.id))
+                # ====================================================================#
+                # Propagate Commit to BOM Ascending Products
+                OdooClient.commit(
+                    Product(),
+                    action,
+                    BomHelper.get_ascending_ids(move_line.product_id)
+                )
+
