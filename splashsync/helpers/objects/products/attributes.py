@@ -40,6 +40,20 @@ class AttributesHelper:
     # Names of Unit Tests Variants Codes
     attr_test = ['VariantA', 'VariantB']
 
+    splash_attribute_lock = False
+
+    # ====================================================================#
+    # Products Attributes Lock
+    # ====================================================================#
+
+    @staticmethod
+    def set_attributes_lock(state=False):
+        AttributesHelper.splash_attribute_lock = state
+
+    @staticmethod
+    def is_attributes_locked():
+        return AttributesHelper.splash_attribute_lock
+
     # ====================================================================#
     # Products Attributes Management
     # ====================================================================#

@@ -101,7 +101,7 @@ class ProductsAttributes:
         new_attributes_ids = []
         # ==================================================================== #
         # Lock Product Attributes from Unlinking...
-        self.object.set_splash_attribute_lock(True)
+        AttributesHelper.set_attributes_lock(True)
         # ==================================================================== #
         # Walk on Product Attributes Field...
         if isinstance(field_data, dict):
@@ -139,7 +139,7 @@ class ProductsAttributes:
             self.object.product_template_attribute_value_ids = [(3, attr_value.id, 0)]
         # ==================================================================== #
         # Unlock Product Attributes from Unlinking...
-        self.object.set_splash_attribute_lock(False)
+        AttributesHelper.set_attributes_lock(False)
         self._in.__delitem__(field_id)
 
     def _get_attributes_values(self, value_id):

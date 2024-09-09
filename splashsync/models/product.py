@@ -16,12 +16,9 @@
 from odoo import api, models, fields
 from splashpy import const
 
-
 class ProductProduct(models.Model):
     """Override for Odoo Products to Make it Work with Splash"""
     _inherit = 'product.product'
-
-    splash_attribute_lock = False
 
     variant_price_extra = fields.Float(
         string='Variant Extra Price',
@@ -47,9 +44,10 @@ class ProductProduct(models.Model):
         This method override default one to prevent archive/unlink
         when template attributes are updated by Splash
         """
+        from odoo.addons.splashsync.helpers import AttributesHelper
         # ====================================================================#
         # Product is Locked by Splash
-        if type(self).splash_attribute_lock:
+        if AttributesHelper.is_attributes_locked():
             return
         # ====================================================================#
         # Redirect to Odoo Core Action
@@ -101,9 +99,6 @@ class ProductProduct(models.Model):
 
         return res
 
-
-    def set_splash_attribute_lock(self, state=False):
-        type(self).splash_attribute_lock = state
 
     def __do_splash_commit(self, action):
         """
