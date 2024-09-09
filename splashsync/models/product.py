@@ -16,6 +16,7 @@
 from odoo import api, models, fields
 from splashpy import const
 
+
 class ProductProduct(models.Model):
     """Override for Odoo Products to Make it Work with Splash"""
     _inherit = 'product.product'
