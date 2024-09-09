@@ -71,6 +71,14 @@ class OrderLinesHelper:
         :rtype: bool
         """
         # ====================================================================#
+        # Update Taxes Names in Priority
+        for field_id, field_data in line_data.items():
+            if field_id in ["tax_name", "tax_names"]:
+                try:
+                    OrderLinesHelper.__set_raw_value(line, field_id, field_data)
+                except Exception:
+                    continue
+        # ====================================================================#
         # Walk on Data to Update
         for field_id, field_data in line_data.items():
             try:
@@ -131,6 +139,10 @@ class OrderLinesHelper:
         from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
 
         # ==================================================================== #
+        # Detect Line Taxes Storage Field Id
+        tax_field_id = OrderLinesHelper.get_tax_field_id(line)
+
+        # ==================================================================== #
         # [CORE] Order Line Fields
         # ==================================================================== #
 
@@ -151,48 +163,25 @@ class OrderLinesHelper:
                 return int(getattr(line, field_id))
             return getattr(line, field_id)
         # ==================================================================== #
-        # Line Unit Price (HT)
+        # Line Unit Price (HT/TTC)
         if field_id == "price_unit":
-
-            if OrderLinesHelper.is_order_line(line):
-                tax_ids = line.tax_id
-            elif OrderLinesHelper.is_move_line(line):
-                tax_ids = line.tax_ids
-            else:
-                tax_ids = line.invoice_line_tax_ids
-
-            return PricesHelper.encode(
+            # ==================================================================== #
+            # Encode Price
+            return TaxHelper.encode_price(
                 float(line.price_unit),
-                TaxHelper.get_tax_rate(
-                    tax_ids,
-                    'sale'
-                ),
-                None,
-                CurrencyHelper.get_main_currency_code()
+                getattr(line, tax_field_id),
+                'sale'
             )
 
         # ==================================================================== #
         # Sales Taxes
         if field_id == "tax_name":
             try:
-                if OrderLinesHelper.is_order_line(line):
-                    tax_ids = line.tax_id
-                elif OrderLinesHelper.is_move_line(line):
-                    tax_ids = line.tax_ids
-                else:
-                    tax_ids = line.invoice_line_tax_ids
-
-                return tax_ids[0].name
+                return getattr(line, tax_field_id)[0].name
             except:
                 return None
         if field_id == "tax_names":
-
-            if OrderLinesHelper.is_order_line(line):
-                return M2MHelper.get_names(line, "tax_id")
-            elif OrderLinesHelper.is_move_line(line):
-                return M2MHelper.get_names(line, "tax_ids")
-            else:
-                return M2MHelper.get_names(line, "invoice_line_tax_ids")
+            return M2MHelper.get_names(line, tax_field_id)
 
         # ==================================================================== #
         # [EXTRA] Order Line Fields
@@ -243,12 +232,9 @@ class OrderLinesHelper:
 
         from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
 
-        if OrderLinesHelper.is_order_line(line):
-            tax_field_id = "tax_id"
-        elif OrderLinesHelper.is_move_line(line):
-            tax_field_id = "tax_ids"
-        else:
-            tax_field_id = "invoice_line_tax_ids"
+        # ==================================================================== #
+        # Detect Line Taxes Storage Field Id
+        tax_field_id = OrderLinesHelper.get_tax_field_id(line)
 
         # ==================================================================== #
         # [CORE] Order Line Fields
@@ -275,13 +261,17 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Line Unit Price (HT)
         if field_id == "price_unit":
-            line.price_unit = PricesHelper.extract(field_data, "ht")
+            # ==================================================================== #
+            # Update Line Tax using Price Tax Percent
             if not SettingsManager.is_sales_adv_taxes():
                 setattr(
                     line,
                     tax_field_id,
                     TaxHelper.find_by_rate(PricesHelper.extract(field_data, "vat"), 'sale')
                 )
+            # ==================================================================== #
+            # Update Line Unit Price with Tax Included / Excluded Detection
+            line.price_unit = TaxHelper.decode_price(field_data, getattr(line, tax_field_id), 'sale')
         # ==================================================================== #
         # Sales Taxes
         if field_id == "tax_name" and SettingsManager.is_sales_adv_taxes():
@@ -330,6 +320,20 @@ class OrderLinesHelper:
         :return: bool
         """
         return getattr(line, "_name") in ["account.move.line"]
+
+    @staticmethod
+    def get_tax_field_id(line):
+        """
+        Get Field Id for Line Tax Storage
+
+        :return: str
+        """
+        if OrderLinesHelper.is_order_line(line):
+            return "tax_id"
+        elif OrderLinesHelper.is_move_line(line):
+            return "tax_ids"
+        else:
+            return "invoice_line_tax_ids"
 
     # ====================================================================#
     # Order Specific Methods
@@ -493,7 +497,6 @@ class OrderLinesHelper:
 
         :return: int|None
         """
-        from odoo.addons.splashsync.helpers import SettingsManager
         from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Prepare Product
