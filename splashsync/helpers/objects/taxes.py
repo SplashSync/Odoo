@@ -40,6 +40,23 @@ class TaxHelper:
         return M2OHelper.get_name_values(TaxHelper.tax_domain, [("type_tax_use", "=", type_tax_use)])
 
     @staticmethod
+    def is_price_include(taxes_ids, type_tax_use):
+        """
+        Check if Product Taxes are Included in Price or NOT
+        :param taxes_ids: list
+        :param type_tax_use: str
+        :rtype: bool
+        """
+        for tax in taxes_ids:
+            # Filter on Taxes types
+            if tax.type_tax_use != type_tax_use:
+                continue
+            # Tax is Included in Price
+            if tax.price_include:
+                return True
+        return False
+
+    @staticmethod
     def __get_tax_rate(tax, type_tax_use):
         tax_rate = 0
         # Filter on Taxes types
@@ -54,6 +71,57 @@ class TaxHelper:
                 tax_rate += TaxHelper.__get_tax_rate(child_tax)
 
         return tax_rate
+
+    @staticmethod
+    def encode_price(price, taxes_ids = None, type_tax_use = None):
+        """
+        Encode a Price with Taxes (Included / Excluded) Management
+        :param price: float
+        :param taxes_ids: list
+        :param type_tax_use: str
+        :rtype: bool
+        """
+        from splashpy.helpers import PricesHelper
+        from odoo.addons.splashsync.helpers import CurrencyHelper
+
+        # ==================================================================== #
+        # Check if Taxes are Included
+        is_price_include = TaxHelper.is_price_include(taxes_ids, type_tax_use)
+        # ==================================================================== #
+        # Compute Taxes Rate
+        if taxes_ids and type_tax_use:
+            tax_rate = TaxHelper.get_tax_rate(taxes_ids, type_tax_use)
+        else:
+            tax_rate = float(0)
+        # ==================================================================== #
+        # Build Product Price
+        return PricesHelper.encode(
+            price if not is_price_include else None,
+            tax_rate,
+            price if is_price_include else None,
+            CurrencyHelper.get_main_currency_code()
+        )
+
+    @staticmethod
+    def decode_price(field_data, taxes_ids = None, type_tax_use = None):
+        """
+        Decode a Price with Taxes (Included / Excluded) Management
+        :param field_data: None,dict
+        :param taxes_ids: list
+        :param type_tax_use: str
+        :rtype: float
+        """
+        from splashpy.helpers import PricesHelper
+
+        try:
+            # ====================================================================#
+            # Check if Taxes are Included in Price
+            if TaxHelper.is_price_include(taxes_ids, type_tax_use):
+                return float(PricesHelper.taxIncluded(field_data))
+            else:
+                return float(PricesHelper.taxExcluded(field_data))
+        except TypeError:
+            return float(0)
 
     # ====================================================================#
     # Odoo ORM Access

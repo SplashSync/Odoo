@@ -111,7 +111,6 @@ class OrderStatus:
         # Is Order Global State Field
         if field_id != "state":
             return
-        self._in.__delitem__(field_id)
         # ====================================================================#
         # Load Picking Helper
         from odoo.addons.splashsync.helpers import OrderPickingHelper
@@ -119,6 +118,8 @@ class OrderStatus:
         # Check if State Changed
         state = self._get_odoo_status(field_data)
         if not isinstance(state, str) or self.object.state == state:
+            self._in.__delitem__(field_id)
+
             return
         # ====================================================================#
         # Update Order State
@@ -159,6 +160,7 @@ class OrderStatus:
 
         except Exception as exception:
             return Framework.log().fromException(exception)
+        self._in.__delitem__(field_id)
 
     def _is_editable(self, state=None):
         """

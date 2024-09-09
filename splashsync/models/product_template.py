@@ -25,13 +25,16 @@ class ProductTemplate(models.Model):
     # !!! Odoo Core Features Overrides !!!
     # ====================================================================#
 
-    def create_variant_ids(self):
-        _logger = logging.getLogger("SPLASH SYNC")
-        _logger.warning("Variants Auto-creation is disabled when Splash Module is Active")
-        return True
-
     def _create_variant_ids(self):
-        return self.create_variant_ids()
+        from odoo.addons.splashsync.helpers import AttributesHelper
+        # ====================================================================#
+        # Product is Locked by Splash
+        if AttributesHelper.is_attributes_locked():
+            _logger = logging.getLogger("SPLASH SYNC")
+            _logger.warning("Variants Auto-creation is locked while Splash Sync is Writing Attributes")
+            return True
+
+        return super(ProductTemplate, self)._create_variant_ids()
 
     @api.model
     def create(self, vals):

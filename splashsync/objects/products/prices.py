@@ -15,7 +15,7 @@
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 from splashpy.helpers import PricesHelper
-from odoo.addons.splashsync.helpers import CurrencyHelper, TaxHelper, SettingsManager, M2MHelper
+from odoo.addons.splashsync.helpers import TaxHelper, SettingsManager, M2MHelper
 
 
 class ProductsPrices:
@@ -83,41 +83,37 @@ class ProductsPrices:
         # ==================================================================== #
         # Read Sell Prices
         if field_id in ["lst_price", "list_price"]:
-            self._out[field_id] = PricesHelper.encode(
+            self._out[field_id] = TaxHelper.encode_price(
                 float(getattr(self.object, field_id)),
-                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
-                None,
-                CurrencyHelper.get_main_currency_code()
+                self.object.taxes_id if not is_adv_taxes else None,
+                'sale'
             )
             self._in.__delitem__(index)
         # ==================================================================== #
         # Variant Price is List Price
         if field_id in ["variant_price"]:
-            self._out[field_id] = PricesHelper.encode(
+            self._out[field_id] = TaxHelper.encode_price(
                 float(getattr(self.object, "lst_price")),
-                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
-                None,
-                CurrencyHelper.get_main_currency_code()
+                self.object.taxes_id if not is_adv_taxes else None,
+                'sale'
             )
             self._in.__delitem__(index)
         # ==================================================================== #
         # Variant Extra Price
         if field_id in ["variant_price_extra"]:
-            self._out[field_id] = PricesHelper.encode(
+            self._out[field_id] = TaxHelper.encode_price(
                 float(self.object.lst_price - self.object.list_price),
-                TaxHelper.get_tax_rate(self.object.taxes_id, 'sale') if not is_adv_taxes else float(0),
-                None,
-                CurrencyHelper.get_main_currency_code()
+                self.object.taxes_id if not is_adv_taxes else None,
+                'sale'
             )
             self._in.__delitem__(index)
         # ==================================================================== #
         # Read Buy Price
         if field_id == "standard_price":
-            self._out[field_id] = PricesHelper.encode(
+            self._out[field_id] = TaxHelper.encode_price(
                 float(self.object.standard_price),
-                TaxHelper.get_tax_rate(self.object.supplier_taxes_id, 'purchase') if not is_adv_taxes else float(0),
-                None,
-                CurrencyHelper.get_main_currency_code()
+                self.object.supplier_taxes_id if not is_adv_taxes else None,
+                'purchase'
             )
             self._in.__delitem__(index)
 
@@ -147,52 +143,32 @@ class ProductsPrices:
         if not self.isPricesFields(field_id):
             return
         # ==================================================================== #
-        # Extract Price
-        try:
-            tax_excl = float(PricesHelper.taxExcluded(field_data))
-        except TypeError:
-            tax_excl = 0
+        # Update Product Main Tax Rate
+        if not SettingsManager.is_prd_adv_taxes():
+            self._set_main_tax_rate(field_id, PricesHelper.taxPercent(field_data))
         # ==================================================================== #
-        # Directs Updates of Buy Price
-        # Directs Updates of Base Price
-        if field_id in ["standard_price", "list_price"]:
-            self.setSimple(field_id, tax_excl)
+        # Update of Sale Prices
+        if field_id  in ["list_price", "lst_price", "variant_price"]:
+            sale_price = TaxHelper.decode_price(field_data, self.object.taxes_id, 'sale')
+            # ==================================================================== #
+            # Directs Updates of Base Price
+            if field_id == "list_price":
+                self.setSimple(field_id, sale_price)
+            # ==================================================================== #
+            # Updates of Final Prices
+            elif field_id == "lst_price":
+                    self._set_final_price(sale_price)
+            # ==================================================================== #
+            # Updates of Variant Price
+            elif field_id == "variant_price":
+                    self._set_variant_price(sale_price)
         # ==================================================================== #
-        # Updates of Final Sell Prices
-        elif field_id == "lst_price":
-            self._set_final_price(tax_excl)
-        # ==================================================================== #
-        # Updates of Variant Final Sell Prices
-        elif field_id == "variant_price":
-            self._set_variant_price(tax_excl)
-        # ==================================================================== #
-        # Load Product Configuration
-        if SettingsManager.is_prd_adv_taxes():
-            return
-        # ==================================================================== #
-        # Update Product Sell Taxes
-        if field_id in ["lst_price", "list_price"]:
-            tax_rate = PricesHelper.taxPercent(field_data)
-            if tax_rate is not None and tax_rate > 0:
-                tax = TaxHelper.find_by_rate(tax_rate, 'sale')
-                if tax is None:
-                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
-                else:
-                    self.object.taxes_id = [(6, 0, [tax.id])]
-            else:
-                self.object.taxes_id = [(6, 0, [])]
-        # ==================================================================== #
-        # Update Product Buy Taxes
-        if field_id == "standard_price":
-            tax_rate = PricesHelper.taxPercent(field_data)
-            if tax_rate is not None and tax_rate > 0:
-                tax = TaxHelper.find_by_rate(tax_rate, 'purchase')
-                if tax is None:
-                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
-                else:
-                    self.object.supplier_taxes_id = [(6, 0, [tax.id])]
-            else:
-                self.object.supplier_taxes_id = [(6, 0, [])]
+        # Updates of Vendor Prices
+        elif field_id == "standard_price":
+            self.setSimple(
+                field_id,
+                TaxHelper.decode_price(field_data, self.object.supplier_taxes_id, 'purchase')
+            )
 
     def setPricesTaxFields(self, field_id, field_data):
         # Check if Price Field...
@@ -241,6 +217,31 @@ class ProductsPrices:
         ] and SettingsManager.is_prd_adv_taxes():
             return True
         return False
+
+    def _set_main_tax_rate(self, field_id, tax_rate):
+        """Update product Template Taxes (Sales / Vendors)"""
+        # ==================================================================== #
+        # Update Product Sell Taxes
+        if field_id in ["lst_price", "list_price", "variant_price"]:
+            if tax_rate is not None and tax_rate > 0:
+                tax = TaxHelper.find_by_rate(tax_rate, 'sale')
+                if tax is None:
+                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
+                else:
+                    self.object.taxes_id = [(6, 0, [tax.id])]
+            else:
+                self.object.taxes_id = [(6, 0, [])]
+        # ==================================================================== #
+        # Update Product Buy Taxes
+        if field_id == "standard_price":
+            if tax_rate is not None and tax_rate > 0:
+                tax = TaxHelper.find_by_rate(tax_rate, 'purchase')
+                if tax is None:
+                    return Framework.log().error("Unable to Identify Tax ID for Rate "+str(tax_rate))
+                else:
+                    self.object.supplier_taxes_id = [(6, 0, [tax.id])]
+            else:
+                self.object.supplier_taxes_id = [(6, 0, [])]
 
     def _set_variant_price(self, tax_excl):
         """

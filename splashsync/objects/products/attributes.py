@@ -101,7 +101,7 @@ class ProductsAttributes:
         new_attributes_ids = []
         # ==================================================================== #
         # Lock Product Attributes from Unlinking...
-        self.object.set_splash_attribute_lock(True)
+        AttributesHelper.set_attributes_lock(True)
         # ==================================================================== #
         # Walk on Product Attributes Field...
         if isinstance(field_data, dict):
@@ -120,18 +120,26 @@ class ProductsAttributes:
                 self._set_attribute_value_langs(attr_value, value)
                 self._set_attribute_extra_price(attr_value.attribute_id.id, value)
         # ==================================================================== #
+        # Delete Remaining Product Attributes Lines...
+        to_delete_lines = self.object.attribute_line_ids.filtered(
+            lambda v: not AttributesHelper.is_wnva(v.attribute_id) and v.attribute_id.id not in new_attributes_ids
+        )
+        for attr_line in to_delete_lines:
+            # Remove Attribute Line
+            self.object.attribute_line_ids = [(3, attr_line.id, 0)]
+            # Update Template Attribute Values with Variants Values
+            self._set_variants_value_ids(attr_line.attribute_id)
+        # ==================================================================== #
         # Delete Remaining Product Attributes Values...
-        to_delete_values = self.object.attribute_line_ids.filtered(
+        to_delete_values = self.object.product_template_attribute_value_ids.filtered(
             lambda v: not AttributesHelper.is_wnva(v.attribute_id) and v.attribute_id.id not in new_attributes_ids
         )
         for attr_value in to_delete_values:
             # Remove Attribute from Values
-            self.object.attribute_line_ids = [(3, attr_value.id, 0)]
-            # Update Template Attribute Values with Variants Values
-            self._set_variants_value_ids(attr_value.attribute_id)
+            self.object.product_template_attribute_value_ids = [(3, attr_value.id, 0)]
         # ==================================================================== #
         # Unlock Product Attributes from Unlinking...
-        self.object.set_splash_attribute_lock(False)
+        AttributesHelper.set_attributes_lock(False)
         self._in.__delitem__(field_id)
 
     def _get_attributes_values(self, value_id):

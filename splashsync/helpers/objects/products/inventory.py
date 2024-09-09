@@ -209,7 +209,7 @@ class InventoryHelper:
             """
             return {
                 'product_qty': float(new_quantity),
-                'location_id': product.env.ref('stock.stock_location_stock').id,
+                'location_id': InventoryHelper.__get_location().id,
                 'product_id': product.id,
                 'product_uom_id': product.uom_id.id,
                 'theoretical_qty': product.qty_available,
@@ -218,6 +218,32 @@ class InventoryHelper:
     # ====================================================================#
     # Odoo ORM Access
     # ====================================================================#
+
+    @staticmethod
+    def __get_location():
+        """
+        Get Default Stock Location Model Class
+
+        :rtype: stock.inventory
+        """
+        from odoo.addons.splashsync.helpers import CompanyManager
+        # ====================================================================#
+        # Get Default Stock Location
+        location = http.request.env.ref('stock.stock_location_stock')
+        # ====================================================================#
+        # Stock Location has Right Company ID
+        if CompanyManager.get_id(location) == location.company_id.id:
+            return location
+        # ====================================================================#
+        # Search for Default Stock Location for Company ID
+        locations = http.request.env["stock.location"].search(
+            ['|', ('company_id', 'in', [CompanyManager.get_id(location)]), ('company_id', '=', False)]
+        )
+        for location in locations:
+            if location.name == "Stock":
+                return location
+
+        return None
 
     @staticmethod
     def __get_inventory():
