@@ -88,6 +88,7 @@ class Product(
             "active": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "active", "notest": True},
             "sale_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
+            "purchase_method": { "notest": True },
             "tracking": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
 
             "qty_at_date": {"group": ""},
