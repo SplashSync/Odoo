@@ -90,11 +90,11 @@ class Product(
             "purchase_ok": {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
             "tracking": {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
 
-            "qty_at_date": {"group": ""},
-            "free_qty": {"group": "", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
-            "virtual_available": {"group": ""},
-            "outgoing_qty	": {"group": ""},
-            "incoming_qty": {"group": ""},
+            "qty_at_date": {"group": "Stocks"},
+            "free_qty": {"group": "Stocks", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
+            "virtual_available": {"group": "Stocks"},
+            "outgoing_qty	": {"group": "Stocks"},
+            "incoming_qty": {"group": "Stocks"},
 
             "website_url": {"type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Product", "itemprop": "urlRewrite"},
             "activity_summary": {"write": False},

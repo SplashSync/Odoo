@@ -12,11 +12,11 @@
 #  file that was distributed with this source code.
 #
 
+import re
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
-from odoo.addons.splashsync.helpers import InventoryHelper
-
+from odoo.addons.splashsync.helpers import InventoryHelper, SystemManager
 
 class ProductsInventory:
     """
@@ -28,8 +28,18 @@ class ProductsInventory:
         # Product Global Stock
         FieldFactory.create(const.__SPL_T_INT__, "qty_available", "Quantity On Hand")
         FieldFactory.description("Current quantity of products.")
+        FieldFactory.group("Stocks")
         FieldFactory.microData("http://schema.org/Offer", "inventoryLevel")
         FieldFactory.setPreferNone()
+        # ==================================================================== #
+        # Product Warehouses Stock
+        warehouses = SystemManager.getModel("stock.warehouse").search([], limit=50)
+        for warehouse in warehouses:
+            FieldFactory.create(const.__SPL_T_INT__, "free_qty_wh_"+str(warehouse.id), "Free Qty On "+str(warehouse.code))
+            FieldFactory.description("Free quantity of product on Warehouse "+str(warehouse.name))
+            FieldFactory.group("Stocks")
+            FieldFactory.microData("http://schema.org/Offer", "inventoryLevel"+str(warehouse.code))
+            FieldFactory.isReadOnly()
 
     def getInventoryFields(self, index, field_id):
         # Check if Inventory Field...
@@ -38,6 +48,24 @@ class ProductsInventory:
         # ==================================================================== #
         # Read Inventory Level
         self.getSimple(index, field_id)
+
+    def getInventoryWarehouseFields(self, index, field_id):
+        """
+        Get Stocks by Warehouse Fields
+        """
+        # ==================================================================== #
+        # Check if Inventory Free Qty by Warehouse Field...
+        if field_id.startswith("free_qty_wh_"):
+            # ==================================================================== #
+            # Get Free Qty by Warehouse for Product
+            wh_id = re.search(r'\d+$', field_id)
+            if wh_id:
+                self._out[field_id] = self.object.with_context(warehouse=int(wh_id.group())).free_qty
+            else:
+                self._out[field_id] = 0
+            self._in.__delitem__(index)
+
+            return
 
     def setInventoryFields(self, field_id, field_data):
         # ==================================================================== #
