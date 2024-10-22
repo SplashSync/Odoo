@@ -18,7 +18,7 @@ from . import objects
 from odoo.api import Environment, SUPERUSER_ID
 import logging
 
-__VERSION__ = "1.14.1"
+__VERSION__ = "1.14.2"
 
 def post_init_hook(cr, registry):
     """

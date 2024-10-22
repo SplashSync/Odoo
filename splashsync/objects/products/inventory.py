@@ -60,7 +60,7 @@ class ProductsInventory:
             # Get Free Qty by Warehouse for Product
             wh_id = re.search(r'\d+$', field_id)
             if wh_id:
-                self._out[field_id] = self.object.with_context(warehouse=int(wh_id.group())).free_qty
+                self._out[field_id] = int(self.object.with_context(warehouse=int(wh_id.group())).free_qty)
             else:
                 self._out[field_id] = 0
             self._in.__delitem__(index)
