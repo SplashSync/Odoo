@@ -31,7 +31,7 @@ class SupplierHelper:
         """
         # ====================================================================#
         # Filter Product Suppliers
-        productSuppliers = product.seller_ids.filtered(lambda r: r.product_id.id == product.id)
+        productSuppliers = product.seller_ids.filtered(lambda r: r.product_id.id is False or r.product_id.id == product.id)
         # ====================================================================#
         # Return First Product Suppliers if Exists
         return productSuppliers[0] if len(productSuppliers) > 0 else None
@@ -55,7 +55,7 @@ class SupplierHelper:
             # ====================================================================#
             # Create Supplier Info
             supplier = SupplierHelper.getModel().create({
-                "name": vendor_id,
+                "partner_id": vendor_id,
                 "product_id": product.id,
                 "min_qty": 1,
                 "price": vendor_price,

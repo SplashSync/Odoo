@@ -125,7 +125,7 @@ class ProductsSupplier:
         # ====================================================================#
         # Get Value
         if value_id == "supplier_name":
-            return supplier.name.name
+            return supplier.partner_id.name
         elif value_id == "supplier_sku":
             return supplier.product_code
         elif value_id == "supplier_min_qty":
@@ -164,7 +164,7 @@ class ProductsSupplier:
             new_currency = M2OHelper.verify_name(field_data, "name", SupplierHelper.vendorDomain, SupplierHelper.filter)
             if new_currency is not None and new_currency > 0:
                 M2OHelper.set_name(
-                    supplier, "name", field_data,
+                    supplier, "partner_id", field_data,
                     domain=SupplierHelper.vendorDomain, filters=SupplierHelper.filter
                 )
         elif field_id == "supplier_sku":
