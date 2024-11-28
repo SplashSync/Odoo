@@ -122,7 +122,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         self._in["name"] = self._in["legal"]
         # ====================================================================#
         # Safety Check - Force Contact Type as Company
-        if "company_type" not in self._in:
+        if "company_type" not in self._in and "is_company" not in self._in:
             self._in["company_type"] = "company"
         # ====================================================================#
         # Init List of required Fields
