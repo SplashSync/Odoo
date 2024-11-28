@@ -73,7 +73,7 @@ class BasicFields():
                 # Build Splash Field Definition
                 FieldFactory.create(self.__BasicTypes__[field["type"]], fieldId, field["string"])
                 FieldFactory.group("Others")
-                FieldFactory.microData("http://schema.org/Product", field["string"])
+                FieldFactory.microData("http://schema.org/"+self.name, field["string"])
                 if field["required"] or fieldId in self.get_required_fields():
                     FieldFactory.isRequired(iso_code == TransHelper.get_default_iso())
                 if field["readonly"]:
