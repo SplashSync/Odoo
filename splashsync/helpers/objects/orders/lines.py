@@ -507,7 +507,14 @@ class OrderLinesHelper:
         # ==================================================================== #
         # Get Product ID From Line data
         if "product_id" in line_data and isinstance(ObjectsHelper.id(line_data["product_id"]), (int, str)):
-            return int(ObjectsHelper.id(line_data["product_id"]))
+            product_id = int(ObjectsHelper.id(line_data["product_id"]))
+            # ====================================================================#
+            # Ensure Product Variant Exists
+            if SystemManager.getModel('product.product').browse([product_id]).exists():
+                return product_id
+            # ====================================================================#
+            # Product Not Found => Use Default
+            Framework.log().error("Product ID " + str(product_id) + " does not exist")
 
         # ==================================================================== #
         # Search or Create for SPL Empty Product

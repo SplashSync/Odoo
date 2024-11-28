@@ -158,6 +158,7 @@ class InvoiceLines:
                 invoice_line = self.object.invoice_line_ids[index]
             except Exception:
                 invoice_line = OrderLinesHelper.add_invoice_line(self.object, line_data)
+                invoice_line.recompute_tax_line = True
                 if invoice_line is None:
                     return
             # ==================================================================== #
@@ -199,9 +200,5 @@ class InvoiceLines:
         """
         Recompute Invoice Taxes & Totals
         """
-        from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(13) >= 0:
-            self.object._onchange_invoice_line_ids()
-            self.object._compute_amount()
-        else:
-            self.object.compute_taxes()
+        self.object._recompute_dynamic_lines(recompute_all_taxes=True)
+        self.object._compute_amount()

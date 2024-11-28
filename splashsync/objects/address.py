@@ -81,7 +81,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
             "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"group": "Address"},
+            "country_name": {"group": "Address", "write": False},
             "country_code": {"group": "Address"},
             "state_id": {"group": "Address"},
 
@@ -165,7 +165,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
 
     def load(self, object_id):
         """
-        Load Odoo Object by Id
+        Load Odoo Object by ID
         :param object_id: str
         :return: Address Object
         """
@@ -174,7 +174,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         model = super(Address, self).load(object_id)
         # ====================================================================#
         # Safety Check - Loaded Object is an Address
-        if not PartnersHelper.is_address(model):
+        if not PartnersHelper.is_address(model) and not "parent_id" in self._in:
             Framework.log().error('This Object is not an Address')
             return False
         # ====================================================================#
