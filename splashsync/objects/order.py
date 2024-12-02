@@ -66,8 +66,10 @@ class Order(OdooObject, SafeName, OrderCore, OrderAddress, OrderCarrier, OrderDe
             "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-            "activity_summary": {"write": False},
-            "picking_policy": {"required": False},
+            "activity_summary":     {"write": False},
+            "show_json_popover":    {"write": False},
+            "show_update_fpos":     {"write": False},
+            "picking_policy":       {"required": False},
         }
 
     # ====================================================================#
