@@ -43,8 +43,7 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='lst_price']|//field[@name='list_price']" position="after">
-                    <label for="variant_price_extra"/>
+                <xpath expr="//field[@name='standard_price']|//field[@name='list_price']" position="before">
                     <field name="variant_price_extra" widget='monetary'
                            string="Variant Extra Price"
                            options="{'currency_field': 'currency_id', 'field_digits': True}"

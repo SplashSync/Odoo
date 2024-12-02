@@ -79,7 +79,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
             "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
             "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"group": "Address"},
+            "country_name": {"group": "Address", "write": False},
             "country_code": {"group": "Address"},
             "state_id": {"group": "Address"},
 
@@ -120,6 +120,10 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         # ====================================================================#
         # Load Legal Name Field in Name Field
         self._in["name"] = self._in["legal"]
+        # ====================================================================#
+        # Safety Check - Force Contact Type as Company
+        if "company_type" not in self._in and "is_company" not in self._in:
+            self._in["company_type"] = "company"
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()

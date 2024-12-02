@@ -28,38 +28,17 @@ class InventoryHelper:
 
         :param product: Product
         :param new_quantity: float
-        :return: None, stock.inventory
+        :return: None
         """
-        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # ODOO V15+ - Create New Product Quant
-        if SystemManager.compare_version(15) >= 0:
-            InventoryHelper.__get_quants().create({
-                'product_id': product.id,
-                'location_id': product.env.ref('stock.stock_location_stock').id,
-                'inventory_quantity':  float(float(new_quantity) - float(product.qty_available)),
-            }).action_apply_inventory()
+        InventoryHelper.__get_quants().create({
+            'product_id': product.id,
+            'location_id': InventoryHelper.__get_location().id,
+            'inventory_quantity':  float(float(new_quantity) - float(product.qty_available)),
+        }).action_apply_inventory()
 
-            return
-        # ====================================================================#
-        # ODOO V13/V14 - Create New Product Inventory Adjustment
-        elif SystemManager.compare_version(13) >= 0:
-            inventory = InventoryHelper.__get_inventory().create({
-                'name': '[SPLASH] Stock Update for %s' % product.display_name,
-                'product_ids': [product.id],
-                'line_ids': [(0, 0, InventoryHelper.__get_adjustment_line(product, new_quantity))],
-            })
-        # ====================================================================#
-        # ODOO V12 - Create New Product Inventory Adjustment
-        else:
-            inventory = InventoryHelper.__get_inventory().create({
-                'name': '[SPLASH] Stock Update for %s' % product.display_name,
-                'filter': 'product',
-                'product_id': product.id,
-                'location_id': product.env.ref('stock.stock_location_stock').id,
-                'line_ids': [(0, 0, InventoryHelper.__get_adjustment_line(product, new_quantity))],
-            })
-        inventory._action_done()
+        return
 
     @staticmethod
     def unlink_all_inventory_adjustment(product_id):

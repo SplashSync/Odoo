@@ -158,6 +158,7 @@ class InvoiceLines:
                 invoice_line = self.object.invoice_line_ids[index]
             except Exception:
                 invoice_line = OrderLinesHelper.add_invoice_line(self.object, line_data)
+                invoice_line.recompute_tax_line = True
                 if invoice_line is None:
                     return
             # ==================================================================== #

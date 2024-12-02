@@ -12,6 +12,7 @@
 #  file that was distributed with this source code.
 #
 
+import re
 from splashpy import const, Framework
 from splashpy.componants import FieldFactory
 
