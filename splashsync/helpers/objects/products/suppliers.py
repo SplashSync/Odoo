@@ -31,7 +31,7 @@ class SupplierHelper:
         """
         # ====================================================================#
         # Filter Product Suppliers
-        productSuppliers = product.seller_ids.filtered(lambda r: r.product_id.id == product.id)
+        productSuppliers = product.seller_ids.filtered(lambda r: r.product_id.id is False or r.product_id.id == product.id)
         # ====================================================================#
         # Return First Product Suppliers if Exists
         return productSuppliers[0] if len(productSuppliers) > 0 else None
