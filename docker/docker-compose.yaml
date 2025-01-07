@@ -75,7 +75,7 @@ services:
             # Specify Local Tests
             - './toolkit/tests:/app/tests:ro'
             # Specify Local Configuration File
-            - './toolkit/splash-dev.yaml:/app/config/packages/splash.yaml:ro'
+            - './toolkit/splash.yaml:/app/config/packages/splash.yaml:ro'
             - './toolkit/phpunit.products.xml:/app/phpunit.products.xml:ro'
             - './toolkit/phpunit.contacts.xml:/app/phpunit.contacts.xml:ro'
             - './toolkit/phpunit.invoices.xml:/app/phpunit.invoices.xml:ro'
