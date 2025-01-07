@@ -51,7 +51,7 @@ class OrderLinesHelper:
         values = []
         # ====================================================================#
         # Walk on Lines
-        for order_line in lines.filtered(lambda r: r.display_type is False):
+        for order_line in lines:
             # ====================================================================#
             # Check Line is Not a Comment Line
             if OrderLinesHelper.is_comment(order_line):
@@ -296,7 +296,7 @@ class OrderLinesHelper:
         :param line: sale.order.line|account.invoice.line
         :return: bool
         """
-        return line.display_type is not False
+        return OrderLinesHelper.is_order_line(line) and line.display_type is not False
 
     @staticmethod
     def is_order_line(line):

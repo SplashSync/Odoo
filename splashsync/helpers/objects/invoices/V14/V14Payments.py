@@ -70,7 +70,7 @@ class OdooV14PaymentsHelper:
         # ====================================================================#
         # UnReconcile Payment
         invoice.refresh()
-        for partials in invoice._get_reconciled_invoices_partials():
+        for partials in invoice._get_reconciled_invoices_partials()[0]:
             if partials[2].payment_id.id == payment.id:
                 invoice.js_remove_outstanding_partial(partials[0].id)
         # ====================================================================#

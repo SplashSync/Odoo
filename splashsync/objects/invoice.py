@@ -77,13 +77,13 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "move_type": {"required": False},
             "extract_state": {"required": False},
 
-            "date": {"group": "General", "required": False},
-            "date_due": {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
-            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-            "__last_update": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "date":                             {"group": "General", "required": False, "write": False},
+            "date_due":                         {"group": "General", "write": False, "itemtype": "http://schema.org/Invoice", "itemprop": "paymentDueDate"},
+            "create_date":                      {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "__last_update":                    {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-            "date_invoice": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True, "write": True},
-            "invoice_date": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True, "write": True},
+            "date_invoice":                     {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True, "write": True},
+            "invoice_date":                     {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderDate", "required": True, "write": True},
 
             "payment_state":                    {"group": "General", "write": False},
             "payment_reference":                {"write": False},
@@ -98,7 +98,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "posted_before":                    {"write": False},
             "qr_code_method":                   {"write": False},
             "show_name_warning":                {"write": False},
-            "auto_post":                        {"write": False},
+            "auto_post":                        {"write": False, "required": False},
+            "auto_post_until":                  {"write": False, "required": False},
             "to_check":                         {"write": False},
 
             "amount_residual":                  {"group": "Totals", "write": False},
@@ -139,6 +140,10 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         # ODOO PRO - Pre-Setup Extract State
         if "extract_state" in self.getModel().fields_get():
             self._in['extract_state'] = 'no_extract_requested'
+        # ==================================================================== #
+        # Pre-Setup Auto Post
+        if "auto_post" not in self._in:
+            self._in['auto_post'] = 'no'
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredFields()
