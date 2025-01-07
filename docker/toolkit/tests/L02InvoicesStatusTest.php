@@ -13,7 +13,7 @@
  *  file that was distributed with this source code.
  */
 
-namespace Splash\Local\Tests;
+namespace Splash\Toolkit\Tests;
 
 use Exception;
 use Splash\Client\Splash;
