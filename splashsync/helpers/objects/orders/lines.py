@@ -13,6 +13,7 @@
 #
 
 from odoo import http
+from collections import OrderedDict
 from splashpy.helpers import PricesHelper, ObjectsHelper
 from splashpy import Framework
 
@@ -70,17 +71,13 @@ class OrderLinesHelper:
         :param line_data: dict
         :rtype: bool
         """
+
         # ====================================================================#
-        # Update Taxes Names in Priority
-        for field_id, field_data in line_data.items():
-            if field_id in ["tax_name", "tax_names"]:
-                try:
-                    OrderLinesHelper.__set_raw_value(line, field_id, field_data)
-                except Exception:
-                    continue
+        # Order Fields by Priority
+        ordered_data = OrderedDict(sorted(line_data.items(), key=OrderLinesHelper.__field_priority))
         # ====================================================================#
         # Walk on Data to Update
-        for field_id, field_data in line_data.items():
+        for field_id, field_data in ordered_data.items():
             try:
                 # ====================================================================#
                 # Update Order Line data
@@ -538,3 +535,21 @@ class OrderLinesHelper:
             .create(empty_product)
 
         return new_product.id
+
+    @staticmethod
+    def __field_priority(line_data):
+        """
+        Sort Field by Write Priority
+        :param line_data:
+        :return: int
+        """
+        __fields_priority = {
+            "product_id": 0,
+            "tax_name": 1,
+            "tax_names": 1,
+        }
+
+        if line_data[0] in __fields_priority.keys():
+            return __fields_priority[line_data[0]]
+        else:
+            return 10
