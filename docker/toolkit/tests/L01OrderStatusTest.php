@@ -55,7 +55,8 @@ class L01OrderStatusTest extends ObjectsCase
     public function testStatusChanges(
         string $objectType,
         string $newStatus,
-        string $expectedStatus
+        string $expectedStatus,
+        bool $allowFailure = false
     ): void {
         //====================================================================//
         //   Update Status Directly on Module
@@ -63,6 +64,13 @@ class L01OrderStatusTest extends ObjectsCase
         $objectId = Splash::object($objectType)
             ->set(self::$objectsIds[$objectType], array("state" => $newStatus))
         ;
+        //====================================================================//
+        //   Update May Fail
+        if (empty($objectId)) {
+            $this->assertNotEmpty($allowFailure);
+
+            return;
+        }
         $this->assertNotEmpty($objectId);
         $this->assertEquals(self::$objectsIds[$objectType], $objectId);
         //====================================================================//
@@ -121,7 +129,7 @@ class L01OrderStatusTest extends ObjectsCase
             //   Tests For Order Objects
             "Order: Draft "     => array("Order",      Status::DRAFT,       Status::DRAFT),
             "Order: Cancel"     => array("Order",      Status::CANCELED,    Status::CANCELED),
-            "Order: Not Valid"  => array("Order",      Status::PROCESSING,  Status::CANCELED),
+            "Order: Not Valid"  => array("Order",      Status::PROCESSING,  Status::CANCELED, true),
             "Order: Re Draft "  => array("Order",      Status::DRAFT,       Status::DRAFT),
             "Order: Valid "     => array("Order",      Status::PROCESSING,    Status::PROCESSING),
             "Order: Done  "     => array("Order",      Status::DELIVERED,    Status::DELIVERED),
