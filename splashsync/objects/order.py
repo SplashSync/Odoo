@@ -55,22 +55,23 @@ class Order(OdooObject, SafeName, OrderCore, OrderAddress, OrderCarrier, OrderDe
     def get_configuration():
         """Get Hash of Fields Overrides"""
         return {
-            "name": {"write": False, "required": False, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
-            "client_order_ref": {"write": True, "required": True, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderNumber"},
+            "name":                     {"write": False, "required": False, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "name"},
+            "client_order_ref":         {"write": True, "required": True, "index": True, "group": "General", "itemtype": "http://schema.org/Order", "itemprop": "orderNumber"},
 
-            "description": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
-            "date_due": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},
-            "date_invoice": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "dateCreated"},
-            "reference": {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "confirmationNumber"},
+            "description":              {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "description"},
+            "date_due":                 {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "paymentDueDate"},
+            "date_invoice":             {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "dateCreated"},
+            "reference":                {"group": "General", "itemtype": "http://schema.org/Order", "itemprop": "confirmationNumber"},
 
-            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-            "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "create_date":              {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "write_date":               {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
             "activity_summary":         {"write": False},
             "show_json_popover":        {"write": False},
             "show_update_fpos":         {"write": False},
             "show_update_pricelist":    {"write": False},
             "picking_policy":           {"required": False},
+            "prepayment_percent":       {"notest": True},
         }
 
     # ====================================================================#

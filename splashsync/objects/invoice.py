@@ -112,6 +112,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "amount_untaxed":                   {"group": "Totals", "write": False},
             "amount_untaxed_signed":            {"group": "Totals", "write": False},
             "amount_total_company_signed":      {"group": "Totals", "write": False},
+
+            "prepayment_percent":               {"write": False, "notest": True},
         }
 
     # ====================================================================#
