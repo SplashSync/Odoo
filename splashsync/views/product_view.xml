@@ -30,7 +30,6 @@
                         <field name="variant_price_extra" widget='monetary'
                                string="Variant Extra Price"
                                options="{'currency_field': 'currency_id', 'field_digits': True}"
-                               attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"
                         />
                     </div>
 
@@ -47,7 +46,6 @@
                     <field name="variant_price_extra" widget='monetary'
                            string="Variant Extra Price"
                            options="{'currency_field': 'currency_id', 'field_digits': True}"
-                           attrs="{'readonly': [('product_variant_count', '&lt;', 2)]}"
                     />
                 </xpath>
             </field>

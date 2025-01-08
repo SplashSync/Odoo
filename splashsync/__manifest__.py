@@ -15,13 +15,13 @@
 {
     'name': 'splashsync',
     'summary': 'SplashSync Connector for Odoo',
-    'version': "1.16.0",
+    'version': "1.17.0",
     'category': 'Technical Settings',
     'website': 'https://www.splashsync.com/',
     'author': 'SplashSync',
     'maintainer': 'contact@splashsync.com',
     'license': 'GPL-3',
-    'application': True,
+    'installation': True,
     'application': True,
     'external_dependencies': {
         'python': ["splashpy"],

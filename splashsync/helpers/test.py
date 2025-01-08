@@ -14,7 +14,7 @@
 
 import logging
 import os
-
+from odoo import tools
 
 class TestsManager():
 
@@ -53,7 +53,7 @@ class TestsManager():
         logging.info("[SPLASH][CI] Splash Setup Done")
         # ====================================================================#
         # Ensure Install of an Extra Language
-        env['res.lang'].load_lang('fr_FR')
+        tools.load_language(env.cr, 'fr_FR')
         logging.info("[SPLASH][CI] Languages Setup Done")
 
     @staticmethod

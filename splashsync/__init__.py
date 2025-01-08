@@ -18,14 +18,14 @@ from . import objects
 from odoo.api import Environment, SUPERUSER_ID
 import logging
 
-__VERSION__ = "1.16.0"
+__VERSION__ = "1.17.0"
 
-def post_init_hook(cr, registry):
+def post_init_hook(env):
     """
     This Hook is run just after Splashsync Module Installation
     """
     from odoo.addons.splashsync.helpers import TestsManager
 
     logging.info("[SPLASH] Execute post init hook")
-    TestsManager.init(Environment(cr, SUPERUSER_ID, {}))
+    TestsManager.init(env)
 
