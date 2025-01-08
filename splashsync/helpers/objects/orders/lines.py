@@ -547,6 +547,7 @@ class OrderLinesHelper:
             "product_id": 0,
             "tax_name": 1,
             "tax_names": 1,
+            "product_uom_qty": 2,
         }
 
         if line_data[0] in __fields_priority.keys():
