@@ -71,33 +71,34 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         configuration = {
             "function": {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
 
-            "email": {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
-            "mobile": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
-            "phone": {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/PostalAddress", "itemprop": "telephone"},
+            "email":                    {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
+            "mobile": {                 "type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
+            "phone":                    {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/PostalAddress", "itemprop": "telephone"},
 
-            "name": {"required": False, "write": False},
-            "type": {"required": False},
+            "name":                     {"required": False, "write": False},
+            "type":                     {"required": False},
 
-            "street": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
-            "zip": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
-            "city": {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
-            "country_name": {"group": "Address", "write": False},
-            "country_code": {"group": "Address"},
-            "state_id": {"group": "Address"},
+            "street":                   {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
+            "zip":                      {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
+            "city":                     {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "addressLocality"},
+            "country_name":             {"group": "Address", "write": False},
+            "country_code":             {"group": "Address"},
+            "state_id":                 {"group": "Address"},
 
-            "active": {"group": "Meta", "itemtype": "http://schema.org/Person", "itemprop": "active"},
-            "create_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
-            "write_date": {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
+            "active":                   {"group": "Meta", "itemtype": "http://schema.org/Person", "itemprop": "active"},
+            "create_date":              {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
+            "write_date":               {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-            "website": {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
-            "activity_summary": {"write": False},
+            "website":                  {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
+            "activity_summary":         {"write": False},
             "use_partner_credit_limit": {"write": False},
-            "is_coa_installed": {"write": False},
+            "is_coa_installed":         {"write": False},
+            "peppol_eas":               {"notest": True},
 
-            "additional_info": {"notest": True},
-            "company_registry": {"notest": True},
+            "additional_info":          {"notest": True},
+            "company_registry":         {"notest": True},
 
-            "image": {"group": "Images", "notest": True},
+            "image":                    {"group": "Images", "notest": True},
         }
 
         # ====================================================================#
