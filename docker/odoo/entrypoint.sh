@@ -84,13 +84,13 @@ if (pip3 list -l --format=columns | grep 'splashpy');
 then
   echo "Splash PyCore Module Already Installed"
 else
-  pip3 install wheel
+  pip3 install wheel --break-system-packages
   if [ -f /mnt/splashpy/setup.py ]; then
     echo "Install Splash PyCore Module from Local Sources"
     pip3 install -e /mnt/splashpy
   else
     echo "Install Splash PyCore Module from Repository"
-    pip3 install splashpy  --prefer-binary
+    pip3 install splashpy  --prefer-binary --break-system-packages
   fi
 
   if (pip3 list -l --format=columns | grep 'splashpy');
