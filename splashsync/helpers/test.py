@@ -53,7 +53,9 @@ class TestsManager():
         logging.info("[SPLASH][CI] Splash Setup Done")
         # ====================================================================#
         # Ensure Install of an Extra Language
-        tools.load_language(env.cr, 'fr_FR')
+        language_id = env['res.lang'].search([('code', '=', 'fr_FR')])
+        if language_id:
+            language_id.write({'active': True})
         logging.info("[SPLASH][CI] Languages Setup Done")
 
     @staticmethod
