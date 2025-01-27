@@ -35,7 +35,7 @@ class TaxHelper:
         :param type_tax_use: str
         :rtype: dict
         """
-        from odoo.addons.splashsync.helpers import M2OHelper\
+        from odoo.addons.splashsync.helpers import M2OHelper
 
         return M2OHelper.get_name_values(TaxHelper.tax_domain, [("type_tax_use", "=", type_tax_use)])
 
@@ -159,6 +159,8 @@ class TaxHelper:
         from splashpy import Framework
         if not Framework.isDebugMode():
             return None
+        from odoo.addons.splashsync.helpers import M2OHelper
+
         tax_data = {
             "amount": tax_rate,
             "amount_type": "percent",
@@ -167,6 +169,7 @@ class TaxHelper:
             "type_tax_use": type_tax_use,
             "sequence": 1,
             "tax_group_id": 1,
+            "country_id": M2OHelper.verify_name("US", "code", "res.country"),
         }
 
         return TaxHelper.getModel().create(tax_data)
