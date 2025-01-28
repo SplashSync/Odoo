@@ -83,9 +83,14 @@ class ProductsInventory:
             return
         # ==================================================================== #
         # Safety Check - Is Tracked Product
-        if self.object.type not in ['product']:
-            Framework.log().warn("You can only adjust inventory of storable products.")
-            Framework.log().warn("Product "+str(self.object.id)+" is a "+str(self.object.type))
+        try:
+            if not self.object.is_storable:
+                from splashpy import Framework
+                Framework.log().warn("You can only adjust inventory of storable products.")
+                return
+        except Exception:
+            from splashpy import Framework
+            Framework.log().warn("You cannot adjust inventory when stock addon is disabled !")
             return
         # ==================================================================== #
         # BASIC METHOD - Create Inventory Adjustment

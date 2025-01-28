@@ -93,6 +93,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
             "activity_summary":             {"write": False},
             "use_partner_credit_limit":     {"write": False},
             "is_coa_installed":             {"write": False},
+            "invoice_edi_format":           {"write": False},
             "display_invoice_edi_format":   {"write": False},
             "display_invoice_template_pdf_report_id": {"write": False},
             "peppol_eas":                   {"notest": True},
