@@ -108,6 +108,7 @@ class Product(
             "write_date":                       {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
             "message_needaction_counter":       {"write": False},
+            "lot_valuated":                     {"write": False},
         }
 
     # ====================================================================#
@@ -116,16 +117,13 @@ class Product(
 
     def create(self):
         """Create a New Product with Variants Detection"""
-        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
         # ====================================================================#
         # Ensure default type
-        if SystemManager.compare_version(15) >= 0 and "detailed_type" not in self._in:
-            self._in['detailed_type'] = 'product'
-        elif "type" not in self._in:
-            self._in['type'] = 'product'
+        if "is_storable" not in self._in:
+            self._in['is_storable'] = True
         # ====================================================================#
         # Ensure default type
         if "tracking" not in self._in:
