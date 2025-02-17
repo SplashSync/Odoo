@@ -115,6 +115,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
 
             "show_reset_to_draft_button":       {"write": False, "notest": True},
             "show_update_fpos":                 {"write": False, "notest": True},
+            "is_manually_modified":             {"write": False, "notest": True},
 
             "prepayment_percent":               {"write": False, "notest": True},
         }

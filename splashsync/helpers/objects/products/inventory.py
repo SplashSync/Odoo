@@ -219,7 +219,7 @@ class InventoryHelper:
             ['|', ('company_id', 'in', [CompanyManager.get_id(location)]), ('company_id', '=', False)]
         )
         for location in locations:
-            if location.name == "Stock":
+            if location.name == "Inventory adjustment":
                 return location
 
         return None

@@ -72,8 +72,6 @@ class Product(
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
             "service_to_purchase", "qty_available", 'priority', "description", "expense_policy"
         ]
-        if SystemManager.compare_version(15) >= 0:
-            composite += ["type"]
 
         return composite
 
@@ -121,11 +119,7 @@ class Product(
         # Order Fields Inputs
         self.order_inputs()
         # ====================================================================#
-        # Ensure default type
-        if "is_storable" not in self._in:
-            self._in['is_storable'] = True
-        # ====================================================================#
-        # Ensure default type
+        # Ensure Default Tracking Mode
         if "tracking" not in self._in:
             self._in['tracking'] = 'none'
         # ====================================================================#
@@ -156,6 +150,10 @@ class Product(
         for template in new_product.product_tmpl_id:
             self.template = template.with_context(create_product_product=True)
             break
+        # ====================================================================#
+        # Ensure Default Storage Mode
+        if "is_storable" not in self._in:
+            self.template.is_storable = True
 
         return new_product
 

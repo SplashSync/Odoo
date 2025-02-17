@@ -95,8 +95,8 @@ class CompanyManager:
         try:
             expected_company_id = CompanyManager.detect_company_id()
 
-            if http.request.env.user.company_id.id != expected_company_id:
-                http.request.env.user.company_id = expected_company_id
+            if http.request.env.company.id != expected_company_id:
+                http.request.env.company = expected_company_id
         except RuntimeError as e:
             return
 
@@ -143,10 +143,6 @@ class CompanyManager:
         :param: odoo.models.TransientModel
         :return: res.company
         """
-        from odoo.addons.splashsync.helpers import SystemManager
         # ====================================================================#
         # Detect Company Id from Object Environment
-        if SystemManager.compare_version(13) >= 0:
-            return model.env.company
-        else:
-            return model.env.user.company_id
+        return model.env.company
