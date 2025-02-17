@@ -86,7 +86,7 @@ class Product(
             "sale_ok":                          {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "offered"},
             "purchase_ok":                      {"group": "", "itemtype": "http://schema.org/Product", "itemprop": "ordered"},
             "purchase_method":                  { "notest": True },
-            "tracking":                         {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
+            "tracking":                         {"group": "", "required": False, "notest": True, "itemtype": "http://schema.org/Product", "itemprop": "inventoryTracking"},
 
             "qty_at_date":                      {"group": "Stocks"},
             "free_qty":                         {"group": "Stocks", "type": "int", "itemtype": "http://schema.org/Offer", "itemprop": "availableLevel"},
