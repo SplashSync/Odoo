@@ -63,7 +63,6 @@ class Product(
         """
         Get List of Fields NOT To Parse Automatically
         """
-        from odoo.addons.splashsync.helpers import SystemManager
         composite = [
             "id", "valuation", "cost_method",
             "image", "image_small", "image_medium", "image_variant",
@@ -118,6 +117,10 @@ class Product(
         # ====================================================================#
         # Order Fields Inputs
         self.order_inputs()
+        # ====================================================================#
+        # Ensure Default Product Type
+        if "type" not in self._in:
+            self._in['type'] = 'consu'
         # ====================================================================#
         # Ensure Default Tracking Mode
         if "tracking" not in self._in:

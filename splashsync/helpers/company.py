@@ -90,13 +90,15 @@ class CompanyManager:
         """
         Ensure Current User Company Requested One
         """
-        # ====================================================================#
-        # Odoo V12
         try:
+            # ====================================================================#
+            # Detect Company
             expected_company_id = CompanyManager.detect_company_id()
-
+            # ====================================================================#
+            # Company Changed
             if http.request.env.company.id != expected_company_id:
-                http.request.env.company = expected_company_id
+                from odoo.addons.splashsync.helpers import SystemManager
+                http.request.env.company = SystemManager.getModelSudo('res.company').browse([int(expected_company_id)])
         except RuntimeError as e:
             return
 
