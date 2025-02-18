@@ -98,7 +98,7 @@ class Product(
             "activity_summary":                 {"write": False},
             "image":                            {"group": "", "notest": True},
 
-            "type":                             {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
+            "type":                             {"group": "", "required": False, "notest": True, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
             "detailed_type":                    {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
 
             "create_date":                      {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
