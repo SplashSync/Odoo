@@ -106,6 +106,7 @@ class Product(
 
             "message_needaction_counter":       {"write": False},
             "lot_valuated":                     {"write": False},
+            "invoice_policy":                   {"write": False},
         }
 
     # ====================================================================#

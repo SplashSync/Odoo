@@ -524,10 +524,7 @@ class OrderLinesHelper:
             return model[0][0].id
         # ====================================================================#
         # Ensure default type
-        if SystemManager.compare_version(15) >= 0:
-            empty_product['detailed_type'] = 'service'
-        elif "type":
-            empty_product['type'] = 'service'
+        empty_product['type'] = 'service'
         # ====================================================================#
         # Create Product
         new_product = SystemManager.getModel('product.product')\
