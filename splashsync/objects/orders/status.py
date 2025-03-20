@@ -103,7 +103,7 @@ class OrderStatus:
         # ====================================================================#
         # Order is Closed
         if field_id == "isClosed":
-            self._out[field_id] = (self.object.state in ["done"])
+            self._out[field_id] = (self.object.state in ["sale "] and self.object.locked)
             self._in.__delitem__(index)
 
     def setStatusFields(self, field_id, field_data):
@@ -126,8 +126,13 @@ class OrderStatus:
         try:
             # ====================================================================#
             # UNLOCK Required
-            if self.object.state == "done" and state in ['cancel', 'draft', 'send', 'sale']:
+            if self.object.locked and state in ['cancel', 'draft', 'sent', 'sale']:
                 self.object.action_unlock()
+            # ====================================================================#
+            # Un cancel Required
+            # if self.object.state == "cancel" and state in ['sent', 'sale', 'done']:
+            #     self.object.action_unlock()
+            #     self.object.action_draft()
             # ====================================================================#
             # UN RESERVE STOCKS
             if state in ['cancel', 'draft']:
@@ -136,15 +141,16 @@ class OrderStatus:
             # ====================================================================#
             # Cancel State
             if state == 'cancel':
-                self.object.action_cancel()
+                self.object.with_context(disable_cancel_warning=True).action_cancel()
             # ====================================================================#
             # IS Draft
             if state == 'draft':
                 self.object.action_draft()
+
             # ====================================================================#
             # IS Send
-            if state == 'send':
-                self.object.state = state
+            if state == 'sent':
+                self.object.action_quotation_sent()
             # ====================================================================#
             # IS Order
             if state == 'sale':
@@ -154,7 +160,7 @@ class OrderStatus:
             # ====================================================================#
             # IS Delivered
             if state == 'done':
-                self.object.action_done()
+                self.object.action_lock()
                 for picking in self.object.picking_ids:
                     OrderPickingHelper.done(picking)
 
@@ -178,8 +184,12 @@ class OrderStatus:
 
         :rtype: str
         """
+        if (self.object.state == "sale") and self.object.locked:
+            return "OrderDelivered"
+
         if self.object.state in OrderStatus.__known_state_trans.keys():
             return OrderStatus.__known_state_trans[self.object.state]
+
         return ""
 
     def _get_odoo_status(self, state):

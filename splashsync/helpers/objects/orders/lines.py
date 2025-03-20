@@ -22,7 +22,7 @@ class OrderLinesHelper:
     """Collection of Static Functions to manage Order & Invoices Lines content"""
 
     __generic_fields = [
-        'name', 'state', 'customer_lead', 'discount',
+        'name', 'name_short', 'state', 'customer_lead', 'discount',
         'product_uom_qty', 'qty_delivered_manual', 'qty_delivered', 'qty_invoiced', 'quantity'
     ]
 
@@ -198,14 +198,6 @@ class OrderLinesHelper:
                     return str(line.product_id[0].type)
 
                 return None
-            except:
-                return None
-
-        # ==================================================================== #
-        # Product reference
-        if field_id == "product_ref":
-            try:
-                return str(line.product_id[0].default_code)
             except:
                 return None
 

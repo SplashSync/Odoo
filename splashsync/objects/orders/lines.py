@@ -110,7 +110,7 @@ class Orderlines:
         FieldFactory.isReadOnly().isNotTested()
         # ==================================================================== #
         # Product reference
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "product_ref", "Product Ref.")
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "name_short", "Product Ref.")
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/Product", "ref")
         FieldFactory.isReadOnly().isNotTested()
@@ -172,7 +172,7 @@ class Orderlines:
         # ==================================================================== #
         # Safety Check - Received List is Valid
         # Safety Check - Order is Locked
-        if not isinstance(field_data, dict) or self.object.state in ["done"]:
+        if not isinstance(field_data, dict) or self.object.locked:
             return
         # ==================================================================== #
         # Walk on Received Order Lines...

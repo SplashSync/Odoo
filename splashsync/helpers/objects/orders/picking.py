@@ -39,6 +39,7 @@ class OrderPickingHelper:
             return
 
         picking.action_confirm()
+        picking.action_assign()
 
     @staticmethod
     def done(picking):
@@ -53,10 +54,8 @@ class OrderPickingHelper:
         if not OrderPickingHelper.is_enabled() or picking.state == "cancel":
             return
         # ====================================================================#
-        # Odoo 15 & 16
-        Framework.log().warn("Picking Done: Odoo 15+")
-        picking.action_set_quantities_to_reservation()
-        picking._action_done()
+        # Odoo 18
+        picking.button_validate()
 
     @staticmethod
     def get_reserved_qty(order_line):
