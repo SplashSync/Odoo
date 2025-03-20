@@ -37,13 +37,11 @@ class OrderCore:
         FieldFactory.create(ObjectsHelper.encode("Address", const.__SPL_T_ID__), "partner_invoice_id", "Invoice Address")
         FieldFactory.microData("http://schema.org/Order", "billingAddress")
         FieldFactory.group("General")
-        FieldFactory.isRequired()
         # ==================================================================== #
         # Order Shipping Address
         FieldFactory.create(ObjectsHelper.encode("Address", const.__SPL_T_ID__), "partner_shipping_id", "Shipping Address")
         FieldFactory.microData("http://schema.org/Order", "orderDelivery")
         FieldFactory.group("General")
-        FieldFactory.isRequired()
         # ==================================================================== #
         # Order Date
         FieldFactory.create(const.__SPL_T_DATE__, "date_order", "Order Date")
@@ -57,18 +55,22 @@ class OrderCore:
         if field_id not in OrderCore.__core_fields_ids:
             return
         # ==================================================================== #
-        # Read Field Data
+        # Read Order Date
         if field_id == "date_order":
             if isinstance(self.object.date_order, datetime):
                 self._out[field_id] = self.object.date_order.strftime(const.__SPL_T_DATECAST__)
             else:
                 self._out[field_id] = ""
+        # ==================================================================== #
+        # Read Partner ID
         if field_id == "partner_id":
             self._out[field_id] = M2OHelper.get_object(self.object, "partner_id", "ThirdParty")
-        # TODO: Filter on Address type ?
+        # ==================================================================== #
+        # Read Shipping Contact ID
         if field_id == "partner_invoice_id":
             self._out[field_id] = M2OHelper.get_object(self.object, "partner_invoice_id", "Address")
-        # TODO: Filter on Address type ?
+        # ==================================================================== #
+        # Read Billing Contact ID
         if field_id == "partner_shipping_id":
             self._out[field_id] = M2OHelper.get_object(self.object, "partner_shipping_id", "Address")
 
@@ -99,14 +101,10 @@ class OrderCore:
         """
         # ====================================================================#
         # Safety Check - Customer, Invoice Address, Shipping Address are required
-        if "date_order" not in self._in:
+        if "date_order" not in self._in or self._in["date_order"] is None:
             return "No Order date provided, Unable to create Order"
-        if "partner_id" not in self._in:
+        if "partner_id" not in self._in or self._in["partner_id"] is None:
             return "No Customer provided, Unable to create Order"
-        if "partner_invoice_id" not in self._in:
-            return "No Invoice Address provided, Unable to create Order"
-        if "partner_shipping_id" not in self._in:
-            return "No Shipping Address provided, Unable to create Order"
 
         return True
 
@@ -145,11 +143,12 @@ class OrderCore:
                 req_fields[field_id] = self._in[field_id]
                 continue
             # ====================================================================#
-            # Setup Order Relations
-            req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
-            object_filters = PartnersHelper.thirdparty_filter() if field_id == "partner_id" else PartnersHelper.address_filter()
-            if not M2OHelper.verify_id(req_fields[field_id], "res.partner", object_filters):
-                return Framework.log().error("Unable to Identify Pointed Object: "+str(self._in[field_id]))
+            # Setup Partner ID
+            if field_id == "partner_id":
+                req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
+                object_filters = PartnersHelper.thirdparty_filter() if field_id == "partner_id" else PartnersHelper.address_filter()
+                if not M2OHelper.verify_id(req_fields[field_id], "res.partner", object_filters):
+                    return Framework.log().error("Unable to Identify Pointed Object: " + str(self._in[field_id]))
         # ====================================================================#
         # Safety Check
         return req_fields
