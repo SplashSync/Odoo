@@ -37,7 +37,6 @@ class InvoiceCore:
         FieldFactory.create(ObjectsHelper.encode("Address", const.__SPL_T_ID__), "partner_shipping_id", "Shipping Address")
         FieldFactory.microData("http://schema.org/Order", "orderDelivery")
         FieldFactory.group("General")
-        FieldFactory.isRequired()
 
     def getInvCoreFields(self, index, field_id):
         # ==================================================================== #
@@ -73,13 +72,11 @@ class InvoiceCore:
         :rtype: True|str
         """
         # ====================================================================#
-        # Safety Check - Customer, Shipping Address are required
+        # Safety Check - Date & Customer are required
         if "date_invoice" not in self._in and "invoice_date" not in self._in:
             return "No Invoice date provided, Unable to create Invoice"
-        if "partner_id" not in self._in:
+        if "partner_id" not in self._in or self._in["partner_id"] is None:
             return "No Customer provided, Unable to create Invoice"
-        if "partner_shipping_id" not in self._in:
-            return "No Shipping Address provided, Unable to create Invoice"
 
         return True
 
@@ -107,11 +104,11 @@ class InvoiceCore:
         # Collect Order Core Fields
         for field_id in InvoiceCore.__core_fields_ids:
             # ====================================================================#
-            # Setup Order Relations
-            req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
-            object_filters = PartnersHelper.thirdparty_filter() if field_id == "partner_id" else PartnersHelper.address_filter()
-            if not M2OHelper.verify_id(req_fields[field_id], "res.partner", object_filters):
-                return Framework.log().error("Unable to Identify Pointed Object: "+str(self._in[field_id]))
+            # Setup Partner ID
+            if field_id == "partner_id":
+                req_fields[field_id] = int(ObjectsHelper.id(self._in[field_id]))
+                if not M2OHelper.verify_id(req_fields[field_id], "res.partner", PartnersHelper.thirdparty_filter()):
+                    return Framework.log().error("Unable to Identify Pointed Object: "+str(self._in[field_id]))
         # ====================================================================#
         # Safety Check
         return req_fields
