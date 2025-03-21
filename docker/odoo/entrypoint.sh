@@ -92,7 +92,7 @@ else
   else
     echo "Install Splash PyCore Module from Repository"
     pip3 install splashpy  --prefer-binary 2>/dev/null
-    pip3 install splashpy  --prefer-binary --break-system-packages
+    pip3 install splashpy  --prefer-binary --break-system-packages 2>/dev/null
   fi
 
   if (pip3 list -l --format=columns | grep 'splashpy');
