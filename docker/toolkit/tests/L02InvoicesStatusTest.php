@@ -37,6 +37,14 @@ class L02InvoicesStatusTest extends ObjectsCase
      */
     public function testCreateObjects(): void
     {
+        //====================================================================//
+        // Only if tests on Invoice are Allowed
+        if (!self::isAllowedObjectType("Invoice")) {
+            $this->assertTrue(true);
+
+            return;
+        }
+
         $this->createObject("Invoice", Status::DRAFT);
     }
 
@@ -59,6 +67,13 @@ class L02InvoicesStatusTest extends ObjectsCase
         string $expectedStatus,
         bool   $withPayment
     ): void {
+        //====================================================================//
+        // Only if tests on Invoice are Allowed
+        if (!self::isAllowedObjectType("Invoice")) {
+            $this->assertTrue(true);
+
+            return;
+        }
         //====================================================================//
         //   Prepare Data for Update
         $newData = array("state" => $newStatus, "payments" => array());

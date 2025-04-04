@@ -37,6 +37,13 @@ class L01OrderStatusTest extends ObjectsCase
      */
     public function testCreateObjects(): void
     {
+        //====================================================================//
+        // Only if tests on Orders are Allowed
+        if (!self::isAllowedObjectType("Order")) {
+            $this->assertTrue(true);
+
+            return;
+        }
         $order = $this->createObject("Order", Status::DRAFT);
     }
 
@@ -58,6 +65,14 @@ class L01OrderStatusTest extends ObjectsCase
         string $expectedStatus,
         bool $allowFailure = false
     ): void {
+        //====================================================================//
+        // Only if tests on Orders are Allowed
+        if (!self::isAllowedObjectType($objectType)) {
+            $this->assertTrue(true);
+
+            return;
+        }
+
         //====================================================================//
         //   Update Status Directly on Module
         Splash::object($objectType)->lock();
