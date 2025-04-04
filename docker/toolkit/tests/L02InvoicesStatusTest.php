@@ -123,6 +123,14 @@ class L02InvoicesStatusTest extends ObjectsCase
      */
     public function testStatusOnCreate(): void
     {
+        //====================================================================//
+        // Only if tests on Invoice are Allowed
+        if (!self::isAllowedObjectType("Invoice")) {
+            $this->assertTrue(true);
+
+            return;
+        }
+
         $this->createObject("Invoice", Status::CANCELED);
         $this->createObject("Invoice", Status::DRAFT);
         $this->createObject("Invoice", Status::PAYMENT_DUE);
