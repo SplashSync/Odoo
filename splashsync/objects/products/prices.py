@@ -33,18 +33,24 @@ class ProductsPrices:
         FieldFactory.create(const.__SPL_T_PRICE__, "list_price", "Base Price (tax excl.)")
         FieldFactory.description("Base Price for this Product & Variants.")
         FieldFactory.microData("http://schema.org/Product", "basePrice")
+        # Default Currency for Testing
+        FieldFactory.addOption("Currency", "USD")
         # ==================================================================== #
         # Product Final Selling Price
         if is_simple_prices:
             FieldFactory.create(const.__SPL_T_PRICE__, "lst_price", "Price (tax excl.)")
             FieldFactory.description("Final Price for Selling this Product.")
             FieldFactory.microData("http://schema.org/Product", "price")
+            # Default Currency for Testing
+            FieldFactory.addOption("Currency", "USD")
         # ==================================================================== #
         # Product Selling Variant Price
         if is_simple_prices:
             FieldFactory.create(const.__SPL_T_PRICE__, "variant_price", "Variant Price (tax excl.)")
             FieldFactory.description("Final Price for this Variant. If set to Zéro, we use Base Price.")
             FieldFactory.microData("http://schema.org/Product", "variantPrice")
+            # Default Currency for Testing
+            FieldFactory.addOption("Currency", "USD")
         # ==================================================================== #
         # Product Selling Extra Price (list_price - lst_price)
         FieldFactory.create(const.__SPL_T_PRICE__, "variant_price_extra", "Variant Extra Price")
@@ -54,6 +60,8 @@ class ProductsPrices:
         # Product Cost Price
         FieldFactory.create(const.__SPL_T_PRICE__, "standard_price", "Buy Price")
         FieldFactory.microData("http://schema.org/Product", "wholesalePrice")
+        # Default Currency for Testing
+        FieldFactory.addOption("Currency", "USD")
         if is_adv_taxes:
             # ==================================================================== #
             # Product Customers Taxes
