@@ -26,7 +26,7 @@ class InvoicePaymentsHelper:
 
     # Codes of Generic Payment Fields
     __generic_fields = [
-        'name', 'ref', 'state', 'payment_type', 'communication'
+        'name', 'state', 'payment_type', 'communication'
     ]
 
     # Default Payment Method ID
@@ -118,7 +118,7 @@ class InvoicePaymentsHelper:
         # Execute Domain Search with Filter
         results = []
         methods = http.request.env["account.journal"].search(
-            InvoicePaymentsHelper.__get_helper().get_sales_types_filter(),
+            InvoicePaymentsHelper.get_sales_types_filter(),
             limit=50
         )
         # ====================================================================#
@@ -175,13 +175,46 @@ class InvoicePaymentsHelper:
                 InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
             # Create Raw Payment
-            return InvoicePaymentsHelper.__get_helper().add(invoice, payment_data)
+            return InvoicePaymentsHelper.add_payment(invoice, payment_data)
 
         except Exception as exception:
             Framework.log().error("Unable to create Payment, please check inputs.")
-            Framework.log().fromException(exception, False)
+            Framework.log().fromException(exception, True)
 
             return None
+
+    @staticmethod
+    def add_payment(invoice, payment_data):
+        """
+        Add a New Payment to an Invoice
+
+        :param invoice: account.move
+        :param payment_data: str
+
+        :return: account.payment
+        """
+        from odoo.addons.splashsync.helpers import SystemManager
+        # ====================================================================#
+        # Detect Payment Date
+        try:
+            payment_date = datetime.strptime(payment_data["date"], const.__SPL_T_DATECAST__).date()
+        except:
+            Framework.log().error("Unable to format payment date.")
+            return None
+        # ====================================================================#
+        # Create Payment Using Wizard
+        payments = SystemManager.getModel("account.payment.register").with_context({
+            'active_model': 'account.move',
+            'active_ids': invoice.ids
+        }).create({
+            "journal_id":       payment_data["journal_id"],
+            "amount":           payment_data["amount"],
+            "communication":    payment_data["ref"],
+            'payment_date':     payment_date,
+            "payment_type":     payment_data["payment_type"],
+        }).action_create_payments()
+
+        return SystemManager.getModel("account.payment").browse(payments['res_id'])
 
     @staticmethod
     def validate(payment_data):
@@ -193,12 +226,8 @@ class InvoicePaymentsHelper:
         :return: bool
         """
         from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(14) >= 0:
-            required_fields = ['ref', 'journal_code', 'date', 'amount']
-        else:
-            required_fields = ['communication', 'journal_code', 'payment_date', 'amount']
 
-        for key in required_fields:
+        for key in ['ref', 'journal_code', 'date', 'amount']:
             if key not in payment_data:
                 return False
 
@@ -217,16 +246,10 @@ class InvoicePaymentsHelper:
         :rtype: bool
         """
         from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(14) >= 0:
-            number_attr = "ref"
-            date_attr = "date"
-        else:
-            number_attr = "communication"
-            date_attr = "payment_date"
         # ==================================================================== #
         # Compare Payment Number
-        if isinstance(data[number_attr], str) and len(data[number_attr]) > 1:
-            if getattr(payment, number_attr) != data[number_attr]:
+        if isinstance(data["ref"], str) and len(data["ref"]) > 1:
+            if getattr(payment, "memo") != data["ref"]:
                 return False
         # ==================================================================== #
         # Compare Payment Method
@@ -268,8 +291,16 @@ class InvoicePaymentsHelper:
             if Framework.isDebugMode() and invoice.state == 'draft':
                 InvoiceStatusHelper.set_validated(invoice)
             # ====================================================================#
-            # Remove Payment
-            return InvoicePaymentsHelper.__get_helper().remove(invoice, payment)
+            # UnReconcile Payment
+            for partials in invoice._get_reconciled_invoices_partials()[0]:
+                if partials[2].payment_id.id == payment.id:
+                    invoice.js_remove_outstanding_partial(partials[0].id)
+            # ====================================================================#
+            # Cancel && Delete Payment
+            payment.action_cancel()
+            payment.unlink()
+
+            return True
         except Exception as exception:
             Framework.log().error("Failed to remove Payment " + payment_name + " from INV " + str(invoice.id))
             Framework.log().fromException(exception, False)
@@ -319,7 +350,7 @@ class InvoicePaymentsHelper:
         :return: List of Payments
         :rtype: dict
         """
-        return InvoicePaymentsHelper.__get_helper().get_payments_list(invoice)
+        return invoice._get_reconciled_payments()
 
     @staticmethod
     def get_sales_types_filter():
@@ -328,30 +359,14 @@ class InvoicePaymentsHelper:
 
         :return: tuple
         """
-        return InvoicePaymentsHelper.__get_helper().get_sales_types_filter()
+        return [
+            ('type', 'in', ["cash", "bank", "general"]),
+            ('default_account_id', '<>', None),
+        ]
 
     # ====================================================================#
     # Private Methods
     # ====================================================================#
-
-    @staticmethod
-    def __get_helper():
-        """
-        Get Adapted Invoices Payments Helper
-
-        :rtype: OdooV12PaymentsHelper|OdooV13PaymentsHelper|OdooV14PaymentsHelper
-        """
-        from odoo.addons.splashsync.helpers import SystemManager
-
-        if SystemManager.compare_version(14) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.V14 import OdooV14PaymentsHelper
-            return OdooV14PaymentsHelper
-        elif SystemManager.compare_version(13) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.V13 import OdooV13PaymentsHelper
-            return OdooV13PaymentsHelper
-        elif SystemManager.compare_version(12) >= 0:
-            from odoo.addons.splashsync.helpers.objects.invoices.V12 import OdooV12PaymentsHelper
-            return OdooV12PaymentsHelper
 
     @staticmethod
     def __get_raw_values(payment, field_id):
@@ -367,6 +382,10 @@ class InvoicePaymentsHelper:
         # Generic Fields
         if field_id in InvoicePaymentsHelper.__generic_fields:
             return getattr(payment, field_id)
+        # ==================================================================== #
+        # Payment Number
+        if field_id in ["ref", "memo"]:
+            return getattr(payment, "memo")
         # ==================================================================== #
         # Payment Method
         if field_id == "journal_code":
@@ -424,11 +443,12 @@ class InvoicePaymentsHelper:
         from odoo.addons.splashsync.helpers import M2OHelper
         try:
             payment_method_id = M2OHelper.verify_name(
-                "manual",
+                "%manual%",
                 "name",
                 "account.payment.method",
                 [('payment_type', '=', mode)]
             )
+
             return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
         except Exception as exception:
             return None
@@ -475,3 +495,4 @@ class InvoicePaymentsHelper:
         # ====================================================================#
         # Compute Allowed Margin
         return float(len(invoice.invoice_line_ids.ids) * InvoicePaymentsHelper.__payment_line_margin)
+
