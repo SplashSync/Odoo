@@ -90,7 +90,16 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
             "create_date":                  {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date":                   {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
 
-            "website":                      {"group": "", "type": const.__SPL_T_URL__, "itemtype": "http://schema.org/Organization", "itemprop": "url"},
+            "website":                      {
+                "group": "",
+                "type": const.__SPL_T_URL__,
+                "itemtype": "http://schema.org/Organization",
+                "itemprop": "url",
+                "options": {
+                    "Url_Prefix": "http://",
+                }
+            },
+
             "activity_summary":             {"write": False},
             "use_partner_credit_limit":     {"write": False},
             "is_coa_installed":             {"write": False},
