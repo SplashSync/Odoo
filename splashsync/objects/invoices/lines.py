@@ -59,6 +59,8 @@ class InvoiceLines:
         FieldFactory.inlist("lines")
         FieldFactory.microData("http://schema.org/PriceSpecification", "price")
         FieldFactory.association("name@lines", "quantity@lines", "price_unit@lines")
+        # Default Currency for Testing
+        FieldFactory.addOption("Currency", "USD")
         # ==================================================================== #
         # Line Unit Price Reduction (Percent)
         FieldFactory.create(const.__SPL_T_DOUBLE__, "discount", "Discount")
