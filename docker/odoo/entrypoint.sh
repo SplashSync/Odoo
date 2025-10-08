@@ -62,7 +62,7 @@ if [ -z $ODOO_DEV ]; then
   check_odoo_config "dev" ""
 else
   echo "[ODOO BOOT] Developer Mode => Enable Auto Reload Mode"
-  check_odoo_config "dev" "reload"
+  check_odoo_config "dev" "reload" "--without-demo"
 fi
 
 # Fast Boot => Disable All Modules Install && Updates
@@ -88,7 +88,8 @@ else
   pip3 install wheel --break-system-packages 2>/dev/null || true
   if [ -f /mnt/splashpy/setup.py ]; then
     echo "Install Splash PyCore Module from Local Sources"
-    pip3 install -e /mnt/splashpy
+    pip3 install -e /mnt/splashpy || true
+    pip3 install -e /mnt/splashpy --break-system-packages || true
   else
     echo "Install Splash PyCore Module from Repository"
     pip3 install splashpy  --prefer-binary 2>/dev/null || true
