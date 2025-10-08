@@ -55,7 +55,7 @@ services:
     ################################################################################
     # Splash Toolkit Container
     toolkit:
-        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit
+        image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/splashsync/toolkit:3.0
         logging:        { driver: "none" }
         volumes:
             # Specify Local Tests
