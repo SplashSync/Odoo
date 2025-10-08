@@ -16,81 +16,116 @@
 namespace Splash\Toolkit\Tests;
 
 use Exception;
-use Splash\Client\Splash;
-use Splash\Tests\Tools\ObjectsCase;
-use Splash\Models\Objects\Order\Status;
+use PHPUnit\Framework\Assert;
+use Splash\Core\Client\Splash;
+use Splash\Core\Dictionary\Objects\Order\Status;
+use Splash\Core\Helpers\ObjectsHelper;
+use Splash\Validator\Phpunit\TestContext as Context;
+use Splash\Validator\Phpunit\Tests\ObjectCrudTest;
+use Splash\Validator\Phpunit\TestSequences;
+use Splash\Validator\SplashTestCase;
+use Splash\Validator\Phpunit\TestObjects;
+use Splash\Validator\Phpunit\TestFields;
 
 /**
  * Local Test Suite - Verify Writing of Orders Status
  */
-class L01OrderStatusTest extends ObjectsCase
+class L01OrderStatusTest extends SplashTestCase
 {
+    const TYPE = "Order";
+
     /**
      * @var array
      */
     private static $objectsIds = array();
 
     /**
-     * @throws Exception
+     * Create Orders Objects for Testing
      *
-     * @return void
+     * @dataProvider sequencesProvider
      */
-    public function testCreateObjects(): void
+    public function testCreateObjects(string $sequence): void
     {
         //====================================================================//
+        // Configure Env. for Test Sequence
+        TestSequences::configure($sequence);
+        //====================================================================//
         // Only if tests on Orders are Allowed
-        if (!self::isAllowedObjectType("Order")) {
+        if (!TestObjects::isAllowed(self::TYPE)) {
             $this->assertTrue(true);
 
             return;
         }
-        $order = $this->createObject("Order", Status::DRAFT);
+        //====================================================================//
+        // Execute Write Test from Module
+        $objectTest = new ObjectCrudTest($sequence, self::TYPE);
+        $objectTest
+            ->setDatasetOverrides(array(
+                'state' => Status::DRAFT,
+            ))
+            ->executeWriteTest()
+        ;
+        //====================================================================//
+        // Store Order ID for next Tests
+        Assert::assertNotEmpty($objectId = Context::objectId());
+        Assert::assertIsString($objectId);
+        self::$objectsIds[$sequence] = $objectId;
+        //====================================================================//
+        // Ensure Minimal Stock
+        foreach (Context::dataset()['lines'] ?? array() as $line) {
+            $productId = ObjectsHelper::id($line['product_id']);
+            Assert::assertNotEmpty($productId);
+            Assert::assertNotEmpty(Splash::object("Product")->set($productId, array(
+                    "qty_available" => $line['product_uom_qty'] + 10000,
+            )));
+        }
     }
 
     /**
      * Test Order Status
      *
-     * @dataProvider statusProvider
-     *
-     * @param string      $objectType
-     * @param string      $newStatus
-     * @param string      $expectedStatus
+     * @dataProvider orderStatusProvider
      *
      * @return void
      * @throws Exception
      */
     public function testStatusChanges(
-        string $objectType,
+        string $sequence,
         string $newStatus,
         string $expectedStatus,
         bool $allowFailure = false
     ): void {
         //====================================================================//
+        // Configure Env. for Test Sequence
+        TestSequences::configure($sequence);
+        //====================================================================//
         // Only if tests on Orders are Allowed
-        if (!self::isAllowedObjectType($objectType)) {
+        if (!TestObjects::isAllowed(self::TYPE)) {
             $this->assertTrue(true);
 
             return;
         }
-
         //====================================================================//
-        //   Update Status Directly on Module
-        Splash::object($objectType)->lock();
-        $objectId = Splash::object($objectType)
-            ->set(self::$objectsIds[$objectType], array("state" => $newStatus))
+        // Update Status Directly on Module
+        Context::setObjectId(self::$objectsIds[$sequence]);
+        Context::setDataset($dataset = array("state" => $newStatus));
+        Context::setDatasetOverrides(array());
+        Splash::object(self::TYPE)->lock();
+        $objectId = Splash::object(self::TYPE)
+            ->set(self::$objectsIds[$sequence], $dataset)
         ;
         //====================================================================//
-        //   Update May Fail
+        // Update May Fail
         if (empty($objectId)) {
             $this->assertNotEmpty($allowFailure);
 
             return;
         }
         $this->assertNotEmpty($objectId);
-        $this->assertEquals(self::$objectsIds[$objectType], $objectId);
+        $this->assertEquals(self::$objectsIds[$sequence], $objectId);
         //====================================================================//
-        //   Load Object
-        $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
+        // Load Object
+        $object = Splash::object(self::TYPE)->get($objectId, $this->getReadFieldsList());
         $this->assertNotEmpty($object);
         //====================================================================//
         //   Check Status
@@ -103,16 +138,16 @@ class L01OrderStatusTest extends ObjectsCase
         //   Check Lines
         foreach ($object["lines"] ?? array() as $line) {
             //====================================================================//
-            //   Check Ordered Qty
+            // Check Ordered Qty
             $this->assertNotEmpty($line["product_uom_qty"], "Ordered Qty is Empty");
             //====================================================================//
-            //   Check Product Type
+            // Check Product Type
             $this->assertNotEmpty($line["detailed_type"], "Product Type is Empty");
             if ($line["detailed_type"] != "consu") {
                 continue;
             }
             //====================================================================//
-            //   Check Reserved Qty
+            // Check Reserved Qty
             if (Status::isValidated($expectedStatus)) {
                     $this->assertNotEmpty($line["qty_reserved"], "Reserved Qty is Empty");
                     $this->assertEquals(
@@ -122,7 +157,7 @@ class L01OrderStatusTest extends ObjectsCase
                     );
             }
             //====================================================================//
-            //   Check Delivered Qty
+            // Check Delivered Qty
             if (Status::isDelivered($expectedStatus)) {
                 $this->assertNotEmpty($line["qty_delivered"], "Delivered Qty is Empty");
                 $this->assertEquals(
@@ -137,67 +172,48 @@ class L01OrderStatusTest extends ObjectsCase
     /**
      * @return array
      */
-    public function statusProvider(): array
+    public static function orderStatusProvider(): array
     {
-        return array(
+        $result = array();
+        $states = array(
             //====================================================================//
             //   Tests For Order Objects
-            "Order: Draft "     => array("Order",      Status::DRAFT,       Status::DRAFT),
-            "Order: Cancel"     => array("Order",      Status::CANCELED,    Status::CANCELED),
-            "Order: Not Valid"  => array("Order",      Status::PROCESSING,  Status::CANCELED, true),
-            "Order: Re Draft "  => array("Order",      Status::DRAFT,       Status::DRAFT),
-            "Order: Valid "     => array("Order",      Status::PROCESSING,    Status::PROCESSING),
-            "Order: Done  "     => array("Order",      Status::DELIVERED,    Status::DELIVERED),
+            "Order: Draft "     => array(Status::DRAFT,       Status::DRAFT),
+            "Order: Cancel"     => array(Status::CANCELED,    Status::CANCELED),
+            "Order: Not Valid"  => array(Status::PROCESSING,  Status::CANCELED, true),
+            "Order: Re Draft "  => array(Status::DRAFT,       Status::DRAFT),
+            "Order: Valid "     => array(Status::PROCESSING,    Status::PROCESSING),
+            "Order: Done  "     => array(Status::DELIVERED,    Status::DELIVERED),
         );
+        //====================================================================//
+        // Walk on Test Sequences
+        foreach (TestSequences::getAll() as $sequence) {
+            //====================================================================//
+            // Configure Env. for Test Sequence
+            TestSequences::configure($sequence);
+            //====================================================================//
+            // For Each Update Test
+            foreach ($states as $name => $state) {
+                //====================================================================//
+                // Add Test to List
+                $dataSetName = '['.$sequence."] ".$name;
+                $result[$dataSetName] = array_merge(
+                    array('sequence' => $sequence),
+                    $state,
+                );
+            }
+        }
+
+        return $result;
     }
 
     /**
-     * @param string $objectType
-     * @param string $status
-     *
-     * @return array
-     * @throws Exception
-     */
-    private function createObject(string $objectType, string $status): array
-    {
-        //====================================================================//
-        //   Create Fake Order Data
-        $fields = $this->fakeFieldsList($objectType, array(), true);
-        $fakeData = $this->fakeObjectData($fields);
-        $fakeData["state"] = $status;
-        //====================================================================//
-        //   Execute Action Directly on Module
-        Splash::object($objectType)->lock();
-        $objectId = Splash::object($objectType)->set(null, $fakeData);
-        $this->assertNotEmpty($objectId);
-        $this->assertIsString($objectId);
-        //====================================================================//
-        //   Add Object Id to Created List
-        $this->addTestedObject($objectType, $objectId);
-        self::$objectsIds[$objectType] = $objectId;
-        //====================================================================//
-        //   Load Object
-        $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
-        $this->assertNotEmpty($object);
-        $this->assertEquals($status, $object["state"]);
-
-        return $object;
-    }
-
-    /**
-     * Get List of Fields to read
-     *
-     * @param string $objectType
+     * Get List of Fields to Read
      *
      * @return string[]
-     *
-     * @throws Exception
      */
-    private function getReadFieldsList(string $objectType): array
+    private function getReadFieldsList(): array
     {
-        return array_merge(
-            $this->reduceFieldList($this->fakeFieldsList($objectType, array(), true), true),
-            array("name", "qty_delivered@lines", "qty_reserved@lines", "detailed_type@lines"),
-        );
+        return TestFields::getAllowed(self::TYPE)->filterRead()->reduce();
     }
 }

@@ -16,216 +16,266 @@
 namespace Splash\Toolkit\Tests;
 
 use Exception;
-use Splash\Client\Splash;
-use Splash\Tests\Tools\ObjectsCase;
-use Splash\Models\Objects\Invoice\Status;
+use PHPUnit\Framework\Assert;
+use Splash\Core\Dictionary\Objects\Invoice\Status;
+use Splash\Validator\Phpunit\TestContext as Context;
+use Splash\Validator\Phpunit\TestFields;
+use Splash\Validator\Phpunit\TestObjects;
+use Splash\Validator\Phpunit\Tests\ObjectCrudTest;
+use Splash\Validator\Phpunit\TestSequences;
+use Splash\Validator\Services\ObjectDataGenerator as Generator;
+use Splash\Validator\SplashTestCase;
+use Splash\Validator\Phpunit\Tests\Write\SelectiveWritingTest;
 
 /**
  * Local Test Suite - Verify Writing of Invoices Status
  */
-class L02InvoicesStatusTest extends ObjectsCase
+class L02InvoicesStatusTest extends SplashTestCase
 {
-    /**
-     * @var array
-     */
-    private static $objectsIds = array();
+    const TYPE = "Invoice";
 
     /**
-     * @throws Exception
-     *
-     * @return void
+     * @var string[]
      */
-    public function testCreateObjects(): void
+    private static array $objectsIds = array();
+
+    /**
+     * Create Invoice Objects for Testing
+     *
+     * @dataProvider sequencesProvider
+     */
+    public function testCreateObjects(string $sequence): void
     {
         //====================================================================//
-        // Only if tests on Invoice are Allowed
-        if (!self::isAllowedObjectType("Invoice")) {
+        // Configure Env. for Test Sequence
+        TestSequences::configure($sequence);
+        //====================================================================//
+        // Only if tests on Orders are Allowed
+        if (!TestObjects::isAllowed(self::TYPE)) {
             $this->assertTrue(true);
 
             return;
         }
+        //====================================================================//
+        // Execute Write Test from Module
+        $objectTest = new ObjectCrudTest($sequence, self::TYPE);
+        $objectTest
+            ->setDatasetOverrides(
+                $this->getDatasetOverrides(Status::DRAFT),
+                array("state")
+            )
+            ->executeWriteTest()
+        ;
+        //====================================================================//
+        // Store Order ID for next Tests
+        Assert::assertNotEmpty($objectId = Context::objectId());
+        Assert::assertIsString($objectId);
+        self::$objectsIds[$sequence] = $objectId;
+    }
 
-        $this->createObject("Invoice", Status::DRAFT);
+    /**
+     * Test Invoice Status on Create
+     *
+     * @dataProvider statusOnCreateProvider
+     */
+    public function testStatusOnCreate(string $sequence, string $status, bool $withPayments): void
+    {
+        //====================================================================//
+        // Configure Env. for Test Sequence
+        TestSequences::configure($sequence);
+        //====================================================================//
+        // Only if tests on Orders are Allowed
+        if (!TestObjects::isAllowed(self::TYPE)) {
+            $this->assertTrue(true);
+
+            return;
+        }
+        //====================================================================//
+        // Execute Write Test from Module
+        $objectTest = new ObjectCrudTest($sequence, self::TYPE);
+        $objectTest
+            ->setDatasetOverrides(
+                $this->getDatasetOverrides($status, $withPayments),
+                array("state"),
+            )
+            ->executeWriteTest()
+        ;
     }
 
     /**
      * Test Invoices Status
      *
-     * @dataProvider statusProvider
+     * @dataProvider invoiceStatusChangesProvider
      *
-     * @param string $objectType
-     * @param string $newStatus
-     * @param string $expectedStatus
-     * @param bool $withPayment
-     *
-     * @return void
      * @throws Exception
      */
     public function testStatusChanges(
-        string $objectType,
+        string $sequence,
         string $newStatus,
         string $expectedStatus,
         bool   $withPayment
     ): void {
         //====================================================================//
-        // Only if tests on Invoice are Allowed
-        if (!self::isAllowedObjectType("Invoice")) {
-            $this->assertTrue(true);
-
-            return;
-        }
+        // Configure Env. for Test Sequence
+        TestSequences::configure($sequence);
         //====================================================================//
-        //   Prepare Data for Update
-        $newData = array("state" => $newStatus, "payments" => array());
-        if ($withPayment) {
-            //====================================================================//
-            //   ADD Complete Payment Details
-            $fields = $this->fakeFieldsList($objectType, array(), true);
-            $fakeData = $this->fakeObjectData($fields);
-            $newData["payments"] = array_replace_recursive($fakeData["payments"], array(
-                "0" => array("amount" => 10.01),
-                "1" => array("amount" => 10),
-            ));
-        }
-        //====================================================================//
-        //   Update Status Directly on Module
-        Splash::object($objectType)->lock();
-        $objectId = Splash::object($objectType)
-            ->set(self::$objectsIds[$objectType], $newData)
-        ;
-        $this->assertNotEmpty($objectId);
-        $this->assertEquals(self::$objectsIds[$objectType], $objectId);
-        //====================================================================//
-        //   Load Object
-        $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
-        $this->assertNotEmpty($object);
-        //====================================================================//
-        //   Check Status
-        $this->assertEquals($expectedStatus, $object['state']);
-        //====================================================================//
-        //   Check Name
-        $this->assertNotEmpty($object["name"]);
-        $this->assertNotEquals("New", $object["name"]);
-        //====================================================================//
-        //   Check Payments
-        $this->assertArrayHasKey("payments", $object);
-        if ($withPayment) {
-            $this->assertNotEmpty($object["payments"]);
-        } else  {
-            $this->assertEmpty($object["payments"]);
-        }
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return void
-     */
-    public function testStatusOnCreate(): void
-    {
-        //====================================================================//
-        // Only if tests on Invoice are Allowed
-        if (!self::isAllowedObjectType("Invoice")) {
+        // Only if tests on Orders are Allowed
+        if (!TestObjects::isAllowed(self::TYPE)) {
             $this->assertTrue(true);
 
             return;
         }
 
-        $this->createObject("Invoice", Status::CANCELED);
-        $this->createObject("Invoice", Status::DRAFT);
-        $this->createObject("Invoice", Status::PAYMENT_DUE);
-        $this->createObject("Invoice", Status::COMPLETE, true);
-    }
-
-    /**
-     * @return array
-     */
-    public function statusProvider(): array
-    {
-        return array(
-            //====================================================================//
-            //   Tests For Invoice Objects
-            "Inv: Draft   "     => array("Invoice",     Status::DRAFT,       Status::DRAFT,         false),
-            "Inv: Cancel  "     => array("Invoice",     Status::CANCELED,    Status::CANCELED,      false),
-            "Inv: Re Draft"     => array("Invoice",     Status::DRAFT,       Status::DRAFT,         false),
-            "Inv: Valid   "     => array("Invoice",     Status::PAYMENT_DUE, Status::PAYMENT_DUE,   false),
-            "Inv: Done    "     => array("Invoice",     Status::COMPLETE,    Status::COMPLETE,      true),
-            "Inv: Partial "     => array("Invoice",     Status::COMPLETE,    Status::PAYMENT_DUE,   false),
-            "Inv: Done 2  "     => array("Invoice",     Status::COMPLETE,    Status::COMPLETE,      true),
+        //====================================================================//
+        // Prepare Data for Update
+        Assert::assertNotEmpty($objectId = self::$objectsIds[$sequence]);
+        $datasetOverrides = array_merge(
+            array(
+                "id" => $objectId,
+                "state" => $newStatus
+            ),
+            $withPayment ? $this->getFakePayments() : array()
         );
+        //====================================================================//
+        // Execute Write Test from Module
+        $objectTest = new ObjectCrudTest($sequence, self::TYPE);
+        $objectTest
+            ->setWriteTest(SelectiveWritingTest::fromFieldIds(self::TYPE, array("state")))
+            ->setDatasetOverrides(
+                $datasetOverrides,
+                array("state"),
+            )
+            ->executeWriteTest()
+        ;
     }
 
     /**
-     * @param string $objectType
-     * @param string $status
-     * @param bool $withPayment
-     *
-     * @return array
-     *
-     * @throws Exception
+     * Data Provider for Test of Invoice Status on Create
      */
-    private function createObject(string $objectType, string $status, bool $withPayment = false): array
+    public function statusOnCreateProvider(): array
+    {
+        $results = array();
+
+        $testedStates = array(
+           array("status" => Status::CANCELED, "withPayments" => false),
+            array("status" => Status::DRAFT, "withPayments" => false),
+            array("status" => Status::PAYMENT_DUE, "withPayments" => false),
+            array("status" => Status::COMPLETE, "withPayments" => true),
+        );
+
+        foreach ($this->sequencesProvider() as $name => $sequence) {
+            foreach ($testedStates as $testedState) {
+                $stepName = sprintf("%s->%s", $name, $testedState['status']);
+                $results[$stepName] = array_merge($sequence, $testedState);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Data Provider for Test of Invoice Status Changes
+     */
+    public function invoiceStatusChangesProvider(): array
+    {
+        $results = array();
+
+        //====================================================================//
+        // Tests For Invoice Objects Status Transitions
+        $testedTransitions = array(
+            "Inv: Draft   "     => array(Status::DRAFT,       Status::DRAFT,         false),
+            "Inv: Cancel  "     => array(Status::CANCELED,    Status::CANCELED,      false),
+            "Inv: Re Draft"     => array(Status::DRAFT,       Status::DRAFT,         false),
+            "Inv: Valid   "     => array(Status::PAYMENT_DUE, Status::PAYMENT_DUE,   false),
+            "Inv: Done    "     => array(Status::COMPLETE,    Status::COMPLETE,      true),
+            "Inv: Partial "     => array(Status::COMPLETE,    Status::PAYMENT_DUE,   false),
+            "Inv: Done 2  "     => array(Status::COMPLETE,    Status::COMPLETE,      true),
+        );
+
+        foreach ($this->sequencesProvider() as $name => $sequence) {
+            foreach ($testedTransitions as $description => $testedTransition) {
+                $stepName = sprintf("%s->%s", $name, $description);
+                $results[$stepName] = array_merge($sequence, $testedTransition);
+            }
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * Get Invoice Dataset for Testing
+     *
+     * @param string $status Expected Invoice Status
+     * @param bool $withPayment Add Payment Details
+     */
+    private function getDatasetOverrides(string $status, bool $withPayment = false): array
     {
         //====================================================================//
-        //   Create Fake Invoice Data
-        $fields = $this->fakeFieldsList($objectType, array(), true, $withPayment);
-        $fakeData = $this->fakeObjectData($fields);
-        $fakeData["state"] = $status;
+        // Create Fake Invoice Dataset
+        $fakeData = array(
+            "state" => $status,
+        );
+
         //====================================================================//
-        //   Force Items Qty & Prices
+        // Force Items Qty & Prices
         $fakeData = array_replace_recursive($fakeData, array(
             "lines" => array(
-                "0" => array("quantity" => 1, "discount" => 0, "price_unit" => array("ht" => 10, "ttc" => 10, "tax" => 0, "vat" => 0)),
-                "1" => array("quantity" => 1, "discount" => 0, "price_unit" => array("ht" => 10, "ttc" => 10, "tax" => 0, "vat" => 0)),
-            ),
-            "payments" => array(
-                "0" => array("amount" => 10),
-                "1" => array("amount" => 10),
+                "0" => array(
+                    "quantity" => 1,
+                    "discount" => 0,
+                    "price_unit" => array("ht" => 10, "ttc" => 10, "tax" => 0, "vat" => 0)
+                ),
+                "1" => array(
+                    "quantity" => 1,
+                    "discount" => 0,
+                    "price_unit" => array("ht" => 10, "ttc" => 10, "tax" => 0, "vat" => 0)
+                ),
             )
         ));
+
         //====================================================================//
         //   Force Payments
         if ($withPayment) {
-            $fakeData = array_replace_recursive($fakeData, array(
-                "payments" => array(
-                    "0" => array("amount" => 10),
-                    "1" => array("amount" => 10),
-                )
-            ));
+            $fakeData = array_replace_recursive(
+                $fakeData, $this->getFakePayments()
+            );
         }
-        //====================================================================//
-        //   Execute Action Directly on Module
-        Splash::object($objectType)->lock();
-        $objectId = Splash::object($objectType)->set(null, $fakeData);
-        $this->assertNotEmpty($objectId);
-        $this->assertIsString($objectId);
-        //====================================================================//
-        //   Add Object Id to Created List
-        $this->addTestedObject($objectType, $objectId);
-        self::$objectsIds[$objectType] = $objectId;
-        //====================================================================//
-        //   Load Object
-        $object = Splash::object($objectType)->get($objectId, $this->getReadFieldsList($objectType));
-        $this->assertNotEmpty($object);
-        $this->assertEquals($status, $object["state"]);
 
-        return $object;
+        return $fakeData;
     }
 
     /**
-     * Get List of Fields to read
-     *
-     * @param string $objectType
-     *
-     * @return string[]
-     *
-     * @throws Exception
+     * Get Fake Invoice Payments Dataset
      */
-    private function getReadFieldsList(string $objectType): array
+    private function getFakePayments(): array
     {
-        return array_merge(
-            $this->reduceFieldList($this->fakeFieldsList($objectType, array(), true), true),
-            array("name"),
-        );
+        //====================================================================//
+        // Generate Associated fields Collection
+        $fieldsIds = TestFields::getAll("Invoice")
+            ->filterIdentifiers(array(
+                "journal_code@payments",
+                //====================================================================//
+                // Payment Fields in V12 & V13
+                "payment_date@payments",
+                "communication@payments",
+                //====================================================================//
+                // Payment Fields in V14 ++
+                "date@payments",
+                "ref@payments",
+            ))
+        ;
+        //====================================================================//
+        // Generate Dataset
+        $fakeData =  Generator::fromCollection($fieldsIds);
+
+        //====================================================================//
+        // Force Payments Amounts
+        return array_replace_recursive($fakeData, array(
+            "payments" => array(
+                "0" => array("amount" => 10),
+                "1" => array("amount" => 10.1),
+            )
+        ));
     }
 }
