@@ -68,9 +68,9 @@ class ProductProduct(models.Model):
         # Redirect to Odoo Core Action
         super(ProductProduct, self)._compute_product_price_extra()
 
-    @api.model
-    def create(self, vals):
-        res = super(ProductProduct, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(ProductProduct, self).create(vals_list)
 
         # ====================================================================#
         # Execute Splash Commit

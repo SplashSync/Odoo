@@ -36,9 +36,9 @@ class ProductTemplate(models.Model):
 
         return super(ProductTemplate, self)._create_variant_ids()
 
-    @api.model
-    def create(self, vals):
-        res = super(ProductTemplate, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(ProductTemplate, self).create(vals_list)
 
         # ====================================================================#
         # Execute Splash Commit

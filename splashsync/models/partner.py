@@ -21,9 +21,9 @@ class Partner(models.Model):
     """Override for Odoo Partners to Make it Work with Splash"""
     _inherit = 'res.partner'
 
-    @api.model
-    def create(self, vals):
-        res = super(Partner, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(Partner, self).create(vals_list)
 
         # ====================================================================#
         # Execute Splash Commit
