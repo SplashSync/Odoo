@@ -79,10 +79,7 @@ class InvoicePayments:
         FieldFactory.isNotTested()
         # ==================================================================== #
         # Payment Transaction Id
-        if SystemManager.compare_version(14) >= 0:
-            FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Number")
-        else:
-            FieldFactory.create(const.__SPL_T_VARCHAR__, "communication", "Number")
+        FieldFactory.create(const.__SPL_T_VARCHAR__, "ref", "Number")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/Invoice", "paymentMethodId")
         InvoicePayments.__register_payment_associations()
@@ -166,7 +163,7 @@ class InvoicePayments:
         if not InvoiceStatusHelper.is_validated(self.object):
             payments = {}
         # ==================================================================== #
-        # Init Payments f or Writing
+        # Init Payments for Writing
         index = 0
         original_payment_ids = InvoicePaymentsHelper.get_payments_list(self.object)
         updated_payment_ids = []
@@ -189,7 +186,7 @@ class InvoicePayments:
             if payment_id is None:
                 return False
             # ==================================================================== #
-            # Store Updated Order Line Id
+            # Store Updated Order Line ID
             updated_payment_ids.append(payment_id)
             index += 1
         # ==================================================================== #
@@ -208,13 +205,8 @@ class InvoicePayments:
         :return: dict
         """
         from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(14) >= 0:
-            FieldFactory.association(
-                "journal_code@payments", "date@payments",
-                "ref@payments", "amount@payments"
-            )
-        else:
-            FieldFactory.association(
-                "journal_code@payments", "payment_date@payments",
-                "communication@payments", "amount@payments"
-            )
+
+        FieldFactory.association(
+            "journal_code@payments", "date@payments",
+            "ref@payments", "amount@payments"
+        )
