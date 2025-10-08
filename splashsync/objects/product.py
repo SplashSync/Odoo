@@ -69,7 +69,8 @@ class Product(
             "rating_last_image", "rating_last_feedback", "sale_line_warn",
             "message_unread_counter", "purchase_line_warn",
             "price", "lst_price", "list_price", "price_extra", "variant_price_extra", "standard_price",
-            "service_to_purchase", "qty_available", 'priority', "description", "expense_policy"
+            "service_to_purchase", "qty_available", 'priority', "description", "expense_policy",
+            "service_tracking"
         ]
 
         return composite
@@ -100,6 +101,7 @@ class Product(
 
             "type":                             {"group": "", "required": False, "notest": True, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
             "detailed_type":                    {"group": "", "required": False, "itemtype": "http://schema.org/Product", "itemprop": "odooType"},
+            "base_unit_count":                  {"required": False},
 
             "create_date":                      {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateCreated"},
             "write_date":                       {"group": "Meta", "itemtype": "http://schema.org/DataFeedItem", "itemprop": "dateModified"},
@@ -126,6 +128,10 @@ class Product(
         # Ensure Default Tracking Mode
         if "tracking" not in self._in:
             self._in['tracking'] = 'none'
+        # ====================================================================#
+        # Ensure Default Base Unit Count (Only if Website Sale is Activated)
+        if "base_unit_count" in self.getModel().fields_get() and "base_unit_count" not in self._in:
+            self._in['base_unit_count'] = 0
         # ====================================================================#
         # Init List of required Fields
         reqFields = self.collectRequiredCoreFields()
