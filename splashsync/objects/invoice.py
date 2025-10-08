@@ -32,10 +32,7 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
 
     @staticmethod
     def getDomain():
-        from odoo.addons.splashsync.helpers import SystemManager
-        if SystemManager.compare_version(13) >= 0:
-            return 'account.move'
-        return 'account.invoice'
+        return 'account.move'
 
     @staticmethod
     def objectsListFiltered(filter):
@@ -64,7 +61,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
         return [
             'id', 'state', 'activity_summary', 'date'
             'message_unread', 'message_unread_counter', 'move_name'
-            'my_activity_date_deadline', 'amount_total_company_signed'
+            'my_activity_date_deadline', 'amount_total_company_signed',
+            'always_tax_exigible', 'is_storno', 'checked'
         ]
 
     @staticmethod
@@ -93,6 +91,8 @@ class Invoice(OdooObject, InvoiceCore, InvoiceLines, OrderAddress, InvoiceStatus
             "user_id":                          {"write": False},
             "user_email":                       {"write": False},
             "invoice_sequence_number_next":     {"write": False},
+            "invoice_currency_rate":            {"write": False},
+            "invoice_date_due":                 {"write": False},
             "sequence_number_next":             {"write": False},
             "sequence_number_next_prefix":      {"write": False},
             "posted_before":                    {"write": False},
