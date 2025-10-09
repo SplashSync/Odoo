@@ -183,13 +183,13 @@ class OdooClient(ClientInfo):
             # ====================================================================#
             # Company Information
             self.company = company.name
-            self.address = company.street
-            self.zip = company.zip
-            self.town = company.city
+            self.address = company.street if company.street else "N/A"
+            self.zip = company.zip if company.zip else "N/A"
+            self.town = company.city if company.city else "N/A"
             self.country = company.country_id.name
-            self.www = company.website
-            self.email = company.email
-            self.phone = company.phone
+            self.www = company.website if company.website else "N/A"
+            self.email = company.email if company.email else "N/A"
+            self.phone = company.phone if company.phone else "N/A"
         except:
             self.company = "Unable to fetch Main Company"
         try:
