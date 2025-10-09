@@ -69,7 +69,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
     def get_configuration():
         """Get Hash of Fields Overrides"""
         configuration = {
-            "function": {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
+            "function":                     {"group": "", "itemtype": "http://schema.org/Person", "itemprop": "jobTitle"},
 
             "email":                        {"type": const.__SPL_T_EMAIL__, "group": "", "itemtype": "http://schema.org/ContactPoint", "itemprop": "email"},
             "mobile":                       {"type": const.__SPL_T_PHONE__, "group": "", "itemtype": "http://schema.org/Person", "itemprop": "telephone"},
@@ -77,6 +77,7 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
 
             "name":                         {"required": False, "write": False},
             "type":                         {"required": False},
+            "autopost_bills":               {"required": False},
 
             "street":                       {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip":                          {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
@@ -147,6 +148,10 @@ class Address(OdooObject, PartnersCountry, AddresseName, PartnersParent, Address
         # Safety Check - Address Type is Required (Auto-provide if needed)
         if "type" not in self._in:
             self._in["type"] = "other"
+        # ====================================================================#
+        # Safety Check - Force Auto-post Bills
+        if "autopost_bills" not in self._in:
+            self._in["autopost_bills"] = 'never'
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()

@@ -75,6 +75,7 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
 
             "name":                         {"required": False, "write": False},
             "type":                         {"choices": {"contact": "Contact"}},
+            "autopost_bills":               {"required": False},
 
             "street":                       {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "streetAddress"},
             "zip":                          {"group": "Address", "itemtype": "http://schema.org/PostalAddress", "itemprop": "postalCode"},
@@ -137,6 +138,10 @@ class ThirdParty(OdooObject, PartnersParent, PartnersCountry, ThirdPartyName):
         # Safety Check - Force Contact Type as Company
         if "company_type" not in self._in and "is_company" not in self._in:
             self._in["company_type"] = "company"
+        # ====================================================================#
+        # Safety Check - Force Auto-post Bills
+        if "autopost_bills" not in self._in:
+            self._in["autopost_bills"] = 'never'
         # ====================================================================#
         # Init List of required Fields
         req_fields = self.collectRequiredCoreFields()
