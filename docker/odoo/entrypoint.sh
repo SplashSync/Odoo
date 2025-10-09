@@ -56,21 +56,26 @@ check_odoo_config "http-interface" "$ODOO_INTERFACE"
 check_odoo_config "http-port" "80"
 check_odoo_config "log-handler" "$ODOO_LOG_LEVEL"
 
+# Odoo Demo => Install modules demo datasets
+if [ -z "$ODOO_DEMO" ]; then
+    echo "[ODOO DEMO] Disable loading of demo data"
+    check_odoo_config "without-demo" "all"
+fi
+
 # CI/CD Mode => Disable Sources Reload
 if [ -z $ODOO_DEV ]; then
-  echo "[ODOO BOOT] User Mode => Disable Auto Reload Mode"
-  check_odoo_config "dev" ""
+    echo "[ODOO BOOT] User Mode => Disable Auto Reload Mode"
 else
-  echo "[ODOO BOOT] Developer Mode => Enable Auto Reload Mode"
-  check_odoo_config "dev" "reload" "--without-demo"
+    echo "[ODOO BOOT] Developer Mode => Enable Auto Reload Mode"
+    check_odoo_config "dev" "reload"
 fi
 
 # Fast Boot => Disable All Modules Install && Updates
 if [ -z "$FAST_BOOT" ]; then
-  echo "[ODOO BOOT] Normal Mode"
-  check_odoo_config "init" "$ODOO_MODULES"
+    echo "[ODOO BOOT] Normal Mode"
+    check_odoo_config "init" "$ODOO_MODULES"
 else
-  echo "[ODOO BOOT] FAST Mode"
+    echo "[ODOO BOOT] FAST Mode"
 fi
 
 echo "[ODOO BOOT] Database Args" "${DB_ARGS[@]}"
