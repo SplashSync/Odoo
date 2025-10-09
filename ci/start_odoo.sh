@@ -37,7 +37,7 @@ do
   subtitle "$cpt => $http_code: Wait for Odoo...";
   docker compose logs --tail="10" app
   sleep 10;
-  if [ $cpt == '6' ];
+  if [ $cpt == '20' ];
   then
       subtitle "Odoo takes too long to start...";
       exit 1;
