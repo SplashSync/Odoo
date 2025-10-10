@@ -16,7 +16,7 @@
 
 ################################################################
 # Force Failure if ONE line Fails
-#set -e
+set -e
 ################################################################
 # import Layout Functions
 . resources/scripts/functions.sh
@@ -24,6 +24,7 @@
 # Ensure Toolkit Started
 title "TEST --> Start Toolkit"
 docker compose exec -T toolkit php bin/console | grep Symfony
+docker compose exec -T toolkit php bin/console cache:clear --env=test
 ################################################################
 # Wait Until Odoo Container Started
 title "TEST --> Start Odoo"
