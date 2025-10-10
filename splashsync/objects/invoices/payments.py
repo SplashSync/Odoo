@@ -69,10 +69,7 @@ class InvoicePayments:
         FieldFactory.isReadOnly()
         # ==================================================================== #
         # Payment Date
-        if SystemManager.compare_version(14) >= 0:
-            FieldFactory.create(const.__SPL_T_DATE__, "date", "Date")
-        else:
-            FieldFactory.create(const.__SPL_T_DATE__, "payment_date", "Date")
+        FieldFactory.create(const.__SPL_T_DATE__, "date", "Date")
         FieldFactory.inlist("payments")
         FieldFactory.microData("http://schema.org/PaymentChargeSpecification", "validFrom")
         InvoicePayments.__register_payment_associations()
@@ -161,7 +158,7 @@ class InvoicePayments:
         # ==================================================================== #
         # Payments Allowed Only if Validated...
         if not InvoiceStatusHelper.is_validated(self.object):
-            payments = {}
+            return True
         # ==================================================================== #
         # Init Payments for Writing
         index = 0
