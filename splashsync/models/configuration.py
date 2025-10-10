@@ -106,7 +106,6 @@ class ResConfigSplash(models.Model):
 
     sales_account_id = fields.Many2one(
         'account.account',
-        domain=[("user_type_id", "=ilike", "income")],
         required=False,
         string="Account for New Invoices Line"
     )
@@ -114,7 +113,7 @@ class ResConfigSplash(models.Model):
     sales_journal_id = fields.Many2one(
         'account.journal',
         domain=[
-            ('type', 'in', ["sale", "cash", "bank", "general"]),
+            ('type', 'in', ["cash", "bank", "credit", "general"]),
             ('default_credit_account_id', '<>', None),
         ],
         string="Default Payment Journal for Invoices"

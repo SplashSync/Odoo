@@ -73,13 +73,16 @@ class ResConfigSettings(models.TransientModel):
 
     sales_account_id = fields.Many2one(
         'account.account',
+        domain=[("account_type", "=ilike", "income")],
         string="Account for New Invoices Line",
         help="Select the Account type to use when Splash will create new Invoices lines. I.e: 200000 Product Sales"
     )
 
+    from odoo.addons.splashsync.helpers import InvoicePaymentsHelper
     sales_journal_id = fields.Many2one(
         'account.journal',
         string="Default Payment Journal for Invoices",
+        domain=InvoicePaymentsHelper.get_sales_types_filter(),
         help="Select the default payment method to use if given Invoice Payment Method was not identified",
     )
 
