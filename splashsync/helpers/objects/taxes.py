@@ -43,10 +43,13 @@ class TaxHelper:
     def is_price_include(taxes_ids, type_tax_use):
         """
         Check if Product Taxes are Included in Price or NOT
-        :param taxes_ids: list
+        :param taxes_ids: None|list
         :param type_tax_use: str
         :rtype: bool
         """
+        if taxes_ids is None:
+            return False
+
         for tax in taxes_ids:
             # Filter on Taxes types
             if tax.type_tax_use != type_tax_use:
@@ -54,6 +57,7 @@ class TaxHelper:
             # Tax is Included in Price
             if tax.price_include:
                 return True
+
         return False
 
     @staticmethod
@@ -77,7 +81,7 @@ class TaxHelper:
         """
         Encode a Price with Taxes (Included / Excluded) Management
         :param price: float
-        :param taxes_ids: list
+        :param taxes_ids: None|list
         :param type_tax_use: str
         :rtype: bool
         """
