@@ -34,6 +34,7 @@ services:
         environment:
             - ODOO_DATABASE=$CI_JOB_ID
             - ODOO_MODULES=splashsync,contacts,product,website_sale_comparison,sale,purchase,stock
+            - ODOO_DEMO=1
             - CI_MODE=enabled
 #            - ODOO_LOG_LEVEL=:WARNING
             - ODOO_LOG_LEVEL=:INFO
