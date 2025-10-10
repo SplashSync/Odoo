@@ -115,19 +115,32 @@ class InvoicePaymentsHelper:
         :rtype: dict
         """
         # ====================================================================#
-        # Execute Domain Search with Filter
+        # Search for Account Journals with Filter
         results = []
-        methods = http.request.env["account.journal"].search(
+        journals = http.request.env["account.journal"].search(
             InvoicePaymentsHelper.get_sales_types_filter(),
             limit=50
         )
         # ====================================================================#
-        # Parse results
-        for method in methods:
+        # Walk on Sales Journals
+        for journal in journals:
+            # ====================================================================#
+            # Add Journal Default Payment Method
             results += [(
-                method.name,
-                "[%s] %s (%s)" % (method.code, method.name, method.type)
+                journal.name,
+                "[%s] %s Journal (%s)" % (journal.name, journal.name, journal.code)
             )]
+            # ====================================================================#
+            # Walk on Payment Method
+            for inbound_payment_method in journal.inbound_payment_method_line_ids:
+                # ====================================================================#
+                # Add Journal Manual Payment Method
+                if inbound_payment_method.code == 'manual':
+                    results += [(
+                        inbound_payment_method.name,
+                        "[%s] %s Manual Payment Method" % (inbound_payment_method.name, journal.name)
+                    )]
+
         # ====================================================================#
         # Add Default Value
         if not Framework.isDebugMode():
@@ -149,22 +162,19 @@ class InvoicePaymentsHelper:
 
         :return: account.payment
         """
+
+
         # ====================================================================#
         # Detect Payment Method
-        payment_data["journal_id"] = InvoicePaymentsHelper.__detect_journal_id(payment_data["journal_code"])
-        if payment_data["journal_id"] is None:
-            Framework.log().error("Unable to detect Journal Id (Payment Method)")
+        payment_data["payment_method"] = InvoicePaymentsHelper.__detect_payment_method(payment_data)
+        if payment_data["payment_method"] is None:
+            Framework.log().error("Unable to detect Payment Method")
             return None
-        # ====================================================================#
-        # Detect Payment Method Id
-        payment_data["payment_type"] = "inbound" if float(payment_data["amount"]) > 0 else 'outbound'
-        payment_data["payment_method_id"] = InvoicePaymentsHelper.__detect_payment_type(payment_data["payment_type"])
-        if payment_data["payment_method_id"] is None:
-            Framework.log().error("Unable to detect manual payments method")
-            return None
+
         # ====================================================================#
         # Adjust Payment Amount
         payment_data["amount"] = InvoicePaymentsHelper.__adjust_payment_amount(invoice, payment_data["amount"])
+
         # ====================================================================#
         # Create Payment
         try:
@@ -207,11 +217,12 @@ class InvoicePaymentsHelper:
             'active_model': 'account.move',
             'active_ids': invoice.ids
         }).create({
-            "journal_id":       payment_data["journal_id"],
+            "journal_id":       payment_data["payment_method"].journal_id.id,
+            "payment_method_line_id":       payment_data["payment_method"].id,
             "amount":           payment_data["amount"],
             "communication":    payment_data["ref"],
             'payment_date':     payment_date,
-            "payment_type":     payment_data["payment_type"],
+            "payment_type":     payment_data["payment_method"].payment_type,
         }).action_create_payments()
 
         return SystemManager.getModel("account.payment").browse(payments['res_id'])
@@ -251,10 +262,15 @@ class InvoicePaymentsHelper:
         if isinstance(data["ref"], str) and len(data["ref"]) > 1:
             if getattr(payment, "memo") != data["ref"]:
                 return False
+
+        # ====================================================================#
+        # Detect Payment Method
+        payment_method = InvoicePaymentsHelper.__detect_payment_method(payment_data)
         # ==================================================================== #
-        # Compare Payment Method
-        if payment.journal_id.id != InvoicePaymentsHelper.__detect_journal_id(data["journal_code"]):
-            return False
+        # Compare Payment Journal
+        if payment_method is Noen or payment.journal_id.id == payment_method.journal_id.id:
+            return None
+
         # ==================================================================== #
         # Compare Payment Date
         try:
@@ -263,6 +279,7 @@ class InvoicePaymentsHelper:
                 return False
         except Exception:
             return False
+
         # ====================================================================#
         # Compute Allowed Margin
         margin = InvoicePaymentsHelper.__get_payment_margin(invoice)
@@ -355,12 +372,12 @@ class InvoicePaymentsHelper:
     @staticmethod
     def get_sales_types_filter():
         """
-        Get Filters for Listing Available Payment Methods
+        Get Account Journals Filters for Listing Available Customers Payment Methods
 
         :return: tuple
         """
         return [
-            ('type', 'in', ["cash", "bank", "general"]),
+            ('type', 'in', ["cash", "bank", "credit", "general"]),
             ('default_account_id', '<>', None),
         ]
 
@@ -389,11 +406,11 @@ class InvoicePaymentsHelper:
         # ==================================================================== #
         # Payment Method
         if field_id == "journal_code":
-            return M2OHelper.get_name(payment, "journal_id", "name")
-        if field_id == "journal_type":
-            return M2OHelper.get_name(payment, "journal_id", "type")
+            return M2OHelper.get_name(payment, "payment_method_line_id", "name")
         if field_id == "journal_name":
             return M2OHelper.get_name(payment, "journal_id")
+        if field_id == "journal_type":
+            return M2OHelper.get_name(payment, "journal_id", "type")
         # ==================================================================== #
         # Payment Date
         if field_id in ["date", "payment_date"]:
@@ -407,51 +424,84 @@ class InvoicePaymentsHelper:
             return float(getattr(payment, field_id))
 
     @staticmethod
-    def __detect_journal_id(journal_code):
+    def __detect_payment_method(payment_data):
         """
-        Search for Journal using Payment method Code
+        Search for Payment method on all Available Journals
 
-        :param journal_code: str
+        :param payment_data: dict
 
-        :return: int|None
+        :return: None|account.payment.method.line
         """
-        from odoo.addons.splashsync.helpers import M2OHelper
-        try:
-            journal_id = M2OHelper.verify_name(
-                journal_code,
-                "name",
-                "account.journal",
-                InvoicePaymentsHelper.get_sales_types_filter()
-            )
-            if isinstance(journal_id, int) and journal_id > 0:
-                return journal_id
 
-            from odoo.addons.splashsync.helpers.settings import SettingsManager
-            default_id = SettingsManager.get_sales_journal_id()
+        # ====================================================================#
+        # Detect Payment Method Code
+        method_code = payment_data["journal_code"] if "journal_code" in payment_data else "default"
+        # ====================================================================#
+        # Search for Account Journals with Filter
+        journals = http.request.env["account.journal"].search(
+            InvoicePaymentsHelper.get_sales_types_filter(),
+            limit=50
+        )
+        # ====================================================================#
+        # Walk on Sales Journals to Identify by Payment methode Name
+        for journal in journals:
+            # ====================================================================#
+            # Get Journal Payment Methods
+            payment_methods = journal.inbound_payment_method_line_ids if float(payment_data["amount"]) > 0 else journal.outbound_payment_method_line_ids
+            # ====================================================================#
+            # Walk on Payment Method
+            for payment_method in payment_methods:
+                # ====================================================================#
+                # Filter on Manual Payment Method
+                if payment_method.code != 'manual':
+                    continue
+                # ====================================================================#
+                # Filter on Method Name
+                if payment_method.name.lower() != method_code.lower():
+                    continue
 
-            return default_id if isinstance(default_id, int) and default_id > 0 else None
-        except Exception:
-            return None
+                return payment_method
+        # ====================================================================#
+        # Walk on Sales Journals to Identify by Journal Name
+        for journal in journals:
+            # ====================================================================#
+            # Filter on Journal Name
+            if journal.name.lower() != method_code.lower():
+                continue
+            # ====================================================================#
+            # Get Journal Payment Methods
+            payment_methods = journal.inbound_payment_method_line_ids if float(payment_data["amount"]) > 0 else journal.outbound_payment_method_line_ids
+            # ====================================================================#
+            # Walk on Payment Method
+            for payment_method in payment_methods:
+                # ====================================================================#
+                # Filter on Manual Payment Method
+                if payment_method.code != 'manual':
+                    continue
+                # ====================================================================#
+                # Return Fist Manual Payment Method
+                return payment_method
 
-    @staticmethod
-    def __detect_payment_type(mode='inbound'):
-        """
-        Search for Manual Payment Method ID
+        # ====================================================================#
+        # Use Default Journal
+        from odoo.addons.splashsync.helpers.settings import SettingsManager
+        journal = SettingsManager.get_sales_journal()
+        if journal:
+            # ====================================================================#
+            # Get Journal Payment Methods
+            payment_methods = journal.inbound_payment_method_line_ids if float(payment_data["amount"]) > 0 else journal.outbound_payment_method_line_ids
+            # ====================================================================#
+            # Walk on Payment Method
+            for payment_method in payment_methods:
+                # ====================================================================#
+                # Filter on Manual Payment Method
+                if payment_method.code != 'manual':
+                    continue
+                # ====================================================================#
+                # Return Fist Manual Payment Method
+                return payment_method
 
-        :return: int|None
-        """
-        from odoo.addons.splashsync.helpers import M2OHelper
-        try:
-            payment_method_id = M2OHelper.verify_name(
-                "%manual%",
-                "name",
-                "account.payment.method",
-                [('payment_type', '=', mode)]
-            )
-
-            return payment_method_id if isinstance(payment_method_id, int) and payment_method_id > 0 else None
-        except Exception as exception:
-            return None
+        return None
 
     @staticmethod
     def __adjust_payment_amount(invoice, amount):
