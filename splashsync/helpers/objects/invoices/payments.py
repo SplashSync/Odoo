@@ -265,10 +265,10 @@ class InvoicePaymentsHelper:
 
         # ====================================================================#
         # Detect Payment Method
-        payment_method = InvoicePaymentsHelper.__detect_payment_method(payment_data)
+        payment_method = InvoicePaymentsHelper.__detect_payment_method(data)
         # ==================================================================== #
         # Compare Payment Journal
-        if payment_method is Noen or payment.journal_id.id == payment_method.journal_id.id:
+        if payment_method is None or payment.journal_id.id == payment_method.journal_id.id:
             return None
 
         # ==================================================================== #
