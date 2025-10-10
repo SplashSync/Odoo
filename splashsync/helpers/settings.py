@@ -105,6 +105,10 @@ class SettingsManager():
         return SettingsManager.get_configuration().sales_account_id.id
 
     @staticmethod
+    def get_sales_journal():
+        return SettingsManager.get_configuration().sales_journal_id
+
+    @staticmethod
     def get_sales_journal_id():
         return SettingsManager.get_configuration().sales_journal_id.id
 
