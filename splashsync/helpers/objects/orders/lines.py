@@ -231,7 +231,7 @@ class OrderLinesHelper:
 
         # ==================================================================== #
         # Linked Product ID
-        if field_id == "product_id" and isinstance(ObjectsHelper.id(field_data), (int, str)):
+        if field_id == "product_id":
             try:
                 line.product_id = OrderLinesHelper.detect_product_id({
                     "product_id": field_data
