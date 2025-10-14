@@ -28,6 +28,8 @@ class Orderlines:
 
         from odoo.addons.splashsync.helpers import SettingsManager, TaxHelper
 
+        allFields = self.getModel().fields_get()
+
         # ==================================================================== #
         # [CORE] Order Line Fields
         # ==================================================================== #
@@ -112,10 +114,11 @@ class Orderlines:
         FieldFactory.isReadOnly().isNotTested()
         # ==================================================================== #
         # Product reference
-        FieldFactory.create(const.__SPL_T_VARCHAR__, "name_short", "Product Ref.")
-        FieldFactory.inlist("lines")
-        FieldFactory.microData("http://schema.org/Product", "ref")
-        FieldFactory.isReadOnly().isNotTested()
+        if "name_short" in allFields:
+            FieldFactory.create(const.__SPL_T_VARCHAR__, "name_short", "Product Ref.")
+            FieldFactory.inlist("lines")
+            FieldFactory.microData("http://schema.org/Product", "ref")
+            FieldFactory.isReadOnly().isNotTested()
         # ==================================================================== #
         # Delivery Lead Time
         FieldFactory.create(const.__SPL_T_DOUBLE__, "lead_time", "Customer LeadTime")
