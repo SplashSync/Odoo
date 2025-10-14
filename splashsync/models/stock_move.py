@@ -47,7 +47,7 @@ class StockMove(models.Model):
         # Execute Splash Commit
         self.__do_splash_commit(const.__SPL_A_UPDATE__)
 
-        res = super(StockMoveLine, self).unlink()
+        res = super(StockMove, self).unlink()
 
         return res
 
