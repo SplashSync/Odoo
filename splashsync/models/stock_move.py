@@ -23,6 +23,7 @@ class StockMove(models.Model):
     """
     _inherit = 'stock.move'
 
+    @api.model
     def create(self, vals):
         res = super(StockMove, self).create(vals)
 
@@ -38,6 +39,15 @@ class StockMove(models.Model):
         # ====================================================================#
         # Execute Splash Commit
         self.__do_splash_commit(const.__SPL_A_UPDATE__)
+
+        return res
+
+    def unlink(self):
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_UPDATE__)
+
+        res = super(StockMoveLine, self).unlink()
 
         return res
 
