@@ -41,6 +41,15 @@ class StockMove(models.Model):
 
         return res
 
+    def unlink(self):
+        # ====================================================================#
+        # Execute Splash Commit
+        self.__do_splash_commit(const.__SPL_A_UPDATE__)
+
+        res = super(StockMoveLine, self).unlink()
+
+        return res
+
     def __do_splash_commit(self, action):
         """
         Execute Splash Commit for this Product
