@@ -25,7 +25,7 @@ class StockMoveLine(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(StockMove, self).create(vals)
+        res = super(StockMoveLine, self).create(vals)
 
         # ====================================================================#
         # Execute Splash Commit
@@ -34,7 +34,7 @@ class StockMoveLine(models.Model):
         return res
 
     def write(self, vals):
-        res = super(StockMove, self).write(vals)
+        res = super(StockMoveLine, self).write(vals)
 
         # ====================================================================#
         # Execute Splash Commit
