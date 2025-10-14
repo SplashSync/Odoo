@@ -23,6 +23,7 @@ class StockMoveLine(models.Model):
     """
     _inherit = 'stock.move.line'
 
+    @api.model
     def create(self, vals):
         res = super(StockMove, self).create(vals)
 

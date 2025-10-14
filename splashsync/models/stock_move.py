@@ -23,6 +23,7 @@ class StockMove(models.Model):
     """
     _inherit = 'stock.move'
 
+    @api.model
     def create(self, vals):
         res = super(StockMove, self).create(vals)
 
