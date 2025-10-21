@@ -55,6 +55,7 @@ class OrderPickingHelper:
             return
         # ====================================================================#
         # Odoo 18
+        picking._action_done()
         picking.button_validate()
 
     @staticmethod
