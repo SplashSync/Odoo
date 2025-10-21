@@ -124,6 +124,11 @@ class ResConfigSplash(models.Model):
         help="Enable Advanced Taxes Mode."
     )
 
+    sales_orders_self_invoiced = fields.Boolean(
+        string="Sales Orders are Invoiced by Splash",
+        help="Automatically mark delivered orders lines as Fully Invoiced."
+    )
+
     sales_check_payments_amount = fields.Boolean(
         string="Invoices Payments Amounts Check",
         help="Validate Invoice only if Payments Amounts match Invoice Total."
@@ -186,6 +191,7 @@ class ResConfigSplash(models.Model):
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
+            'sales_orders_self_invoiced': self.sales_orders_self_invoiced,
             'sales_check_payments_amount': self.sales_check_payments_amount,
         }
 
@@ -233,6 +239,7 @@ class ResConfigSplash(models.Model):
             'sales_account_id': self.sales_account_id.id,
             'sales_journal_id': self.sales_journal_id.id,
             'sales_advanced_taxes': self.sales_advanced_taxes,
+            'sales_orders_self_invoiced': self.sales_orders_self_invoiced,
             'sales_check_payments_amount': self.sales_check_payments_amount,
         })
         logging.warning('[SPLASH] Configuration ID '+str(config.id)+' Updated')

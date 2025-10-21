@@ -203,6 +203,21 @@
                             </div>
                         </div>
 
+                        <div class="col-12 col-md-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sales_orders_self_invoiced" class="o_light_label"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sales_orders_self_invoiced"/>
+                                <div class="text-muted">
+                                    Automatically mark delivered orders lines as Fully Invoiced.
+                                </div>
+                                <div class="text-muted">
+                                    Enable this mode if you receive Orders and Invoices from Splash.
+                                    Or leave unchecked if Odoo generates your invoices.
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-12 col-md-12 o_setting_box">
                             <div class="o_setting_left_pane">

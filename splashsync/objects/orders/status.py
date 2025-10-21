@@ -113,7 +113,7 @@ class OrderStatus:
             return
         # ====================================================================#
         # Load Picking Helper
-        from odoo.addons.splashsync.helpers import OrderPickingHelper
+        from odoo.addons.splashsync.helpers import OrderPickingHelper, SettingsManager
         # ====================================================================#
         # Check if State Changed
         state = self._get_odoo_status(field_data)
@@ -161,8 +161,17 @@ class OrderStatus:
             # IS Delivered
             if state == 'done':
                 self.object.action_lock()
+                # ====================================================================#
+                # Mark all picking as Done
                 for picking in self.object.picking_ids:
                     OrderPickingHelper.done(picking)
+                # ====================================================================#
+                # Order Self-Invoiced Mode
+                if SettingsManager.is_sales_orders_self_invoiced():
+                    # ====================================================================#
+                    # Mark all Lines as Invoiced
+                    for line in self.object.order_line:
+                        line.write({ 'qty_invoiced': line.product_uom_qty })
 
         except Exception as exception:
             return Framework.log().fromException(exception)

@@ -67,6 +67,10 @@ class SettingsManager():
     def get_company_filter():
         return [('company_id', '=', SettingsManager.get_configuration().company_id.id)]
 
+    # ====================================================================#
+    # PRODUCTS CATALOG SETTINGS
+    # ====================================================================#
+
     @staticmethod
     def is_prd_simple_prices():
         try:
@@ -92,13 +96,28 @@ class SettingsManager():
     def is_prd_sku_detection():
         return bool(SettingsManager.get_configuration()["product_sku_detection"])
 
+    # ====================================================================#
+    # ORDERS SETTINGS
+    # ====================================================================#
+
+    @staticmethod
+    def get_sales_default_team_id():
+        try:
+            return SettingsManager.get_configuration().sales_default_team_id.id
+        except Exception:
+            return None
+
     @staticmethod
     def is_sales_adv_taxes():
         return bool(SettingsManager.get_configuration()["sales_advanced_taxes"])
 
     @staticmethod
-    def is_sales_check_payments():
-        return bool(SettingsManager.get_configuration()["sales_check_payments_amount"])
+    def is_sales_orders_self_invoiced():
+        return bool(SettingsManager.get_configuration()["sales_orders_self_invoiced"])
+
+    # ====================================================================#
+    # INVOICING SETTINGS
+    # ====================================================================#
 
     @staticmethod
     def get_sales_account_id():
@@ -113,11 +132,8 @@ class SettingsManager():
         return SettingsManager.get_configuration().sales_journal_id.id
 
     @staticmethod
-    def get_sales_default_team_id():
-        try:
-            return SettingsManager.get_configuration().sales_default_team_id.id
-        except Exception:
-            return None
+    def is_sales_check_payments():
+        return bool(SettingsManager.get_configuration()["sales_check_payments_amount"])
 
     @staticmethod
     def get_configuration():

@@ -62,7 +62,7 @@ class ResConfigSettings(models.TransientModel):
     )
 
     # ====================================================================#
-    # SALES Settings
+    # ORDERS Settings
     # ====================================================================#
 
     sales_default_team_id = fields.Many2one(
@@ -70,6 +70,10 @@ class ResConfigSettings(models.TransientModel):
         string="Default Sales Team",
         help="Default Sales Team for New Contacts, Orders & Invoices"
     )
+
+    # ====================================================================#
+    # INVOICES Settings
+    # ====================================================================#
 
     sales_account_id = fields.Many2one(
         'account.account',
@@ -91,6 +95,11 @@ class ResConfigSettings(models.TransientModel):
     sales_advanced_taxes = fields.Boolean(
         string="Order & Invoices Advanced Taxes",
         help="Enable Advanced Taxes Mode."
+    )
+
+    sales_orders_self_invoiced = fields.Boolean(
+        string="Sales Orders are Invoiced by Splash",
+        help="Automatically mark delivered orders lines as Fully Invoiced."
     )
 
     sales_check_payments_amount = fields.Boolean(
@@ -136,6 +145,7 @@ class ResConfigSettings(models.TransientModel):
                 'sales_account_id': self.sales_account_id.id,
                 'sales_journal_id': self.sales_journal_id.id,
                 'sales_advanced_taxes': self.sales_advanced_taxes,
+                'sales_orders_self_invoiced': self.sales_orders_self_invoiced,
                 'sales_check_payments_amount': self.sales_check_payments_amount,
             })
         else:
@@ -153,6 +163,7 @@ class ResConfigSettings(models.TransientModel):
             splash_config.sales_account_id = int(self.sales_account_id.id)
             splash_config.sales_journal_id = int(self.sales_journal_id.id)
             splash_config.sales_advanced_taxes = bool(self.sales_advanced_taxes)
+            splash_config.sales_orders_self_invoiced = bool(self.sales_orders_self_invoiced)
             splash_config.sales_check_payments_amount = bool(self.sales_check_payments_amount)
             splash_config.execute()
 
