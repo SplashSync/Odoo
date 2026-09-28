@@ -2,13 +2,19 @@
 lang: fr
 permalink: start/composer
 title: Installation
+description: Installer le package Splash Core depuis PyPi et le module Splash pour Odoo.
+updated: 2026-09-28
+translation:
+    from:        en
+    source_hash: 7a06d89d
+    mode:        llm
 ---
 
-### Installer le Package Splash Core depuis PyPi
+### Installer le package Splash Core depuis PyPi
 
-Odoo Module nécessite l'installation de notre module de base pour Python.
+Le module Odoo nécessite l'installation de notre package de base pour Python.
 
-Vous pouvez l'installer via cette commande:
+Vous pouvez l'installer via cette commande :
 
 ```bash
 pip3 install splashpy
@@ -16,7 +22,7 @@ pip3 install splashpy
 
 ### Installer le module Splash pour Odoo
 
-Téléchargez {{ site.github.project_title }} depuis notre dépôt GitHub, et créez un lien symbolique dans le dossier extra-addons de Odoo.
+Téléchargez le module Splash pour Odoo depuis notre dépôt GitHub, et créez un lien symbolique dans le dossier des addons d'Odoo.
 
 ```bash
 git clone https://github.com/SplashSync/Odoo.git /home/splashsync --depth=1
@@ -29,15 +35,13 @@ Pour mettre à jour le module, il vous suffit de mettre à jour le dépôt Git.
 cd /home/splashsync && git pull
 ```
 
-### Installation | Mise à jour automatisée 
+### Installation | Mise à jour automatisée
 
-Si vous travaillez sur un environnement Ubuntu/Debian et que vos modules Odoo sont installés dans ***/mnt/extra-addons/***.
-Ou si vous utilisez une image docker.
-
-Vous pouvez tester la ligne de commande suivante: 
+Si vous travaillez sur un environnement Ubuntu/Debian et que vos modules Odoo sont installés dans `/mnt/extra-addons/`, vous pouvez tester la commande suivante :
 
 ```bash
-curl -s  https://raw.githubusercontent.com/SplashSync/Odoo/master/scripts/install.sh | bash
+curl -s https://raw.githubusercontent.com/SplashSync/Odoo/master/scripts/install.sh | bash
 ```
 
-**Note**: Nécéssite des droits administrateur
+> [!NOTE]
+> Nécessite des droits administrateur.
