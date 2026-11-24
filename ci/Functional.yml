@@ -13,7 +13,7 @@
 #
 ################################################################################
 
-# Toolkit 3.0 validator: images pulled from the registry, the database of the image is ready, the
+# Toolkit 3.0 validator: Odoo & database images pulled from the registry (not the dev image), the database of the image is ready, the
 # addon of the commit is mounted and upgraded at start (ODOO_UPDATE). One run per object type.
 
 toolkit:
@@ -28,7 +28,7 @@ toolkit:
         - apk add --no-cache make > /dev/null
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     script:
-        - make pull up
+        - make pull up PULL="odoo db"
         - make test SUITE=Validator
         - make manifest
     after_script:

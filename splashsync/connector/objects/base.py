@@ -45,6 +45,11 @@ class OdooGroup(FieldsGroup):
         """Keep the Odoo context of the request (optional)."""
         self.odoo = odoo
 
+    @classmethod
+    def available(cls, odoo: OdooContext) -> bool:  # noqa: ARG003 - used by the overrides
+        """Tell if this group is available in the Odoo database (modules, settings): default, always."""
+        return True
+
     # ====================================================================#
     # Read
     # ====================================================================#
@@ -98,7 +103,9 @@ class OdooObject(BaseObject):
         self.odoo = odoo
         # groups are built by splashpy without arguments: bind them to the request context
         vars(self)["groups"] = tuple(
-            cast("type[FieldsGroup]", partial(cast("type[OdooGroup]", group), odoo)) for group in type(self).groups
+            cast("type[FieldsGroup]", partial(cast("type[OdooGroup]", group), odoo))
+            for group in type(self).groups
+            if cast("type[OdooGroup]", group).available(odoo)
         )
 
     # ====================================================================#

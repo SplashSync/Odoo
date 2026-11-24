@@ -17,6 +17,7 @@
 
 COMPOSE     ?= docker compose
 TOOLS       ?= $(COMPOSE) run --rm -T quality
+PULL        ?= odoo db quality
 TOOLKIT     := $(COMPOSE) exec -T toolkit
 WS          ?= ThisIsOdooC0WsId
 MANIFESTS   := splash.yml splash.json swagger.json
@@ -33,8 +34,8 @@ help:		## Show this help
 # Docker Stack
 ################################################################################
 
-pull:		## Pull the images of the branch from the registry (Odoo, pre-initialised database, tools)
-	$(COMPOSE) --profile tools pull odoo db quality
+pull:		## Pull the images of the branch from the registry (PULL: Odoo, pre-initialised database, tools)
+	$(COMPOSE) --profile tools pull $(PULL)
 
 build:		## Build the images (only when docker/ changes: the addon & splashpy are mounted)
 	$(COMPOSE) --profile tools build
@@ -86,10 +87,11 @@ quality: lint style stan	## Run ALL checks
 # Functional Tests (Toolkit 3.0)
 ################################################################################
 
-test:		## Run the Toolkit suites, one run per object type (TYPES="ThirdParty Address", SUITE=Validator|Odoo)
+test:		## Run the Toolkit suites, one run per object type (TYPES="Product", SEQUENCE="[Gen 3] Odoo C1", FIELDS=sku, FILTER=O11)
 	@for type in $(TYPES); do \
 		echo "=== $$type"; \
-		$(COMPOSE) exec -T -e SPLASH_TYPES=$$type toolkit php vendor/bin/phpunit -c phpunit.odoo.xml --testsuite $(SUITE) || exit 1; \
+		$(COMPOSE) exec -T -e SPLASH_TYPES=$$type -e SPLASH_SEQUENCE="$(SEQUENCE)" -e SPLASH_FIELDS="$(FIELDS)" toolkit \
+			php vendor/bin/phpunit -c phpunit.odoo.xml --testsuite $(SUITE) $(if $(FILTER),--filter "$(FILTER)") || exit 1; \
 	done
 
 manifest:	## Generate Splash manifests (splash.yml, splash.json, swagger.json) with the Toolkit (WS=...)

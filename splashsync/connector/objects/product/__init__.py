@@ -13,7 +13,8 @@
 """Product: Odoo product variants (``product.product``), one Splash product per variant.
 
 Field ids are the V1 ids. Scopes: Variants Receiver (attributes & variants declared on the fly,
-without generating every combination) and Gallery Receiver.
+without generating every combination), when the "Variants" setting of Odoo is enabled, and Gallery
+Receiver, when the eCommerce module is installed (extra images).
 """
 
 from __future__ import annotations
@@ -24,25 +25,38 @@ from typing import Any, ClassVar, Final
 from splashpy.core.context import RequestContext
 from splashpy.objects import ObjectRequest
 
+from ...context import OdooContext
 from ..base import OdooObject
 from ..generic import GenericFields
 from .attributes import FIELDS as ATTRIBUTES_FIELDS
 from .attributes import ProductAttributes, clean_lines
 from .core import TEMPLATES as CORE_TEMPLATES
 from .core import TRANSLATED, ProductCore
+from .features import has_gallery, has_variants
 from .gallery import FIELDS as GALLERY_FIELDS
 from .gallery import ProductGallery, read_file
 from .variants import FIELDS as VARIANTS_FIELDS
 from .variants import ProductVariants, sibling_template
 
-SCOPES: Final = ("Splash.Scopes.Product.VariantsReceiver", "Splash.Scopes.Product.GalleryReceiver")
-"""Scopes declared for Product."""
+VARIANTS_SCOPE: Final = "Splash.Scopes.Product.VariantsReceiver"
+"""Scope declared when the "Variants" setting is enabled."""
+
+GALLERY_SCOPE: Final = "Splash.Scopes.Product.GalleryReceiver"
+"""Scope declared when the eCommerce module is installed."""
 
 MODEL: Final = "product.product"
 """Odoo model."""
 
 NO_VARIANTS: Final = {"create_product_product": False}
 """Odoo context: never generate variants automatically while Splash writes."""
+
+
+def scopes(odoo: OdooContext) -> list[str]:
+    """Scopes declared for Product, by enabled features."""
+    return [
+        *([VARIANTS_SCOPE] if has_variants(odoo.env) else []),
+        *([GALLERY_SCOPE] if has_gallery(odoo.env) else []),
+    ]
 
 
 class ProductFields(GenericFields):
@@ -92,7 +106,7 @@ class Product(OdooObject):
         """Name & type; attached to the template of a received sibling variant, if any."""
         values: dict[str, Any] = {"name": req.inputs.get("name") or req.inputs.get("default_code") or "New Product"}
         values.setdefault("type", "consu")
-        template = sibling_template(self.odoo.env, req.inputs.get("variants"))
+        template = sibling_template(self.odoo.env, req.inputs.get("variants")) if has_variants(self.odoo.env) else None
         if template and not req.inputs.get("attributes"):
             # Odoo refuses two variants with the same (empty) attributes on one template
             req.logger.warning("Product: variant received without attributes, created as a separate product.")

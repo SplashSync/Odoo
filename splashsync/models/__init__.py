@@ -13,4 +13,4 @@
 
 """Odoo models of the Splash connector."""
 
-from . import product_image, res_company, res_config_settings
+from . import res_company, res_config_settings

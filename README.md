@@ -16,7 +16,7 @@ One branch per Odoo version: this is `20.0`.
 | Order       | `sale.order`  | Planned                                                        |
 | Invoice     | `account.move`| Planned                                                        |
 
-Field ids of the V1 connector are kept. Plan & field correspondence: `docs/plan/`.
+Field ids of the V1 connector are kept.
 
 ## Requirements
 

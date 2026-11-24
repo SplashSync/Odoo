@@ -24,7 +24,7 @@ from odoo import release
 from splashpy import ClientInfo, SplashClient, SplashConfig
 
 from .context import OdooContext
-from .objects import OBJECTS, SCOPES
+from .objects import OBJECTS, scopes
 from .widgets import WIDGETS
 
 STATIC: Final = Path(__file__).resolve().parent.parent / "static" / "assets" / "img"
@@ -117,7 +117,7 @@ def client_info(odoo: OdooContext) -> ClientInfo:
         icoraw=_asset("favicon.ico"),
         logoraw=_asset("logo.png"),
         logourl=None,
-        scopes=list(SCOPES),
+        scopes=scopes(odoo),
         servertype=f"Odoo {release.version}",
         serverurl=company.get_base_url() or None,
         moduleauthor="Splash Sync",

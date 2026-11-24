@@ -16,15 +16,18 @@ from __future__ import annotations
 
 from typing import Final
 
+from ..context import OdooContext
 from .address import SCOPE as ADDRESS_SCOPE
 from .address import Address
-from .product import SCOPES as PRODUCT_SCOPES
 from .product import Product
+from .product import scopes as product_scopes
 from .thirdparty import SCOPE as THIRDPARTY_SCOPE
 from .thirdparty import ThirdParty
 
 OBJECTS: Final = (ThirdParty, Address, Product)
 """Objects of the connector."""
 
-SCOPES: Final = (THIRDPARTY_SCOPE, ADDRESS_SCOPE, *PRODUCT_SCOPES)
-"""Scopes declared to Splash (contracts catalog)."""
+
+def scopes(odoo: OdooContext) -> list[str]:
+    """Scopes declared to Splash (contracts catalog), by features enabled in the database."""
+    return [THIRDPARTY_SCOPE, ADDRESS_SCOPE, *product_scopes(odoo)]

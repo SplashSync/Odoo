@@ -64,6 +64,8 @@ admin.write({"company_ids": [(6, 0, companies)], "lang": "en_US", "password": AD
 env["res.lang"]._activate_lang("en_US")
 env["res.lang"]._activate_lang("fr_FR")
 Company.browse(companies).partner_id.write({"lang": "en_US"})
+# "Variants" setting enabled: the connector only exposes attributes & variants with it
+env["res.config.settings"].create({"group_product_variant": True}).execute()
 # Base URL: port 80 on the Odoo host, never overwritten by an admin login from another address
 Params = env["ir.config_parameter"].sudo()
 Params.set_str("web.base.url", BASE_URL)

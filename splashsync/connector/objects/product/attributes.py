@@ -26,7 +26,9 @@ from typing import Any, Final
 from splashpy.fields import FieldsFactory
 from splashpy.objects import ObjectRequest, fields_group
 
+from ...context import OdooContext
 from ..base import OdooGroup
+from .features import has_variants
 
 LIST: Final = "attributes"
 """Attributes list name."""
@@ -53,6 +55,11 @@ FIELDS: Final = frozenset({LIST})
 @fields_group("attributes", priority=30, after=("core", "variants"))
 class ProductAttributes(OdooGroup):
     """Variant attributes: code, name and translated value of each attribute of the variant."""
+
+    @classmethod
+    def available(cls, odoo: OdooContext) -> bool:
+        """Only when the "Variants" setting of Odoo is enabled."""
+        return has_variants(odoo.env)
 
     def build(self, factory: FieldsFactory, req: ObjectRequest) -> None:
         """Declare attributes fields (not tested here: the Variants Receiver scope tests them)."""
