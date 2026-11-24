@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 #
 #  This file is part of SplashSync Project.
 #
-#  Copyright (C) 2015-2020 Splash Sync  <www.splashsync.com>
+#  Copyright (C) Splash Sync  <www.splashsync.com>
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,29 +12,18 @@
 #
 
 {
-    'name': 'splashsync',
-    'summary': 'SplashSync Connector for Odoo',
-    'version': "1.18.0",
-    'category': 'Technical Settings',
-    'website': 'https://www.splashsync.com/',
-    'author': 'SplashSync',
-    'maintainer': 'contact@splashsync.com',
-    'license': 'GPL-3',
-    'installation': True,
-    'application': True,
-    'external_dependencies': {
-        'python': ["splashpy"],
-        'bin': [],
-    },
-    'depends': [
-        'base', 'product', 'sale',
+    "name": "Splash Sync Connector",
+    "version": "20.0.3.0.0",
+    "summary": "Synchronize Odoo with any application through Splash Sync",
+    "author": "Splash Sync",
+    "website": "https://www.splashsync.com",
+    "category": "Technical",
+    "license": "LGPL-3",
+    "depends": ["base", "contacts", "product", "sale_management", "stock", "sale_stock", "account", "website_sale"],
+    "external_dependencies": {"python": ["splashpy"]},
+    "data": [
+        "views/res_config_settings_views.xml",
     ],
-    'data': [
-       'views/res_config_settings_views.xml',
-       'views/product_view.xml',
-       'security/ir.model.access.csv',
-    ],
-    'images': ["static/description/banner.png"],
-    'post_init_hook': 'post_init_hook',
+    "images": ["static/description/banner.png"],
+    "application": True,
 }
-

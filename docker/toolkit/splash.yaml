@@ -1,0 +1,77 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Toolkit 3.0 configuration: one SOAP connection per Odoo company.
+
+parameters:
+    env(SERVER_NAME):   'http://toolkit.odoo.local'
+    env(APP_SECRET):    'HXAE37X4DWTprvyLb10F3f7StmRStcZy'
+
+splash:
+
+    # No cache: tests create & delete objects all the time
+    cache:
+        enabled:    false
+        lifetime:   10
+
+    # Allow notifications for generic users
+    notify:     ["ROLE_USER"]
+
+    connections:
+
+        ########################################################################
+        # Odoo C0 (main)
+        odoo-main:
+            id:                 ThisIsOdooC0WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               "[Gen 3] Odoo C0 (main)"
+            host:               false
+            connector:          soap
+            config:
+                Extended:           true
+                WsIdentifier:       ThisIsOdooC0WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://app.odoo.local:8069
+                WsPath:             /splash
+
+        ########################################################################
+        # Odoo C1
+        odoo-1:
+            id:                 ThisIsOdooC1WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               "[Gen 3] Odoo C1"
+            host:               false
+            connector:          soap
+            config:
+                Extended:           true
+                WsIdentifier:       ThisIsOdooC1WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://app.odoo.local:8069
+                WsPath:             /splash?cname=PhpUnit1
+
+        ########################################################################
+        # Odoo C2
+        odoo-2:
+            id:                 ThisIsOdooC2WsId
+            key:                ThisIsYourEncryptionKeyForSplash
+            name:               "[Gen 3] Odoo C2"
+            host:               false
+            connector:          soap
+            config:
+                Extended:           true
+                WsIdentifier:       ThisIsOdooC2WsId
+                WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
+                WsHost:             http://app.odoo.local:8069
+                WsPath:             /splash?cname=PhpUnit2

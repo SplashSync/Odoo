@@ -1,0 +1,43 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Quality tools (ruff, mypy, pylint-odoo, bandit) in the Odoo image of this branch: the addon is
+# checked where it runs, against the real Odoo & splashpy. Not started by "up" (profile "tools").
+
+services:
+
+    quality:
+        image:              "${IMAGES:-registry.gitlab.com/splashsync/odoo}/dev:${ODOO_VERSION:-20}"
+        profiles:           [ "tools" ]
+        build:
+            context:        ".."
+            dockerfile:     "docker/odoo/Dockerfile"
+            target:         "dev"
+            args:
+                ODOO_VERSION:       "${ODOO_VERSION:-20}"
+                POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
+            additional_contexts:
+                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+        working_dir:        "/opt/splash/src"
+        environment:
+            MYPYPATH:       "/opt/splash/src"
+            PYTHONPATH:     "/opt/splash/splashpy"
+            RUFF_CACHE_DIR: "/tmp/ruff"
+            MYPY_CACHE_DIR: "/tmp/mypy"
+        volumes:
+            - "..:/opt/splash/src:ro"
+            - "../splashsync:/opt/splash/addons/splashsync:ro"
+            - "${SPLASHPY_PATH:-../../../SplTools/Py-Core}/src:/opt/splash/splashpy:ro"
+        network_mode:       "none"

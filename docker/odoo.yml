@@ -1,0 +1,50 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Odoo + Splash addon. Host: app.odoo.local - IP: 172.120.0.10
+# Image from the registry (built by "make build" or the CI Build job). The addon and splashpy sources
+# are mounted: no rebuild when they change. Odoo reloads on change (ODOO_DEV); ODOO_UPDATE=1 upgrades
+# the addon at start (CI: the database of the image gets the addon of the commit).
+
+services:
+
+    odoo:
+        image:              "${IMAGES:-registry.gitlab.com/splashsync/odoo}/odoo:${ODOO_VERSION:-20}"
+        container_name:     "app.odoo.local"
+        hostname:           "app.odoo.local"
+        build:
+            context:        ".."
+            dockerfile:     "docker/odoo/Dockerfile"
+            target:         "odoo"
+            args:
+                ODOO_VERSION:       "${ODOO_VERSION:-20}"
+                POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
+            additional_contexts:
+                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+        environment:
+            DB_HOST:        "db.odoo.local"
+            ODOO_DEV:       "${ODOO_DEV:-1}"
+            ODOO_UPDATE:    "${ODOO_UPDATE:-}"
+            PYTHONPATH:     "/opt/splash/splashpy"
+        ports:
+            - "127.0.0.1:8069:8069"
+        volumes:
+            - "../splashsync:/opt/splash/addons/splashsync:ro"
+            - "${SPLASHPY_PATH:-../../../SplTools/Py-Core}/src:/opt/splash/splashpy:ro"
+        depends_on:
+            db:             { condition: service_healthy }
+        networks:
+            odoo:           { ipv4_address: 172.120.0.10, aliases: [ app.odoo.local ] }
+            splashsync:     { aliases: [ app.odoo.local ] }

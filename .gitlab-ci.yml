@@ -2,7 +2,7 @@
 #
 #  This file is part of SplashSync Project.
 #
-#  Copyright (C) Splash Sync <www.splashsync.com>
+#  Copyright (C) Splash Sync  <www.splashsync.com>
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,35 +13,26 @@
 #
 ################################################################################
 
+# Splash connector for Odoo (Gen 3).
+#
+# Images are built once and pushed to the registry of the project ($CI_REGISTRY_IMAGE/odoo|db|dev):
+# Odoo with the modules, the pre-initialised database, the quality tools. Every other pipeline
+# pulls them: the addon of the commit and splashpy (Py-Core, SPLASHPY_BRANCH) are mounted, the
+# addon is upgraded in the database at start. Nothing is rebuilt on a code push.
+
+stages:
+    - Build
+    - Quality
+    - Functional
+
+variables:
+    ODOO_VERSION:       "20"
+    IMAGES:             "$CI_REGISTRY_IMAGE"
+    SPLASHPY_BRANCH:    "3.0"
+    SPLASHPY_PATH:      "$CI_PROJECT_DIR/.splashpy"
+    SPLASHPY_ARCHIVE:   "https://gitlab.com/SplashSync/Py-Core/-/archive/$SPLASHPY_BRANCH/Py-Core-$SPLASHPY_BRANCH.tar.gz"
+
 include:
-  - 'https://raw.githubusercontent.com/SplashSync/Odoo/resources/ci/.gitlab-ci.yml'
-
-################################################################
-# Products - Functional Tests
-################################################################
-
-Products:C1-Extra:
-    allow_failure:        true
-
-Products:C2-Extra:
-    allow_failure:        true
-
-#################################################################
-## Orders - Functional Tests
-#################################################################
-
-Orders:C1-Extra:
-    allow_failure:        true
-
-Orders:C2-Extra:
-    allow_failure:        true
-
-################################################################
-# Invoices - Functional Tests
-################################################################
-
-Invoices:C1-Extra:
-    allow_failure:        true
-
-Invoices:C2-Extra:
-    allow_failure:        true
+    - local:    "ci/Build.yml"         # build & push the images (docker/ changed, schedule, manual)
+    - local:    "ci/Quality.yml"       # ruff, pylint-odoo, format, bandit, mypy (in the dev image)
+    - local:    "ci/Functional.yml"    # Toolkit 3.0 validator against the 3 test companies

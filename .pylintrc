@@ -1,0 +1,10 @@
+# pylint-odoo: Odoo specific checks (manifest, views, API usages) for the Odoo version of the image
+[MASTER]
+load-plugins=pylint_odoo
+score=n
+valid-odoo-versions=20.0
+manifest-required-authors=Splash Sync
+
+[MESSAGES CONTROL]
+disable=all
+enable=odoolint

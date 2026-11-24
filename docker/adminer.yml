@@ -1,0 +1,34 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Adminer: web admin of the Postgres database. Host: db-admin.odoo.local - IP: 172.120.0.102
+# Login: system "PostgreSQL", server "db.odoo.local", user "odoo", password "odoo", database "odoo".
+
+services:
+
+    adminer:
+        image:              "adminer:5"
+        container_name:     "db-admin.odoo.local"
+        hostname:           "db-admin.odoo.local"
+        logging:            { driver: "none" }
+        depends_on:
+            db:             { condition: service_healthy }
+        environment:
+            ADMINER_DEFAULT_SERVER:     "db.odoo.local"
+            ADMINER_DESIGN:             "pepa-linha"
+        ports:
+            - "127.0.0.1:8081:8080"
+        networks:
+            odoo:           { ipv4_address: 172.120.0.102, aliases: [ db-admin.odoo.local ] }

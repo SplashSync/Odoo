@@ -1,0 +1,6 @@
+# Build context: only the addon and the docker folder are used
+*
+!splashsync
+!docker
+**/__pycache__
+**/*.py[cod]

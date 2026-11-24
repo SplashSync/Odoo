@@ -1,0 +1,60 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Quality tools configuration (run inside the "dev" image: same Odoo, same Python as production)
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["docker/odoo/fixtures.py"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "N", "S", "C4", "SIM", "RUF", "PL", "D", "ANN", "BLE", "PT", "RET", "ARG"]
+ignore = [
+    "D203", "D213", "D104",         # docstring layout (Py-Core style)
+    "ANN401",                       # Odoo records are untyped (Any)
+    "PLR0911", "PLR2004",
+    "RUF012",                       # Odoo class attributes
+    "ARG002",                       # framework overrides keep their signatures
+]
+
+[tool.ruff.lint.per-file-ignores]
+"splashsync/__manifest__.py" = ["B018", "D100"]
+"**/__init__.py" = ["F401"]           # Odoo loads models & controllers by import
+
+[tool.ruff.lint.isort]
+known-first-party = ["splashsync"]
+known-third-party = ["odoo", "splashpy"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["splashsync"]
+exclude = ["splashsync/__manifest__\\.py$"]
+explicit_package_bases = true
+namespace_packages = true
+
+[[tool.mypy.overrides]]
+module = ["odoo", "odoo.*", "werkzeug", "werkzeug.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = ["splashsync.models.*", "splashsync.controllers.*"]
+disallow_subclassing_any = false        # Odoo base classes are untyped
+disallow_untyped_decorators = false     # Odoo decorators are untyped
+
+[tool.bandit]
+exclude_dirs = ["docker"]

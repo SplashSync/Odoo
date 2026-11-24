@@ -1,0 +1,35 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Postgres with the pre-initialised Odoo database. Host: db.odoo.local - IP: 172.120.0.101
+# Built from the Odoo Dockerfile ("db" target). Recreate the container to reset the database.
+
+services:
+
+    db:
+        image:              "${IMAGES:-registry.gitlab.com/splashsync/odoo}/db:${ODOO_VERSION:-20}"
+        container_name:     "db.odoo.local"
+        hostname:           "db.odoo.local"
+        build:
+            context:        ".."
+            dockerfile:     "docker/odoo/Dockerfile"
+            target:         "db"
+            args:
+                ODOO_VERSION:       "${ODOO_VERSION:-20}"
+                POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
+            additional_contexts:
+                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+        networks:
+            odoo:           { ipv4_address: 172.120.0.101, aliases: [ db.odoo.local ] }

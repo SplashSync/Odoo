@@ -1,0 +1,34 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Splash Toolkit 3.0: validator & MCP. Host: toolkit.odoo.local - IP: 172.120.0.100
+
+services:
+
+    toolkit:
+        image:              "splashsync/toolkit:3.0"
+        container_name:     "toolkit.odoo.local"
+        hostname:           "toolkit.odoo.local"
+        ports:
+            - "127.0.0.1:8080:80"
+        volumes:
+            - "./toolkit/splash.yaml:/app/config/packages/splash.yaml:ro"
+            - "./toolkit/phpunit.xml.dist:/app/phpunit.odoo.xml:ro"
+            - "./toolkit/tests:/app/tests/Odoo:ro"
+        depends_on:
+            odoo:           { condition: service_healthy }
+        networks:
+            odoo:           { ipv4_address: 172.120.0.100, aliases: [ toolkit.odoo.local ] }
+            splashsync:     { aliases: [ toolkit.odoo.local ] }
