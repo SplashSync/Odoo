@@ -19,6 +19,7 @@
 quality:
     stage:      Quality
     image:      "$IMAGES/dev:$ODOO_VERSION"
+    tags:       [ "Dedicated" ]
     variables:
         MYPYPATH:           "$CI_PROJECT_DIR"
         RUFF_CACHE_DIR:     "/tmp/ruff"
