@@ -21,15 +21,15 @@ Field ids of the V1 connector are kept. Plan & field correspondence: `docs/plan/
 ## Requirements
 
 * Odoo 20, Python 3.12
-* splashpy 3.0
+* splashpy 3.x >= 3.0.0b0 (PyPI, betas included, not 4.x) and `packaging` (Odoo checks the splashpy version with it)
 * An active Splash Sync account
 
 ## Development
 
 Everything runs in Docker. Images are built once and pushed to the registry of the project
 (`registry.gitlab.com/splashsync/odoo/odoo|db|dev:20`): Odoo with its modules, the pre-initialised
-database, the quality tools. The addon and splashpy (`SPLASHPY_PATH`) are mounted from the sources:
-a code change never needs a rebuild.
+database, the quality tools, with the latest splashpy 3.x from PyPI (betas included, never 4.x). The addon is
+mounted from the sources: a code change never needs a rebuild.
 
 ```bash
 docker network create splashsync --attachable   # once
@@ -45,15 +45,16 @@ CI: `Build` builds & pushes the images only when `docker/odoo` changes, on sched
 `BUILD_IMAGES=1`; `Quality` runs in the dev image, `Functional` pulls the images, upgrades the addon
 of the commit at start (`ODOO_UPDATE=1`) and runs the validator. Nothing is rebuilt on a code push.
 
-| Service | URL                                           | Notes                                  |
-|---------|-----------------------------------------------|----------------------------------------|
-| Odoo    | http://localhost:8069                         | test login `admin` / `admin`           |
-| Splash  | http://localhost:8069/splash?node=ThisIsOdooC0WsId | debug page of the main company   |
-| Toolkit | http://localhost:8080                         | MCP: `http://172.120.0.100/_mcp`       |
-| Adminer | http://localhost:8081                         | Postgres admin: server `db.odoo.local`, `odoo` / `odoo` |
+| Service | URL                                            | Notes                                                    |
+|---------|------------------------------------------------|----------------------------------------------------------|
+| Odoo    | http://172.120.0.10                            | test login `admin` / `admin`                             |
+| Splash  | http://172.120.0.10/splash?node=ThisIsOdooC0WsId | debug page of the main company                         |
+| Toolkit | http://172.120.0.100                           | MCP: `http://172.120.0.100/_mcp`                         |
+| Adminer | http://172.120.0.102                           | Postgres admin: server `db.odoo.local`, `odoo` / `odoo`  |
 
-splashpy is built from a local Py-Core checkout (`SPLASHPY_PATH`, default `../../../SplTools/Py-Core`
-relative to `docker/`). Network: `172.120.0.0/24`, the same on every branch (one stack at a time).
+Every service listens on port 80 of its fixed IP address: nothing is published on localhost.
+
+A new splashpy release needs a rebuild of the images (`make build push`, or the CI Build job). Network: `172.120.0.0/24`, the same on every branch (one stack at a time).
 
 ## License
 

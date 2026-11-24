@@ -1,0 +1,28 @@
+################################################################################
+#
+#  This file is part of SplashSync Project.
+#
+#  Copyright (C) Splash Sync  <www.splashsync.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+# Quality checks run directly in the dev image of the registry (same Odoo & Python as production),
+# against the sources of the commit and the splashpy release of the image: no Docker, no build.
+
+quality:
+    stage:      Quality
+    image:      "$IMAGES/dev:$ODOO_VERSION"
+    variables:
+        MYPYPATH:           "$CI_PROJECT_DIR"
+        RUFF_CACHE_DIR:     "/tmp/ruff"
+        MYPY_CACHE_DIR:     "/tmp/mypy"
+    before_script:    []
+    script:
+        - make quality TOOLS=

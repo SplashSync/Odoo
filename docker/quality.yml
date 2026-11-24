@@ -28,16 +28,13 @@ services:
             args:
                 ODOO_VERSION:       "${ODOO_VERSION:-20}"
                 POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
-            additional_contexts:
-                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+                SPLASHPY:           "${SPLASHPY:-splashpy>=3.0.0b0,<4}"
         working_dir:        "/opt/splash/src"
         environment:
             MYPYPATH:       "/opt/splash/src"
-            PYTHONPATH:     "/opt/splash/splashpy"
             RUFF_CACHE_DIR: "/tmp/ruff"
             MYPY_CACHE_DIR: "/tmp/mypy"
         volumes:
             - "..:/opt/splash/src:ro"
             - "../splashsync:/opt/splash/addons/splashsync:ro"
-            - "${SPLASHPY_PATH:-../../../SplTools/Py-Core}/src:/opt/splash/splashpy:ro"
         network_mode:       "none"

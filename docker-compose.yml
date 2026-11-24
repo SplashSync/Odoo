@@ -19,10 +19,10 @@
 # to the external "splashsync" network:
 #
 #   Service     Host name               IP address      Endpoint
-#   odoo        app.odoo.local          172.120.0.10    http://localhost:8069 (admin / admin, Splash: /splash)
-#   toolkit     toolkit.odoo.local      172.120.0.100   http://localhost:8080 (MCP: http://172.120.0.100/_mcp)
+#   odoo        app.odoo.local          172.120.0.10    http://172.120.0.10 (admin / admin, Splash: /splash)
+#   toolkit     toolkit.odoo.local      172.120.0.100   http://172.120.0.100 (MCP: /_mcp)
 #   db          db.odoo.local           172.120.0.101   postgres://odoo:odoo@db.odoo.local/odoo
-#   adminer     db-admin.odoo.local     172.120.0.102   http://localhost:8081 (Postgres web admin, odoo / odoo)
+#   adminer     db-admin.odoo.local     172.120.0.102   http://172.120.0.102 (Postgres web admin, odoo / odoo)
 #
 # Images are ready to use: the database is built in the "db" image, nothing is installed at start.
 # The "splashsync" network must exist: docker network create splashsync --attachable

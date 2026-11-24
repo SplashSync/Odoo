@@ -29,7 +29,6 @@ services:
             args:
                 ODOO_VERSION:       "${ODOO_VERSION:-20}"
                 POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
-            additional_contexts:
-                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+                SPLASHPY:           "${SPLASHPY:-splashpy>=3.0.0b0,<4}"
         networks:
             odoo:           { ipv4_address: 172.120.0.101, aliases: [ db.odoo.local ] }

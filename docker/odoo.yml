@@ -14,8 +14,8 @@
 ################################################################################
 
 # Odoo + Splash addon. Host: app.odoo.local - IP: 172.120.0.10
-# Image from the registry (built by "make build" or the CI Build job). The addon and splashpy sources
-# are mounted: no rebuild when they change. Odoo reloads on change (ODOO_DEV); ODOO_UPDATE=1 upgrades
+# Image from the registry (built by "make build" or the CI Build job). The addon sources are mounted:
+# no rebuild when they change. Odoo reloads on change (ODOO_DEV); ODOO_UPDATE=1 upgrades
 # the addon at start (CI: the database of the image gets the addon of the commit).
 
 services:
@@ -31,18 +31,13 @@ services:
             args:
                 ODOO_VERSION:       "${ODOO_VERSION:-20}"
                 POSTGRES_VERSION:   "${POSTGRES_VERSION:-17}"
-            additional_contexts:
-                splashpy:   "${SPLASHPY_PATH:-../../../SplTools/Py-Core}"
+                SPLASHPY:           "${SPLASHPY:-splashpy>=3.0.0b0,<4}"
         environment:
             DB_HOST:        "db.odoo.local"
             ODOO_DEV:       "${ODOO_DEV:-1}"
             ODOO_UPDATE:    "${ODOO_UPDATE:-}"
-            PYTHONPATH:     "/opt/splash/splashpy"
-        ports:
-            - "127.0.0.1:8069:8069"
         volumes:
             - "../splashsync:/opt/splash/addons/splashsync:ro"
-            - "${SPLASHPY_PATH:-../../../SplTools/Py-Core}/src:/opt/splash/splashpy:ro"
         depends_on:
             db:             { condition: service_healthy }
         networks:

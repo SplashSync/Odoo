@@ -21,8 +21,6 @@ services:
         image:              "splashsync/toolkit:3.0"
         container_name:     "toolkit.odoo.local"
         hostname:           "toolkit.odoo.local"
-        ports:
-            - "127.0.0.1:8080:80"
         volumes:
             - "./toolkit/splash.yaml:/app/config/packages/splash.yaml:ro"
             - "./toolkit/phpunit.xml.dist:/app/phpunit.odoo.xml:ro"

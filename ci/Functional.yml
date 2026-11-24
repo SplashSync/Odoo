@@ -26,7 +26,6 @@ toolkit:
         ODOO_DEV:       "0"
     before_script:
         - apk add --no-cache make > /dev/null
-        - mkdir -p "$SPLASHPY_PATH" && wget -qO- "$SPLASHPY_ARCHIVE" | tar xz --strip-components=1 -C "$SPLASHPY_PATH"
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     script:
         - make pull up

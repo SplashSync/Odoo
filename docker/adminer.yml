@@ -28,7 +28,6 @@ services:
         environment:
             ADMINER_DEFAULT_SERVER:     "db.odoo.local"
             ADMINER_DESIGN:             "pepa-linha"
-        ports:
-            - "127.0.0.1:8081:8080"
+        command:            [ "php", "-S", "[::]:80", "-t", "/var/www/html" ]
         networks:
             odoo:           { ipv4_address: 172.120.0.102, aliases: [ db-admin.odoo.local ] }

@@ -43,7 +43,7 @@ splash:
                 Extended:           true
                 WsIdentifier:       ThisIsOdooC0WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://app.odoo.local:8069
+                WsHost:             http://app.odoo.local
                 WsPath:             /splash
 
         ########################################################################
@@ -58,7 +58,7 @@ splash:
                 Extended:           true
                 WsIdentifier:       ThisIsOdooC1WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://app.odoo.local:8069
+                WsHost:             http://app.odoo.local
                 WsPath:             /splash?cname=PhpUnit1
 
         ########################################################################
@@ -73,5 +73,5 @@ splash:
                 Extended:           true
                 WsIdentifier:       ThisIsOdooC2WsId
                 WsEncryptionKey:    ThisIsYourEncryptionKeyForSplash
-                WsHost:             http://app.odoo.local:8069
+                WsHost:             http://app.odoo.local
                 WsPath:             /splash?cname=PhpUnit2

@@ -15,8 +15,7 @@
 
 # Splash Odoo connector (Gen 3) - ready to use images, nothing installed at start.
 #
-#   base    official Odoo image, configuration
-#   wheel   splashpy 3.0 wheel (build context "splashpy" = Py-Core)
+#   base    official Odoo image, configuration, "packaging" (versioned external dependencies)
 #   modules builds the database once with the Odoo modules (cached)
 #   init    installs the addon and the test fixtures (companies, Splash configuration)
 #   odoo    Odoo + addon + filestore matching the "db" image
@@ -24,10 +23,13 @@
 #   dev     "odoo" + quality tools (ruff, mypy, pylint-odoo), run against the installed addon
 #
 # Build: make build (only when this directory changes), then make push. Day to day, images come
-# from the registry (make pull): the addon & splashpy sources are mounted, nothing is rebuilt.
+# from the registry (make pull): the addon sources are mounted, nothing is rebuilt.
+# splashpy comes from PyPI (SPLASHPY, a pip requirement): "splashpy>=3.0.0b0,<4" takes the latest 3.x
+# release, betas included (a pre-release in the specifier lets pip pick pre-releases), never 4.x.
 
 ARG ODOO_VERSION=20
 ARG POSTGRES_VERSION=17
+ARG SPLASHPY="splashpy>=3.0.0b0,<4"
 
 ################################################################################
 # Base: official Odoo image, addons & data outside its VOLUMEs (they stay in the image)
@@ -40,16 +42,10 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1 \
     SPLASH_ADDONS=/opt/splash/addons \
     SPLASH_DATA=/var/lib/odoo-data
 
-RUN mkdir -p ${SPLASH_ADDONS} ${SPLASH_DATA} && chown -R odoo:odoo ${SPLASH_DATA}
+# Odoo needs "packaging" to check versioned external dependencies ("splashpy>=3.0.0b0,<4")
+RUN mkdir -p ${SPLASH_ADDONS} ${SPLASH_DATA} && chown -R odoo:odoo ${SPLASH_DATA} \
+    && pip3 install packaging
 COPY docker/odoo/odoo.conf /etc/odoo/odoo.conf
-
-################################################################################
-# Wheel: splashpy (Py-Core 3.0, build context "splashpy"), built apart so that a change of
-# splashpy never invalidates the Odoo modules layer
-FROM base AS wheel
-
-COPY --from=splashpy . /tmp/splashpy
-RUN pip3 wheel --no-deps -w /wheels /tmp/splashpy
 
 ################################################################################
 # Modules: database with the Odoo modules (cached until the modules list changes)
@@ -81,8 +77,8 @@ RUN pg.sh start \
 # Init: Splash addon & test fixtures (rebuilt when the addon changes)
 FROM modules AS init
 
-COPY --from=wheel /wheels /wheels
-RUN pip3 install /wheels/*.whl
+ARG SPLASHPY
+RUN pip3 install "${SPLASHPY}"
 COPY --chown=odoo:odoo splashsync ${SPLASH_ADDONS}/splashsync
 COPY docker/odoo/fixtures.py /opt/splash/fixtures.py
 RUN pg.sh start \
@@ -96,16 +92,16 @@ RUN pg.sh start \
 # Odoo: addon + filestore matching the database
 FROM base AS odoo
 
-COPY --from=wheel /wheels /wheels
-RUN pip3 install /wheels/*.whl
+ARG SPLASHPY
+RUN pip3 install "${SPLASHPY}"
 COPY --from=init --chown=odoo:odoo ${SPLASH_DATA} ${SPLASH_DATA}
 COPY --chown=odoo:odoo splashsync ${SPLASH_ADDONS}/splashsync
 COPY docker/odoo/entrypoint.sh /usr/local/bin/splash-entrypoint.sh
 
 USER odoo
-EXPOSE 8069
+EXPOSE 80
 HEALTHCHECK --interval=2s --timeout=3s --retries=60 \
-    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8069/web/health')"
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1/web/health')"
 ENTRYPOINT ["/usr/local/bin/splash-entrypoint.sh"]
 CMD ["odoo"]
 

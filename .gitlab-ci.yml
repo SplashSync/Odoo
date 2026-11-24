@@ -17,8 +17,8 @@
 #
 # Images are built once and pushed to the registry of the project ($CI_REGISTRY_IMAGE/odoo|db|dev):
 # Odoo with the modules, the pre-initialised database, the quality tools. Every other pipeline
-# pulls them: the addon of the commit and splashpy (Py-Core, SPLASHPY_BRANCH) are mounted, the
-# addon is upgraded in the database at start. Nothing is rebuilt on a code push.
+# pulls them: the addon of the commit is mounted and upgraded in the database at start. splashpy is
+# the one of the images: the latest 3.x release from PyPI, betas included. Nothing is rebuilt on a push.
 
 stages:
     - Build
@@ -28,9 +28,6 @@ stages:
 variables:
     ODOO_VERSION:       "20"
     IMAGES:             "$CI_REGISTRY_IMAGE"
-    SPLASHPY_BRANCH:    "3.0"
-    SPLASHPY_PATH:      "$CI_PROJECT_DIR/.splashpy"
-    SPLASHPY_ARCHIVE:   "https://gitlab.com/SplashSync/Py-Core/-/archive/$SPLASHPY_BRANCH/Py-Core-$SPLASHPY_BRANCH.tar.gz"
 
 include:
     - local:    "ci/Build.yml"         # build & push the images (docker/ changed, schedule, manual)

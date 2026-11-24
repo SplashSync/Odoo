@@ -18,8 +18,9 @@
 # ruff: noqa: F821
 
 KEY = "ThisIsYourEncryptionKeyForSplash"
-ADMIN_PASSWORD = "admin"  # test stack only: login admin / admin on http://localhost:8069
+ADMIN_PASSWORD = "admin"  # test stack only: login admin / admin on http://172.120.0.10
 TOOLKIT = "http://toolkit.odoo.local/ws/soap"
+BASE_URL = "http://app.odoo.local"  # Odoo URL seen by the Toolkit (images, links), frozen
 NODES = {"YourCompany": "ThisIsOdooC0WsId", "PhpUnit1": "ThisIsOdooC1WsId", "PhpUnit2": "ThisIsOdooC2WsId"}
 
 Company = env["res.company"].sudo()
@@ -63,5 +64,9 @@ admin.write({"company_ids": [(6, 0, companies)], "lang": "en_US", "password": AD
 env["res.lang"]._activate_lang("en_US")
 env["res.lang"]._activate_lang("fr_FR")
 Company.browse(companies).partner_id.write({"lang": "en_US"})
+# Base URL: port 80 on the Odoo host, never overwritten by an admin login from another address
+Params = env["ir.config_parameter"].sudo()
+Params.set_str("web.base.url", BASE_URL)
+Params.set_bool("web.base.url.freeze", True)
 env.cr.commit()
 print(f"[SPLASH] Fixtures done: companies {companies}")
