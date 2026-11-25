@@ -43,7 +43,8 @@ make build push # only when docker/odoo changes (CI does it on the version branc
 
 CI: `Build` builds & pushes the images only when `docker/odoo` changes, on schedules or with
 `BUILD_IMAGES=1`; `Quality` runs in the dev image, `Functional` pulls the images, upgrades the addon
-of the commit at start (`ODOO_UPDATE=1`) and runs the validator. Nothing is rebuilt on a code push.
+of the commit at start (`ODOO_UPDATE=1`) and runs the validator, one job per objects group and per company
+(products are shared between companies: never tested side by side). Nothing is rebuilt on a code push.
 
 | Service | URL                                            | Notes                                                    |
 |---------|------------------------------------------------|----------------------------------------------------------|

@@ -13,7 +13,7 @@
 
 """Product gallery, on the Odoo images only: main images and eCommerce extra images.
 
-Splash sends, for one variant, the complete gallery of the product with two flags per image:
+Splash sends and reads, for one variant, the complete gallery of the product with two flags per image:
 
 - **visible**: hidden images belong to other variants, they are never put on this variant;
 - **cover**: the main image of the product, whatever its position.
@@ -128,14 +128,17 @@ class ProductGallery(OdooGroup):
 
 
 def read_gallery(variant: Any) -> list[Entry]:
-    """Images of a variant: its extra images, the main image first when it is not one of them."""
+    """Complete gallery of the product, flagged for a variant: images of the other variants are hidden.
+
+    The main image comes first when it is not one of the extra images.
+    """
     entries: list[Entry] = []
     if has_gallery(variant.env):
-        entries = [Entry(image, True) for image in gallery(variant.product_tmpl_id) if sees(variant, image)]
+        entries = [Entry(image, sees(variant, image)) for image in gallery(variant.product_tmpl_id)]
     main = binary_raw(variant.with_context(bin_size=False).image_1920)
     if main and all(raw_image(entry.record) != main for entry in entries):
         source = variant if variant.image_variant_1920 else variant.product_tmpl_id
-        entries.insert(0, Entry(source, not entries))
+        entries.insert(0, Entry(source, not any(entry.visible for entry in entries)))
     return entries
 
 

@@ -23,6 +23,8 @@ WS          ?= ThisIsOdooC0WsId
 MANIFESTS   := splash.yml splash.json swagger.json
 SUITE       ?= Validator
 TYPES       ?= ThirdParty Address Product
+# Companies, tested one after the other (products are shared: never mix them in one run)
+SEQUENCES   ?= [Gen 3] Odoo C0 (main),[Gen 3] Odoo C1,[Gen 3] Odoo C2
 
 .DEFAULT_GOAL := help
 .PHONY: help pull build push up stop prune reset update logs shell lint style stan quality test manifest
@@ -87,11 +89,13 @@ quality: lint style stan	## Run ALL checks
 # Functional Tests (Toolkit 3.0)
 ################################################################################
 
-test:		## Run the Toolkit suites, one run per object type (TYPES="Product", SEQUENCE="[Gen 3] Odoo C1", FIELDS=sku, FILTER=O11)
+test:		## Run the Toolkit suites, one run per object type then per company (TYPES="Product", SEQUENCES="[Gen 3] Odoo C1", FIELDS=sku, FILTER=O11)
 	@for type in $(TYPES); do \
-		echo "=== $$type"; \
-		$(COMPOSE) exec -T -e SPLASH_TYPES=$$type -e SPLASH_SEQUENCE="$(SEQUENCE)" -e SPLASH_FIELDS="$(FIELDS)" toolkit \
-			php vendor/bin/phpunit -c phpunit.odoo.xml --testsuite $(SUITE) $(if $(FILTER),--filter "$(FILTER)") || exit 1; \
+		echo "$(SEQUENCES)" | tr ',' '\n' | while IFS= read -r sequence; do \
+			echo "=== $$type / $$sequence"; \
+			$(COMPOSE) exec -T -e SPLASH_TYPES=$$type -e SPLASH_SEQUENCE="$$sequence" -e SPLASH_FIELDS="$(FIELDS)" toolkit \
+				php vendor/bin/phpunit -c phpunit.odoo.xml --testsuite $(SUITE) $(if $(FILTER),--filter "$(FILTER)") </dev/null || exit 1; \
+		done || exit 1; \
 	done
 
 manifest:	## Generate Splash manifests (splash.yml, splash.json, swagger.json) with the Toolkit (WS=...)

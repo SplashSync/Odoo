@@ -10,9 +10,10 @@
 #  For the full copyright and license information, please view the LICENSE
 #  file that was distributed with this source code.
 #
-"""Product variants: parent template and sibling variants.
+"""Product variants: parent template and variants list.
 
-The variants list is only written on creation: a received sibling attaches the new variant to
+The variants list read is every variant of the parent template, the current one included (Splash
+variants contract). It is only written on creation: a received sibling attaches the new variant to
 the same Odoo product template (see ``Product.create_values()``).
 """
 
@@ -44,7 +45,7 @@ FIELDS: Final = frozenset({"variant_template", LIST})
 
 @fields_group("variants", priority=20, after=("core",))
 class ProductVariants(OdooGroup):
-    """Parent template (read-only) and the other variants of the same template."""
+    """Parent template (read-only) and all the variants of the same template."""
 
     @classmethod
     def available(cls, odoo: OdooContext) -> bool:
@@ -61,14 +62,14 @@ class ProductVariants(OdooGroup):
         build_fields(factory, TEMPLATES, "Variants", flags=flags)
 
     def get(self, req: ObjectRequest, field_id: str) -> Any:
-        """Read the parent template id, or the sibling variants."""
+        """Read the parent template id, or the variants of the template (the current one included)."""
         product = req.object
         if field_id == "variant_template":
             return str(product.product_tmpl_id.id)
-        siblings = product.product_tmpl_id.product_variant_ids - product
+        variants = product.product_tmpl_id.product_variant_ids.sorted("id")
         if field_id == f"id@{LIST}":
-            return [ObjectIds.encode("Product", sibling.id) for sibling in siblings]
-        return [sibling.default_code or None for sibling in siblings]
+            return [ObjectIds.encode("Product", variant.id) for variant in variants]
+        return [variant.default_code or None for variant in variants]
 
     def set(self, req: ObjectRequest, field_id: str, value: Any) -> bool | None:
         """Ignore the received variants (used on creation only)."""

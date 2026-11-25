@@ -14,7 +14,8 @@
 ################################################################################
 
 # Toolkit 3.0 validator: Odoo & database images pulled from the registry (not the dev image), the database of the image is ready, the
-# addon of the commit is mounted and upgraded at start (ODOO_UPDATE). One run per object type.
+# addon of the commit is mounted and upgraded at start (ODOO_UPDATE). One job per objects group and per company,
+# each on its own stack: products are shared between companies, their tests never run side by side.
 
 toolkit:
     stage:      Functional
@@ -24,6 +25,10 @@ toolkit:
     variables:
         ODOO_UPDATE:    "1"
         ODOO_DEV:       "0"
+    parallel:
+        matrix:
+            - TYPES:        [ "ThirdParty Address", "Product" ]
+              SEQUENCES:    [ "[Gen 3] Odoo C0 (main)", "[Gen 3] Odoo C1", "[Gen 3] Odoo C2" ]
     before_script:
         - apk add --no-cache make > /dev/null
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
