@@ -50,6 +50,13 @@ HTML: Final = ("description",)
 BOOLS: Final = ("active", "sale_ok", "purchase_ok")
 """Boolean fields."""
 
+UNITS: Final = {
+    "weight": ("_get_weight_uom_id_from_ir_config_parameter", "uom.product_uom_kgm"),
+    "volume": ("_get_volume_uom_id_from_ir_config_parameter", "uom.product_uom_cubic_meter"),
+}
+"""Measures: Odoo stores them in the unit of the Inventory settings (kg / lb, m3 / ft3), Splash always
+in metric units (kg, m3). Field => (Odoo getter of the configured unit, metric unit xml id)."""
+
 
 def field_ids(languages: list[str]) -> frozenset[str]:
     """Field ids of this group, translations included."""
@@ -88,6 +95,8 @@ class ProductCore(OdooGroup):
             return bool(value)
         if name in AUDIT:
             return odoo_fields.Datetime.to_string(value) if value else None
+        if name in UNITS:
+            return convert(product, name, float(value or 0), to_metric=True)
         return value or None
 
     def set(self, req: ObjectRequest, field_id: str, value: Any) -> bool | None:
@@ -101,8 +110,8 @@ class ProductCore(OdooGroup):
             return self.stage_translation(req, req.object.product_tmpl_id, name, lang, value)
         if name in BOOLS:
             return self.stage(req, name, str(value) in ("1", "True", "true"))
-        if name in ("weight", "volume"):
-            return self.stage(req, name, float(value or 0))
+        if name in UNITS:
+            return self.stage(req, name, convert(req.object, name, float(value or 0), to_metric=False))
         if name == "description" and req.object and self.same_html(req.object[name], value):
             return True
         return self.stage(req, name, value or False)
@@ -119,3 +128,17 @@ class ProductCore(OdooGroup):
     def same_html(current: Any, value: Any) -> bool:
         """Compare an HTML value with a received one, as plain text."""
         return bool(html2plaintext(current or "").strip() == html2plaintext(value or "").strip())
+
+
+def convert(product: Any, name: str, value: float, *, to_metric: bool) -> float:
+    """Convert a measure between the unit configured in Odoo and the metric unit of Splash."""
+    getter, metric_ref = UNITS[name]
+    configured = getattr(product.env["product.template"], getter)()
+    metric = product.env.ref(metric_ref)
+    if configured == metric or not value:
+        return value
+    source, target = (configured, metric) if to_metric else (metric, configured)
+    converted = float(source._compute_quantity(value, target, round=False))
+    # read back at the precision Odoo stores the measure with: kg 4.71 => lb 10.38 => kg 4.71
+    digits = product._fields[name].get_digits(product.env)
+    return round(converted, digits[1]) if to_metric and digits else converted
