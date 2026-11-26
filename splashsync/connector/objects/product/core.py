@@ -33,7 +33,7 @@ TEMPLATES: Final = {
     "default_code": "Splash.Templates.Product.Core.ProductSku",
     "active": "Splash.Templates.Product.Flags.Active",
     "sale_ok": "Splash.Templates.Product.Flags.Offered",
-    "barcode": "Splash.Templates.Product.Identifiers.Barcode",
+    "barcode": "Splash.Templates.Product.Identifiers.Ean13",  # Odoo product barcodes are EAN-13 (GTIN-13)
     "weight": "Splash.Templates.Product.Dimensions.Weight",
     "volume": "Splash.Templates.Product.Dimensions.Volume",
     "create_date": "Splash.Templates.Common.Audit.DateCreated",

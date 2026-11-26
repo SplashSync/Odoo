@@ -30,6 +30,7 @@ from ..base import OdooObject
 from ..generic import GenericFields
 from .attributes import FIELDS as ATTRIBUTES_FIELDS
 from .attributes import ProductAttributes, clean_lines
+from .characteristics import VARIANT_VALUES, ProductFeatures
 from .core import TEMPLATES as CORE_TEMPLATES
 from .core import TRANSLATED, ProductCore
 from .features import has_gallery, has_variants
@@ -63,7 +64,15 @@ class ProductFields(GenericFields):
     """Generic Odoo fields of product variants."""
 
     owned_elsewhere = frozenset(
-        {*TRANSLATED, *CORE_TEMPLATES, "purchase_ok", *VARIANTS_FIELDS, *ATTRIBUTES_FIELDS, *GALLERY_FIELDS}
+        {
+            *TRANSLATED,
+            *CORE_TEMPLATES,
+            "purchase_ok",
+            *VARIANTS_FIELDS,
+            *ATTRIBUTES_FIELDS,
+            *GALLERY_FIELDS,
+            VARIANT_VALUES,
+        }
     )
     """Explicit fields of the object."""
 
@@ -81,7 +90,14 @@ class Product(OdooObject):
     icon = "fa fa-product-hunt"
     model = MODEL
     listed_fields = ("default_code", "name")
-    groups: ClassVar[Any] = (ProductCore, ProductVariants, ProductAttributes, ProductGallery, ProductFields)
+    groups: ClassVar[Any] = (
+        ProductCore,
+        ProductVariants,
+        ProductAttributes,
+        ProductFeatures,
+        ProductGallery,
+        ProductFields,
+    )
 
     def records(self) -> Any:
         """Product variants, without automatic variants generation."""

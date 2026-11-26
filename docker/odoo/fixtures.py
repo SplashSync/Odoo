@@ -22,6 +22,7 @@ ADMIN_PASSWORD = "admin"  # test stack only: login admin / admin on http://172.1
 TOOLKIT = "http://toolkit.odoo.local/ws/soap"
 BASE_URL = "http://app.odoo.local"  # Odoo URL seen by the Toolkit (images, links), frozen
 NODES = {"YourCompany": "ThisIsOdooC0WsId", "PhpUnit1": "ThisIsOdooC1WsId", "PhpUnit2": "ThisIsOdooC2WsId"}
+FEATURES = {"Material": ["Cotton", "Wool", "Leather"], "Brand": ["Splash", "BadPixxel"]}
 
 Company = env["res.company"].sudo()
 
@@ -66,6 +67,14 @@ env["res.lang"]._activate_lang("fr_FR")
 Company.browse(companies).partner_id.write({"lang": "en_US"})
 # "Variants" setting enabled: the connector only exposes attributes & variants with it
 env["res.config.settings"].create({"group_product_variant": True}).execute()
+# Product features: "no variant" attributes; C2 stores them on the variants (Advanced Variants mode)
+Attributes = env["product.attribute"]
+for name, values in FEATURES.items():
+    if not Attributes.search([("name", "=", name), ("create_variant", "=", "no_variant")]):
+        Attributes.create(
+            {"name": name, "create_variant": "no_variant", "value_ids": [(0, 0, {"name": value}) for value in values]}
+        )
+Company.search([("name", "=", "PhpUnit2")]).write({"splash_product_advanced_variants": True})
 # Base URL: port 80 on the Odoo host, never overwritten by an admin login from another address
 Params = env["ir.config_parameter"].sudo()
 Params.set_str("web.base.url", BASE_URL)
