@@ -45,6 +45,13 @@ class OdooGroup(FieldsGroup):
         """Keep the Odoo context of the request (optional)."""
         self.odoo = odoo
 
+    @property
+    def context(self) -> OdooContext:
+        """Odoo context of the request: always given to groups reading or writing values."""
+        if self.odoo is None:
+            raise RuntimeError("Odoo fields group used without Odoo context.")
+        return self.odoo
+
     @classmethod
     def available(cls, odoo: OdooContext) -> bool:  # noqa: ARG003 - used by the overrides
         """Tell if this group is available in the Odoo database (modules, settings): default, always."""
@@ -75,6 +82,16 @@ class OdooGroup(FieldsGroup):
         if req.object is not None and name not in staged and _same(req.object[name], value):
             return True
         req.stash.setdefault(VALUES, {})[name] = value
+        req.need_update()
+        return True
+
+    @staticmethod
+    def stage_ids(req: ObjectRequest, name: str, ids: list[int]) -> bool:
+        """Stage the records of a many2many field (replaced by ids) when they differ from the current ones."""
+        staged = req.stash.get(VALUES) or {}
+        if req.object is not None and name not in staged and set(req.object[name].ids) == set(ids):
+            return True
+        req.stash.setdefault(VALUES, {})[name] = [(6, 0, list(ids))]
         req.need_update()
         return True
 

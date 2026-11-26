@@ -15,7 +15,7 @@
                 "string-3": "Splash.Scopes.Product.GalleryReceiver"
             },
             "servertype": "Odoo 20.0-20261112",
-            "serverurl": "http://app.odoo.local:8069",
+            "serverurl": "http://app.odoo.local",
             "moduleauthor": "Splash Sync",
             "moduleversion": "20.0.3.0.0"
         }
@@ -789,7 +789,7 @@
                         "x-schema-org-itemtype": "http://schema.org/Organization",
                         "x-schema-org-itemprop": "ID",
                         "x-technical-description": "Splash object ID linking this address to its parent ThirdParty. Type is objectid::ThirdParty, value format is the Splash-encoded object ID. Use ObjectsHelper::encode('ThirdParty', $rawId) to write and ObjectsHelper::id($value) to read. Mapped to schema.org Organization/ID. This field establishes the parent-child relationship between ThirdParty and Address objects. When reading, the connector must return the Splash-encoded ID of the parent ThirdParty. When writing, the connector receives a Splash-encoded ID and must resolve it to a local entity reference.",
-                        "example": "715::ThirdParty"
+                        "example": "891::ThirdParty"
                     },
                     "first": {
                         "type": "string",
@@ -958,7 +958,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateCreated",
                         "x-technical-description": "Creation datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is set once at object creation by the remote application. Used for audit trail purposes and to determine object age. This field is mapped to schema.org DataFeedItem/dateCreated. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track creation dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "write_date": {
                         "type": "string",
@@ -970,7 +970,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateModified",
                         "x-technical-description": "Last modification datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is managed by the remote application. This field is purely informational, it is NOT used for change detection. Splash only triggers synchronization when a commit notification is received from the remote application. This field is mapped to schema.org DataFeedItem/dateModified. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track modification dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "customer": {
                         "type": "boolean",
@@ -1041,7 +1041,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Address",
                         "x-schema-org-itemprop": "activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "activity_exception_decoration": {
                         "type": "string",
@@ -1700,7 +1700,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Address",
                         "x-schema-org-itemprop": "my_activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "name": {
                         "type": "string",
@@ -1900,7 +1900,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/Address",
                         "x-schema-org-itemprop": "publish_on",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "published_date": {
                         "type": "string",
@@ -1910,7 +1910,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/Address",
                         "x-schema-org-itemprop": "published_date",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "purchase_incoterm_location": {
                         "type": "string",
@@ -2716,41 +2716,41 @@
                             "Pacific/Yap",
                             "UTC",
                             "WET",
-                            "Etc/GMT-14",
-                            "Etc/GMT-13",
-                            "Etc/GMT+6",
-                            "Etc/GMT-1",
-                            "Etc/GMT+7",
-                            "Etc/GMT-6",
-                            "Etc/GMT+11",
-                            "Etc/GMT+12",
-                            "Etc/GMT-0",
-                            "Etc/Greenwich",
-                            "Etc/GMT-4",
-                            "Etc/GMT+1",
-                            "Etc/GMT+10",
-                            "Etc/GMT+0",
-                            "Etc/GMT",
-                            "Etc/Universal",
-                            "Etc/GMT+9",
-                            "Etc/GMT-11",
-                            "Etc/GMT+5",
-                            "Etc/GMT0",
-                            "Etc/GMT-10",
-                            "Etc/GMT-7",
                             "Etc/GMT+8",
-                            "Etc/GMT-3",
-                            "Etc/GMT-5",
+                            "Etc/GMT-1",
+                            "Etc/GMT-13",
                             "Etc/GMT+4",
-                            "Etc/GMT-8",
-                            "Etc/GMT-12",
-                            "Etc/GMT+3",
-                            "Etc/GMT-9",
-                            "Etc/GMT-2",
-                            "Etc/UTC",
+                            "Etc/GMT-11",
                             "Etc/UCT",
+                            "Etc/GMT-10",
+                            "Etc/GMT+10",
+                            "Etc/GMT-6",
+                            "Etc/GMT-4",
+                            "Etc/GMT+12",
+                            "Etc/GMT0",
+                            "Etc/Zulu",
+                            "Etc/Universal",
+                            "Etc/GMT-5",
+                            "Etc/GMT+1",
+                            "Etc/Greenwich",
+                            "Etc/GMT-0",
+                            "Etc/GMT+5",
+                            "Etc/GMT+6",
+                            "Etc/GMT-12",
+                            "Etc/GMT-9",
+                            "Etc/GMT+7",
+                            "Etc/UTC",
+                            "Etc/GMT-2",
+                            "Etc/GMT-14",
                             "Etc/GMT+2",
-                            "Etc/Zulu"
+                            "Etc/GMT",
+                            "Etc/GMT+0",
+                            "Etc/GMT+3",
+                            "Etc/GMT-3",
+                            "Etc/GMT-8",
+                            "Etc/GMT+9",
+                            "Etc/GMT+11",
+                            "Etc/GMT-7"
                         ]
                     },
                     "tz_offset": {
@@ -2935,13 +2935,13 @@
                     },
                     "barcode": {
                         "type": "string",
-                        "title": "Barcode",
-                        "description": "Product barcode\n\n- **Template:** `Splash\\Templates\\Product\\Identifiers\\Barcode::class`\n- **Microdata:** `http://schema.org/Product` \u2192 `qrcode`",
+                        "title": "EAN 13",
+                        "description": "Product EAN barcode\n\n- **Template:** `Splash\\Templates\\Product\\Identifiers\\Ean13::class`\n- **Microdata:** `http://schema.org/Product` \u2192 `gtin13`",
                         "x-splash-type": "varchar",
                         "format": "varchar",
                         "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "qrcode",
-                        "x-technical-description": "Generic barcode value. Mapped to schema.org Product/qrcode. Use EAN13 or UPC for standard barcodes when available."
+                        "x-schema-org-itemprop": "gtin13",
+                        "x-technical-description": "EAN-13 barcode (International Article Number). Mapped to schema.org Product/gtin13. 13-digit code."
                     },
                     "weight": {
                         "type": "number",
@@ -2973,7 +2973,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateCreated",
                         "x-technical-description": "Creation datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is set once at object creation by the remote application. Used for audit trail purposes and to determine object age. This field is mapped to schema.org DataFeedItem/dateCreated. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track creation dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "write_date": {
                         "type": "string",
@@ -2985,7 +2985,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateModified",
                         "x-technical-description": "Last modification datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is managed by the remote application. This field is purely informational, it is NOT used for change detection. Splash only triggers synchronization when a commit notification is received from the remote application. This field is mapped to schema.org DataFeedItem/dateModified. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track modification dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "purchase_ok": {
                         "type": "boolean",
@@ -3007,6 +3007,284 @@
                         "x-schema-org-itemprop": "isVariationOf",
                         "x-technical-description": "Reference to the parent product this variant belongs to. Mapped to schema.org Product/isVariationOf. Read-only, set by the e-commerce platform."
                     },
+                    "__feature_id__8": {
+                        "type": "string",
+                        "title": "Material",
+                        "description": "[en_US] Material\n\n- **Microdata:** `http://schema.org/Product` \u2192 `Material`\n- **Options:**\n    - **language** => en_US",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "Material",
+                        "enum": [
+                            "Cotton",
+                            "Wool",
+                            "Leather"
+                        ]
+                    },
+                    "__feature_id__8_fr_FR": {
+                        "type": "string",
+                        "title": "Material",
+                        "description": "[fr_FR] Material\n\n- **Microdata:** `http://schema.org/Product/fr_FR` \u2192 `Material`\n- **Options:**\n    - **language** => fr_FR\n- `\ud83e\uddea No Tests`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product/fr_FR",
+                        "x-schema-org-itemprop": "Material"
+                    },
+                    "__feature_id__9": {
+                        "type": "string",
+                        "title": "Brand",
+                        "description": "[en_US] Brand\n\n- **Microdata:** `http://schema.org/Product` \u2192 `Brand`\n- **Options:**\n    - **language** => en_US",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "Brand",
+                        "enum": [
+                            "Splash",
+                            "BadPixxel"
+                        ]
+                    },
+                    "__feature_id__9_fr_FR": {
+                        "type": "string",
+                        "title": "Brand",
+                        "description": "[fr_FR] Brand\n\n- **Microdata:** `http://schema.org/Product/fr_FR` \u2192 `Brand`\n- **Options:**\n    - **language** => fr_FR\n- `\ud83e\uddea No Tests`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product/fr_FR",
+                        "x-schema-org-itemprop": "Brand"
+                    },
+                    "list_price": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SplashPrice"
+                            }
+                        ],
+                        "title": "Base Price",
+                        "description": "Product base price (excl. tax)\n\n- **Template:** `Splash\\Templates\\Product\\Pricing\\BasePrice::class`\n- **Microdata:** `http://schema.org/Product` \u2192 `basePrice`\n- **Options:**\n    - **Currency** => USD",
+                        "x-splash-type": "price",
+                        "format": "price",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "basePrice",
+                        "x-technical-description": "Product base price before tax. Splash type is 'price'. Mapped to schema.org Product/basePrice.",
+                        "example": {
+                            "base": 0,
+                            "ht": 160.57,
+                            "vat": 20,
+                            "tax": 32.11,
+                            "ttc": 192.68,
+                            "code": "EUR",
+                            "symbol": "\u20ac",
+                            "name": "Euro"
+                        }
+                    },
+                    "standard_price": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SplashPrice"
+                            }
+                        ],
+                        "title": "Wholesale Price",
+                        "description": "Product wholesale / cost price\n\n- **Template:** `Splash\\Templates\\Product\\Pricing\\WholesalePrice::class`\n- **Microdata:** `http://schema.org/Product` \u2192 `wholesalePrice`\n- **Options:**\n    - **Currency** => USD",
+                        "x-splash-type": "price",
+                        "format": "price",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "wholesalePrice",
+                        "x-technical-description": "Product wholesale or cost price. Splash type is 'price'. Mapped to schema.org Product/wholesalePrice. Used for margin calculation.",
+                        "example": {
+                            "base": 0,
+                            "ht": 59.45,
+                            "vat": 20,
+                            "tax": 11.89,
+                            "ttc": 71.34,
+                            "code": "EUR",
+                            "symbol": "\u20ac",
+                            "name": "Euro"
+                        }
+                    },
+                    "variant_price_extra": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SplashPrice"
+                            }
+                        ],
+                        "title": "Variant Extra Price",
+                        "description": "Variant Extra Price\n\n- **Microdata:** `http://schema.org/Product` \u2192 `extraPrice`",
+                        "x-splash-type": "price",
+                        "format": "price",
+                        "readOnly": true,
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "extraPrice",
+                        "example": {
+                            "base": 0,
+                            "ht": 168.06,
+                            "vat": 20,
+                            "tax": 33.61,
+                            "ttc": 201.67,
+                            "code": "EUR",
+                            "symbol": "\u20ac",
+                            "name": "Euro"
+                        }
+                    },
+                    "categ_id": {
+                        "type": "string",
+                        "title": "Category Id",
+                        "description": "Category Id\n\n- **Microdata:** `http://schema.org/Product` \u2192 `classificationId`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "readOnly": true,
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "classificationId"
+                    },
+                    "categ": {
+                        "type": "string",
+                        "title": "Category",
+                        "description": "Category\n\n- **Microdata:** `http://schema.org/Product` \u2192 `classification`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "classification",
+                        "enum": [
+                            "Goods",
+                            "Expenses",
+                            "Services",
+                            "Deliveries",
+                            "Donations"
+                        ]
+                    },
+                    "qty_available": {
+                        "type": "integer",
+                        "title": "Quantity On Hand",
+                        "description": "Current quantity of products.\n\n- **Template:** `Splash\\Templates\\Product\\Stock\\StockLevel::class`\n- **Microdata:** `http://schema.org/Offer` \u2192 `inventoryLevel`\n- `\ud83d\udccb In List`",
+                        "x-splash-type": "int",
+                        "format": "int",
+                        "x-schema-org-itemtype": "http://schema.org/Offer",
+                        "x-schema-org-itemprop": "inventoryLevel",
+                        "x-technical-description": "Current stock level / quantity on hand. Mapped to schema.org Offer/inventoryLevel."
+                    },
+                    "is_storable": {
+                        "type": "boolean",
+                        "title": "Track Inventory",
+                        "description": "Track Inventory\n\n- **Microdata:** `http://schema.org/Product` \u2192 `isStorable`\n- `\ud83e\uddea No Tests`",
+                        "x-splash-type": "bool",
+                        "format": "bool",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "isStorable"
+                    },
+                    "virtual_available": {
+                        "type": "integer",
+                        "title": "Forecast Quantity",
+                        "description": "Forecast stock quantity\n\n- **Template:** `Splash\\Templates\\Product\\Stock\\ForecastLevel::class`\n- **Microdata:** `http://schema.org/Offer` \u2192 `forecastLevel`",
+                        "x-splash-type": "int",
+                        "format": "int",
+                        "readOnly": true,
+                        "x-schema-org-itemtype": "http://schema.org/Offer",
+                        "x-schema-org-itemprop": "forecastLevel",
+                        "x-technical-description": "Forecast stock level including pending orders and incoming supplies. Mapped to schema.org Offer/forecastLevel."
+                    },
+                    "free_qty": {
+                        "type": "integer",
+                        "title": "Free Quantity",
+                        "description": "Free Quantity\n\n- **Microdata:** `http://schema.org/Offer` \u2192 `availableLevel`",
+                        "x-splash-type": "int",
+                        "format": "int",
+                        "readOnly": true,
+                        "x-schema-org-itemtype": "http://schema.org/Offer",
+                        "x-schema-org-itemprop": "availableLevel"
+                    },
+                    "free_qty_wh_1": {
+                        "type": "integer",
+                        "title": "Free Qty On WH",
+                        "description": "Free quantity of product on Warehouse My Company\n\n- **Microdata:** `http://schema.org/Offer` \u2192 `inventoryLevelWH`",
+                        "x-splash-type": "int",
+                        "format": "int",
+                        "readOnly": true,
+                        "x-schema-org-itemtype": "http://schema.org/Offer",
+                        "x-schema-org-itemprop": "inventoryLevelWH"
+                    },
+                    "supplier_name": {
+                        "type": "string",
+                        "title": "Supplier Name",
+                        "description": "Supplier Name\n\n- **Microdata:** `http://schema.org/Product` \u2192 `supplierName`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "supplierName",
+                        "enum": [
+                            "BadPixxel Wholesale",
+                            "MTAODYMDAxMwMTIxNjcODAMw",
+                            "MTAyMTQOTYMwMTIyMzQyOTcz",
+                            "MTEwNTENzUxMwMjINDgNzE, NDkNjAwNTQwODIxOTUwODI - MTUMDYMDUNwNTkyNDcxMTY",
+                            "MTINjAOTQwMQMTIMDkxNTgyMA, OTINDYMTMMTEMzUMDEwMQ - MTYyMDEMTAzMQMTEMzgNzAwNQ",
+                            "MTMOTAOTYyMANjAOTYyMDQ",
+                            "MjAODgwMDEwNwNTENDAMDI",
+                            "MzIxMTMxODkNTIMjIODEy, MTcxMTAwMTIwMANzgMDMzNjgx - MTgxMjcOTQNzINTgMjYz",
+                            "NDYMTIxMzkzNjYNDgNzc, MjgNDkMTMMjAOTcNjANg - MjANTkNjQMQMzEMTQNTU",
+                            "NTAxNTQMTgMTUMDYyNTcNg",
+                            "NjkNzcODMMTkNzINzEOQ",
+                            "NzYNTYODczMTYzNzkNDcwNQ, MzcwNzgMDIODQxMTMzMjI - MTUwMDkwNTYNgNzMxNzQMzAy",
+                            "ODkNzUMjgNjMNjUxMDc, NTQzMTQxNzAMTUyODEwNDUwNQ - MTcNTMxMDkNAMTUzMzAwNjcz",
+                            "Splash Supplies"
+                        ]
+                    },
+                    "supplier_price_dbl": {
+                        "type": "number",
+                        "title": "Supplier Price (Float)",
+                        "description": "Supplier Price (Float)\n\n- **Microdata:** `http://schema.org/Product` \u2192 `supplierPriceDbl`",
+                        "x-splash-type": "double",
+                        "format": "double",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "supplierPriceDbl"
+                    },
+                    "supplier_price": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SplashPrice"
+                            }
+                        ],
+                        "title": "Supplier Price",
+                        "description": "Supplier Price\n\n- **Microdata:** `http://schema.org/Product` \u2192 `supplierPrice`\n- `\ud83e\uddea No Tests`",
+                        "x-splash-type": "price",
+                        "format": "price",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "supplierPrice",
+                        "example": {
+                            "base": 0,
+                            "ht": 117.23,
+                            "vat": 20,
+                            "tax": 23.45,
+                            "ttc": 140.68,
+                            "code": "EUR",
+                            "symbol": "\u20ac",
+                            "name": "Euro"
+                        }
+                    },
+                    "supplier_sku": {
+                        "type": "string",
+                        "title": "Supplier SKU",
+                        "description": "Manufacturer part number\n\n- **Template:** `Splash\\Templates\\Product\\Identifiers\\Mpn::class`\n- **Microdata:** `http://schema.org/Product` \u2192 `mpn`",
+                        "x-splash-type": "varchar",
+                        "format": "varchar",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "mpn",
+                        "x-technical-description": "Manufacturer Part Number. Mapped to schema.org Product/mpn. Used for cross-referencing with supplier catalogs."
+                    },
+                    "supplier_min_qty": {
+                        "type": "integer",
+                        "title": "Supplier MOQ",
+                        "description": "Supplier MOQ\n\n- **Microdata:** `http://schema.org/Product` \u2192 `supplierMinQty`",
+                        "x-splash-type": "int",
+                        "format": "int",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "supplierMinQty"
+                    },
+                    "supplier_currency": {
+                        "type": "string",
+                        "format": "currency",
+                        "title": "Supplier Currency",
+                        "description": "Supplier Currency\n\n- **Microdata:** `http://schema.org/Product` \u2192 `supplierCurrency`\n- `\ud83e\uddea No Tests`",
+                        "x-splash-type": "currency",
+                        "x-schema-org-itemtype": "http://schema.org/Product",
+                        "x-schema-org-itemprop": "supplierCurrency"
+                    },
                     "activity_date_deadline": {
                         "type": "string",
                         "format": "date",
@@ -3016,7 +3294,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "activity_exception_decoration": {
                         "type": "string",
@@ -3405,16 +3683,6 @@
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "fiscal_country_codes"
                     },
-                    "free_qty": {
-                        "type": "number",
-                        "title": "Free To Use Quantity",
-                        "description": "Available quantity (computed as Quantity On Hand - reserved quantity)\nIn a context with a single Stock Location, this includes goods stored in this location, or any of its children.\nIn a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\nOtherwise, this includes goods stored in any Stock Location with 'internal' type.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `free_qty`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "readOnly": true,
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "free_qty"
-                    },
                     "has_available_route_ids": {
                         "type": "boolean",
                         "title": "Routes can be selected on this product",
@@ -3534,24 +3802,6 @@
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "is_seo_optimized"
                     },
-                    "is_storable": {
-                        "type": "boolean",
-                        "title": "Track Inventory",
-                        "description": "A storable product is a product for which you manage stock.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `is_storable`\n- `\ud83e\uddea No Tests`",
-                        "x-splash-type": "bool",
-                        "format": "bool",
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "is_storable"
-                    },
-                    "list_price": {
-                        "type": "number",
-                        "title": "Sales Price",
-                        "description": "Price at which the product is sold to customers.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `list_price`\n- `\ud83e\uddea No Tests`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "list_price"
-                    },
                     "lot_valuated": {
                         "type": "boolean",
                         "title": "Valuation by Lot/Serial",
@@ -3560,15 +3810,6 @@
                         "format": "bool",
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "lot_valuated"
-                    },
-                    "lst_price": {
-                        "type": "number",
-                        "title": "Sales\u00a0Price",
-                        "description": "The sale price can be set manually or computed from the product template. Click on the 'Configure Variants' button to set the extra attribute prices.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `lst_price`\n- `\ud83e\uddea No Tests`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "lst_price"
                     },
                     "message_attachment_count": {
                         "type": "integer",
@@ -3668,7 +3909,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "my_activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "nbr_moves_in": {
                         "type": "integer",
@@ -3828,7 +4069,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "publish_date",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "publish_on": {
                         "type": "string",
@@ -3838,7 +4079,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "publish_on",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "published_date": {
                         "type": "string",
@@ -3848,7 +4089,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "published_date",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "purchase_line_warn_msg": {
                         "type": "string",
@@ -3881,15 +4122,6 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "purchased_product_qty"
-                    },
-                    "qty_available": {
-                        "type": "number",
-                        "title": "Quantity On Hand",
-                        "description": "Current quantity of products.\nIn a context with a single Stock Location, this includes goods stored at this Location, or any of its children.\nIn a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\nstored in the Stock Location of the Warehouse of this Shop, or any of its children.\nOtherwise, this includes goods stored in any Stock Location with 'internal' type.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `qty_available`\n- `\ud83e\uddea No Tests`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "qty_available"
                     },
                     "rating_avg": {
                         "type": "number",
@@ -4145,15 +4377,6 @@
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "show_sales_price_page"
                     },
-                    "standard_price": {
-                        "type": "number",
-                        "title": "Cost",
-                        "description": "Value of the product (automatically computed in AVCO).\n        Used to value the product when the purchase cost is not known (e.g. inventory adjustment).\n        Used to compute margins on sale orders.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `standard_price`\n- `\ud83e\uddea No Tests`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "standard_price"
-                    },
                     "store_by": {
                         "type": "string",
                         "title": "Tracking",
@@ -4214,7 +4437,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "suggested_products_last_update",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "suggested_qty": {
                         "type": "integer",
@@ -4326,16 +4549,6 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/Product",
                         "x-schema-org-itemprop": "variants_default_code"
-                    },
-                    "virtual_available": {
-                        "type": "number",
-                        "title": "Forecasted Quantity",
-                        "description": "Forecast quantity (computed as Quantity On Hand - Outgoing + Incoming)\nIn a context with a single Stock Location, this includes goods stored in this location, or any of its children.\nIn a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\nOtherwise, this includes goods stored in any Stock Location with 'internal' type.\n\n- **Microdata:** `http://schema.org/Product` \u2192 `virtual_available`",
-                        "x-splash-type": "double",
-                        "format": "double",
-                        "readOnly": true,
-                        "x-schema-org-itemtype": "http://schema.org/Product",
-                        "x-schema-org-itemprop": "virtual_available"
                     },
                     "visible_reinvoice_policy": {
                         "type": "boolean",
@@ -4522,7 +4735,7 @@
                                     "x-schema-org-itemtype": "http://schema.org/Product",
                                     "x-schema-org-itemprop": "Variants",
                                     "x-technical-description": "List of variant product IDs belonging to the same parent. Mapped to schema.org Product/Variants. Type is objectid::Product@list.",
-                                    "example": "299::Product"
+                                    "example": "826::Product"
                                 },
                                 "sku": {
                                     "type": "string",
@@ -4662,6 +4875,10 @@
                     "default_code": {
                         "type": "string",
                         "title": "Reference"
+                    },
+                    "qty_available": {
+                        "type": "integer",
+                        "title": "Quantity On Hand"
                     }
                 }
             },
@@ -4852,7 +5069,7 @@
                         "x-schema-org-itemtype": "http://schema.org/Organization",
                         "x-schema-org-itemprop": "ID",
                         "x-technical-description": "Splash object ID linking this address to its parent ThirdParty. Type is objectid::ThirdParty, value format is the Splash-encoded object ID. Use ObjectsHelper::encode('ThirdParty', $rawId) to write and ObjectsHelper::id($value) to read. Mapped to schema.org Organization/ID. This field establishes the parent-child relationship between ThirdParty and Address objects. When reading, the connector must return the Splash-encoded ID of the parent ThirdParty. When writing, the connector receives a Splash-encoded ID and must resolve it to a local entity reference.",
-                        "example": "433::ThirdParty"
+                        "example": "224::ThirdParty"
                     },
                     "create_date": {
                         "type": "string",
@@ -4864,7 +5081,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateCreated",
                         "x-technical-description": "Creation datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is set once at object creation by the remote application. Used for audit trail purposes and to determine object age. This field is mapped to schema.org DataFeedItem/dateCreated. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track creation dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "write_date": {
                         "type": "string",
@@ -4876,7 +5093,7 @@
                         "x-schema-org-itemtype": "http://schema.org/DataFeedItem",
                         "x-schema-org-itemprop": "dateModified",
                         "x-technical-description": "Last modification datetime of the object on the remote application. Format: Splash datetime (Y-m-d H:i:s). This field is always read-only, the value is managed by the remote application. This field is purely informational, it is NOT used for change detection. Splash only triggers synchronization when a commit notification is received from the remote application. This field is mapped to schema.org DataFeedItem/dateModified. Available on all object types (ThirdParty, Address, Product, Order, Invoice). If the remote application does not track modification dates, this field should not be exposed.",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "customer": {
                         "type": "boolean",
@@ -4938,7 +5155,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/ThirdParty",
                         "x-schema-org-itemprop": "activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "activity_exception_decoration": {
                         "type": "string",
@@ -5592,7 +5809,7 @@
                         "readOnly": true,
                         "x-schema-org-itemtype": "http://schema.org/ThirdParty",
                         "x-schema-org-itemprop": "my_activity_date_deadline",
-                        "example": "2026-11-24"
+                        "example": "2026-11-26"
                     },
                     "name": {
                         "type": "string",
@@ -5802,7 +6019,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/ThirdParty",
                         "x-schema-org-itemprop": "publish_on",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "published_date": {
                         "type": "string",
@@ -5812,7 +6029,7 @@
                         "x-splash-type": "datetime",
                         "x-schema-org-itemtype": "http://schema.org/ThirdParty",
                         "x-schema-org-itemprop": "published_date",
-                        "example": "2026-11-24 11:38:46"
+                        "example": "2026-11-26 18:59:36"
                     },
                     "purchase_incoterm_location": {
                         "type": "string",
@@ -6624,41 +6841,41 @@
                             "Pacific/Yap",
                             "UTC",
                             "WET",
-                            "Etc/GMT-14",
-                            "Etc/GMT-13",
-                            "Etc/GMT+6",
-                            "Etc/GMT-1",
-                            "Etc/GMT+7",
-                            "Etc/GMT-6",
-                            "Etc/GMT+11",
-                            "Etc/GMT+12",
-                            "Etc/GMT-0",
-                            "Etc/Greenwich",
-                            "Etc/GMT-4",
-                            "Etc/GMT+1",
-                            "Etc/GMT+10",
-                            "Etc/GMT+0",
-                            "Etc/GMT",
-                            "Etc/Universal",
-                            "Etc/GMT+9",
-                            "Etc/GMT-11",
-                            "Etc/GMT+5",
-                            "Etc/GMT0",
-                            "Etc/GMT-10",
-                            "Etc/GMT-7",
                             "Etc/GMT+8",
-                            "Etc/GMT-3",
-                            "Etc/GMT-5",
+                            "Etc/GMT-1",
+                            "Etc/GMT-13",
                             "Etc/GMT+4",
-                            "Etc/GMT-8",
-                            "Etc/GMT-12",
-                            "Etc/GMT+3",
-                            "Etc/GMT-9",
-                            "Etc/GMT-2",
-                            "Etc/UTC",
+                            "Etc/GMT-11",
                             "Etc/UCT",
+                            "Etc/GMT-10",
+                            "Etc/GMT+10",
+                            "Etc/GMT-6",
+                            "Etc/GMT-4",
+                            "Etc/GMT+12",
+                            "Etc/GMT0",
+                            "Etc/Zulu",
+                            "Etc/Universal",
+                            "Etc/GMT-5",
+                            "Etc/GMT+1",
+                            "Etc/Greenwich",
+                            "Etc/GMT-0",
+                            "Etc/GMT+5",
+                            "Etc/GMT+6",
+                            "Etc/GMT-12",
+                            "Etc/GMT-9",
+                            "Etc/GMT+7",
+                            "Etc/UTC",
+                            "Etc/GMT-2",
+                            "Etc/GMT-14",
                             "Etc/GMT+2",
-                            "Etc/Zulu"
+                            "Etc/GMT",
+                            "Etc/GMT+0",
+                            "Etc/GMT+3",
+                            "Etc/GMT-3",
+                            "Etc/GMT-8",
+                            "Etc/GMT+9",
+                            "Etc/GMT+11",
+                            "Etc/GMT-7"
                         ]
                     },
                     "tz_offset": {

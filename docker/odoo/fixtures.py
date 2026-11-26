@@ -22,6 +22,8 @@ ADMIN_PASSWORD = "admin"  # test stack only: login admin / admin on http://172.1
 TOOLKIT = "http://toolkit.odoo.local/ws/soap"
 BASE_URL = "http://app.odoo.local"  # Odoo URL seen by the Toolkit (images, links), frozen
 NODES = {"YourCompany": "ThisIsOdooC0WsId", "PhpUnit1": "ThisIsOdooC1WsId", "PhpUnit2": "ThisIsOdooC2WsId"}
+VAT = 20.0  # VAT rate of the Toolkit prices
+VENDORS = ("Splash Supplies", "BadPixxel Wholesale")  # vendors of the products first supplier
 FEATURES = {"Material": ["Cotton", "Wool", "Leather"], "Brand": ["Splash", "BadPixxel"]}
 
 Company = env["res.company"].sudo()
@@ -75,6 +77,26 @@ for name, values in FEATURES.items():
             {"name": name, "create_variant": "no_variant", "value_ids": [(0, 0, {"name": value}) for value in values]}
         )
 Company.search([("name", "=", "PhpUnit2")]).write({"splash_product_advanced_variants": True})
+# C1 tests the "Simplified Prices" mode (variants own extra prices)
+Company.search([("name", "=", "PhpUnit1")]).write({"splash_product_simplified_prices": True})
+# One warehouse per company (companies created after the Inventory module have none)
+Warehouses = env["stock.warehouse"].sudo()
+for index, company in enumerate(Company.browse(companies)):
+    if not Warehouses.search([("company_id", "=", company.id)]):
+        Warehouses.create({"name": company.name, "code": f"WH{index}", "company_id": company.id})
+# Vendors shared by all companies (products first supplier)
+Partners = env["res.partner"].sudo()
+for name in VENDORS:
+    if not Partners.search([("name", "=", name), ("supplier_rank", ">", 0)]):
+        Partners.create({"name": name, "supplier_rank": 1, "company_id": False})
+# Toolkit prices are tested with a 20% VAT rate: a sale & a purchase tax of that rate in each company
+Taxes = env["account.tax"].sudo()
+for company in Company.browse(companies):
+    for use in ("sale", "purchase"):
+        domain = [("company_id", "=", company.id), ("type_tax_use", "=", use), ("amount_type", "=", "percent")]
+        model = Taxes.search(domain, limit=1)
+        if model and not Taxes.search([*domain, ("amount", "=", VAT)], limit=1):
+            model.copy({"name": f"{VAT:g}% ({use})", "amount": VAT, "price_include_override": "tax_excluded"})
 # Base URL: port 80 on the Odoo host, never overwritten by an admin login from another address
 Params = env["ir.config_parameter"].sudo()
 Params.set_str("web.base.url", BASE_URL)

@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, ClassVar, Final
 
+from odoo.tools import mute_logger
 from splashpy.core.context import RequestContext
 from splashpy.objects import ObjectRequest
 
@@ -30,12 +31,20 @@ from ..base import OdooObject
 from ..generic import GenericFields
 from .attributes import FIELDS as ATTRIBUTES_FIELDS
 from .attributes import ProductAttributes, clean_lines
+from .categories import FIELDS as CATEGORIES_FIELDS
+from .categories import ProductCategories
 from .characteristics import VARIANT_VALUES, ProductFeatures
 from .core import TEMPLATES as CORE_TEMPLATES
 from .core import TRANSLATED, ProductCore
 from .features import has_gallery, has_variants
 from .gallery import FIELDS as GALLERY_FIELDS
 from .gallery import ProductGallery, read_file
+from .prices import FIELDS as PRICES_FIELDS
+from .prices import ProductPrices
+from .stock import FIELDS as STOCK_FIELDS
+from .stock import ON_HAND, STORABLE, ProductStock
+from .suppliers import FIELDS as SUPPLIERS_FIELDS
+from .suppliers import ProductSuppliers
 from .variants import FIELDS as VARIANTS_FIELDS
 from .variants import ProductVariants, sibling_template
 
@@ -72,6 +81,10 @@ class ProductFields(GenericFields):
             *ATTRIBUTES_FIELDS,
             *GALLERY_FIELDS,
             VARIANT_VALUES,
+            *PRICES_FIELDS,
+            *CATEGORIES_FIELDS,
+            *STOCK_FIELDS,
+            *SUPPLIERS_FIELDS,
         }
     )
     """Explicit fields of the object."""
@@ -95,6 +108,10 @@ class Product(OdooObject):
         ProductVariants,
         ProductAttributes,
         ProductFeatures,
+        ProductPrices,
+        ProductCategories,
+        ProductStock,
+        ProductSuppliers,
         ProductGallery,
         ProductFields,
     )
@@ -112,16 +129,20 @@ class Product(OdooObject):
         return ["|", ("name", "ilike", text), ("default_code", "ilike", text)]
 
     def list_values(self, record: Any) -> dict[str, Any]:
-        """SKU and name, with the name translations (listed by the name template)."""
+        """SKU and name, with the name translations (listed by the name template), stock level (Inventory)."""
         values = super().list_values(record)
         for lang in self.odoo.languages()[1:]:
             values[f"name_{lang}"] = record.product_tmpl_id.with_context(lang=lang).name or None
+        if ON_HAND in record._fields:
+            values[ON_HAND] = int(record[ON_HAND])
         return values
 
     def create_values(self, req: ObjectRequest) -> dict[str, Any]:
         """Name & type; attached to the template of a received sibling variant, if any."""
         values: dict[str, Any] = {"name": req.inputs.get("name") or req.inputs.get("default_code") or "New Product"}
         values.setdefault("type", "consu")
+        if STORABLE in self.records()._fields:
+            values.setdefault(STORABLE, True)  # tracked in stock unless received (as V1)
         template = sibling_template(self.odoo.env, req.inputs.get("variants")) if has_variants(self.odoo.env) else None
         if template and not req.inputs.get("attributes"):
             # Odoo refuses two variants with the same (empty) attributes on one template
@@ -143,8 +164,20 @@ class Product(OdooObject):
         return read_file(self.odoo.env, path, md5)
 
     def delete_record(self, record: Any) -> None:
-        """Delete a variant: Odoo deletes the template with its last variant, then clean its lines."""
+        """Delete a variant: Odoo deletes the template with its last variant, then clean its lines.
+
+        A variant still used (stock moves, orders...) cannot be deleted: archived instead, as Odoo does,
+        with its template when no other variant is active.
+        """
         template = record.product_tmpl_id
-        record.with_context(create_product_product=True).unlink()
+        try:
+            # as Odoo "_unlink_or_archive()": refused deletions are expected, not logged as SQL errors
+            with self.odoo.env.cr.savepoint(), mute_logger("odoo.sql_db"):
+                record.with_context(create_product_product=True).unlink()
+        except Exception:  # noqa: BLE001 - database constraints of the records using the variant
+            record.write({"active": False})
+            if not template.product_variant_ids:
+                template.write({"active": False})
+            return
         if template.exists():
             clean_lines(template.with_context(**NO_VARIANTS))
