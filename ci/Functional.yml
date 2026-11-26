@@ -14,21 +14,16 @@
 ################################################################################
 
 # Toolkit 3.0 validator: Odoo & database images pulled from the registry (not the dev image), the database of the image is ready, the
-# addon of the commit is mounted and upgraded at start (ODOO_UPDATE). One job per objects group and per company,
-# each on its own stack: products are shared between companies, their tests never run side by side.
+# addon of the commit is mounted and upgraded at start (ODOO_UPDATE). One stage per objects group, one job per company, each on
+# its own stack: products are shared between companies, their tests never run side by side.
 
-toolkit:
-    stage:      Functional
+.functional:
     image:      docker:latest
     tags:       [ "Dedicated-Docker" ]
     services:   [ "docker:dind" ]
     variables:
         ODOO_UPDATE:    "1"
         ODOO_DEV:       "0"
-    parallel:
-        matrix:
-            - TYPES:        [ "ThirdParty Address", "Product" ]
-              SEQUENCES:    [ "[Gen 3] Odoo C0 (main)", "[Gen 3] Odoo C1", "[Gen 3] Odoo C2" ]
     before_script:
         - apk add --no-cache make > /dev/null
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
@@ -42,3 +37,53 @@ toolkit:
     artifacts:
         when:   always
         paths:  [ "e2e.log", "splash.json", "splash.yml", "swagger.json" ]
+
+################################################################################
+# Contacts: ThirdParty & Address
+################################################################################
+
+Contacts:C0:
+    extends:    .functional
+    stage:      Contacts
+    variables:
+        TYPES:          "ThirdParty Address"
+        SEQUENCES:      "[Gen 3] Odoo C0 (main)"
+
+Contacts:C1:
+    extends:    .functional
+    stage:      Contacts
+    variables:
+        TYPES:          "ThirdParty Address"
+        SEQUENCES:      "[Gen 3] Odoo C1"
+
+Contacts:C2:
+    extends:    .functional
+    stage:      Contacts
+    variables:
+        TYPES:          "ThirdParty Address"
+        SEQUENCES:      "[Gen 3] Odoo C2"
+
+################################################################################
+# Products
+################################################################################
+
+Products:C0:
+    extends:    .functional
+    stage:      Products
+    variables:
+        TYPES:          "Product"
+        SEQUENCES:      "[Gen 3] Odoo C0 (main)"
+
+Products:C1:
+    extends:    .functional
+    stage:      Products
+    variables:
+        TYPES:          "Product"
+        SEQUENCES:      "[Gen 3] Odoo C1"
+
+Products:C2:
+    extends:    .functional
+    stage:      Products
+    variables:
+        TYPES:          "Product"
+        SEQUENCES:      "[Gen 3] Odoo C2"

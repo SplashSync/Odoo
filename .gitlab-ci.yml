@@ -23,7 +23,8 @@
 stages:
     - Build
     - Quality
-    - Functional
+    - Contacts
+    - Products
 
 variables:
     ODOO_VERSION:       "20"
@@ -32,4 +33,4 @@ variables:
 include:
     - local:    "ci/Build.yml"         # build & push the images (docker/ changed, schedule, manual)
     - local:    "ci/Quality.yml"       # ruff, pylint-odoo, format, bandit, mypy (in the dev image)
-    - local:    "ci/Functional.yml"    # Toolkit 3.0 validator against the 3 test companies
+    - local:    "ci/Functional.yml"    # Toolkit 3.0 validator: one stage per objects group, one job per company
