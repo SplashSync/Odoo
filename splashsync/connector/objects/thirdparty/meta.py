@@ -76,11 +76,14 @@ class ThirdPartyMeta(RankFlags):
 
     def build(self, factory: FieldsFactory, req: ObjectRequest) -> None:
         """Declare meta fields."""
-        flags: dict[str, tuple[str | tuple[str, ...], ...]] = dict.fromkeys(AUDIT, ("is_read_only",))
+        flags: dict[str, tuple[str | tuple[Any, ...], ...]] = dict.fromkeys(AUDIT, ("is_read_only",))
         flags["active"] = ("is_not_tested",)
         flags["vat"] = ("is_not_tested",)  # Odoo checks VAT numbers per country
         flags["parent_id"] = (("name", "Parent Company"), "is_not_tested")  # a parent makes it an Address
         flags["prospect"] = ("is_read_only",)  # neither customer nor supplier yet
+        if self.odoo is not None:
+            # only installed languages (Odoo refuses documents in another one): random locales are not tested
+            flags["lang"] = (("add_choices", dict(self.odoo.env["res.lang"].get_installed())), "is_not_tested")
         build_fields(factory, {**TEMPLATES, **FLAGS}, flags=flags)
 
     def get(self, req: ObjectRequest, field_id: str) -> Any:
@@ -107,4 +110,19 @@ class ThirdPartyMeta(RankFlags):
         if field_id == "parent_id":
             parent_id = ObjectIds.id(value) if value else None
             return self.stage(req, field_id, int(parent_id) if parent_id and parent_id.isdigit() else False)
+        if field_id == "lang" and value:
+            return self.set_lang(req, str(value))
         return self.stage(req, field_id, value or False)
+
+    def set_lang(self, req: ObjectRequest, value: str) -> bool:
+        """Write the language: an installed one, else the installed one of the same language (fr_CA => fr_FR)."""
+        installed = [code for code, _name in self.context.env["res.lang"].get_installed()]
+        if value in installed:
+            return self.stage(req, "lang", value)
+        prefix = value.split("_", 1)[0]
+        closest = next((code for code in installed if code.split("_", 1)[0] == prefix), None)
+        if closest is None:
+            req.logger.warning(f"{req.object_type}: language {value} is not installed, not changed.")
+            return True
+        req.logger.warning(f"{req.object_type}: language {value} is not installed, {closest} used.")
+        return self.stage(req, "lang", closest)

@@ -19,7 +19,7 @@
     "website": "https://www.splashsync.com",
     "category": "Technical",
     "license": "LGPL-3",
-    "depends": ["base", "contacts", "product", "sale_management", "stock", "sale_stock", "account"],
+    "depends": ["base", "contacts", "product", "sale_management", "stock", "sale_stock", "account", "payment"],
     # splashpy 3.x, betas included (not 4.x)
     "external_dependencies": {"python": ["splashpy>=3.0.0b0,<4"]},
     "data": [

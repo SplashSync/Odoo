@@ -25,6 +25,7 @@ stages:
     - Quality
     - Contacts
     - Products
+    - Orders
 
 variables:
     ODOO_VERSION:       "20"

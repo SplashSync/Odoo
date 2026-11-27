@@ -22,7 +22,7 @@ TOOLKIT     := $(COMPOSE) exec -T toolkit
 WS          ?= ThisIsOdooC0WsId
 MANIFESTS   := splash.yml splash.json swagger.json
 SUITE       ?= Validator
-TYPES       ?= ThirdParty Address Product
+TYPES       ?= ThirdParty Address Product Order Invoice
 # Companies, tested one after the other (products are shared: never mix them in one run)
 SEQUENCES   ?= [Gen 3] Odoo C0 (main),[Gen 3] Odoo C1,[Gen 3] Odoo C2
 
